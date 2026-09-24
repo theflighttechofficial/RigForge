@@ -1,0 +1,121 @@
+import { BudgetPreset } from '../types';
+
+export const budgetPresets: BudgetPreset[] = [
+  {
+    id: 'preset-esports-35k',
+    name: 'Esports & Student Entry Rig',
+    tierCategory: 'Budget',
+    targetBudgetINR: 35000,
+    resolutionTier: '1080p Esports',
+    cpuId: 'cpu-amd-4500',
+    gpuId: 'gpu-nvidia-1650',
+    ram: '16GB DDR4-3200',
+    psuWatts: 450,
+    description: 'Ultra cost-effective build for CS2, Valorant, Dota 2, and GTA V at 1080p competitive settings.',
+    highlights: ['Sub-₹35,000 Total Outlay', 'Ultra-low 180W power consumption', 'Upgradable AM4 motherboard foundation']
+  },
+  {
+    id: 'preset-value-55k',
+    name: '1080p Pure Value Champion',
+    tierCategory: 'Mid-Range',
+    targetBudgetINR: 55000,
+    resolutionTier: '1080p Ultra',
+    cpuId: 'cpu-intel-12100f',
+    gpuId: 'gpu-amd-6600',
+    ram: '16GB DDR4-3200',
+    psuWatts: 550,
+    description: 'The golden ratio of price-to-performance in Indian retail. Delivers 70+ FPS in modern AAA titles at 1080p High/Ultra.',
+    highlights: ['Unbeatable FPS per Rupee (₹)', '8GB VRAM buffer with RDNA 2 architecture', 'PCIe 4.0 support with snappy Alder Lake IPC']
+  },
+  {
+    id: 'preset-sweetspot-85k',
+    name: '1080p High-Refresh & Streaming',
+    tierCategory: 'Mid-Range',
+    targetBudgetINR: 85000,
+    resolutionTier: '1080p Ultra',
+    cpuId: 'cpu-amd-5600',
+    gpuId: 'gpu-nvidia-4060',
+    ram: '32GB DDR4-3600',
+    psuWatts: 600,
+    description: 'Equipped with NVIDIA 8th Gen NVENC encoder and DLSS 3 Frame Generation. High-efficiency 115W GPU for long gaming sessions.',
+    highlights: ['DLSS 3 & Ray Reconstruction', '32GB dual-channel memory for smooth multitasking', 'Cool & whisper quiet thermals']
+  },
+  {
+    id: 'preset-sweetspot-125k',
+    name: '1440p Sweet Spot Gaming Machine',
+    tierCategory: 'High-End',
+    targetBudgetINR: 125000,
+    resolutionTier: '1440p Sweet Spot',
+    cpuId: 'cpu-amd-5700x3d',
+    gpuId: 'gpu-amd-7800xt',
+    ram: '32GB DDR4-3600',
+    psuWatts: 750,
+    description: 'Huge 96MB 3D V-Cache paired with a 16GB VRAM RDNA 3 monster. Built for flawless 1440p gaming without texture stutter.',
+    highlights: ['16GB VRAM future-proofing', '96MB 3D V-Cache eliminates 1% low frame dips', 'Full 144Hz 1440p AAA performance']
+  },
+  {
+    id: 'preset-raytracing-165k',
+    name: '1440p Ultra RT & Next-Gen AM5',
+    tierCategory: 'High-End',
+    targetBudgetINR: 165000,
+    resolutionTier: '1440p Sweet Spot',
+    cpuId: 'cpu-amd-7600',
+    gpuId: 'gpu-nvidia-4070-super',
+    ram: '32GB DDR5-6000 EXPO',
+    psuWatts: 750,
+    description: 'DDR5 AM5 platform paired with Ada Lovelace RTX 4070 Super. Supreme Ray Tracing and generative AI workstation capabilities.',
+    highlights: ['Next-Gen AM5 with DDR5 6000MHz', 'Dominant Ray Tracing with DLSS 3.5', 'Optimal power-to-performance efficiency']
+  },
+  {
+    id: 'preset-flagship-240k',
+    name: '4K High-Refresh Gaming Masterpiece',
+    tierCategory: 'Enthusiast',
+    targetBudgetINR: 240000,
+    resolutionTier: '4K High Refresh',
+    cpuId: 'cpu-amd-7800x3d',
+    gpuId: 'gpu-nvidia-4080-super',
+    ram: '32GB DDR5-6000 CL30',
+    psuWatts: 850,
+    description: 'The world\'s most revered gaming processor paired with the RTX 4080 Super 16GB. Crushes Cyberpunk 2077 Path Tracing and 4K 144Hz monitors.',
+    highlights: ['World champion gaming CPU (7800X3D)', 'Native 4K HDR Ray Tracing prowess', 'Tier-A Gold 850W ATX 3.0 power foundation']
+  },
+  {
+    id: 'preset-titan-420k',
+    name: 'Extreme Creator & Local AI Leviathan',
+    tierCategory: 'Workstation',
+    targetBudgetINR: 420000,
+    resolutionTier: 'Deep Learning / 3D Workstation',
+    cpuId: 'cpu-amd-9950x',
+    gpuId: 'gpu-nvidia-4090',
+    ram: '64GB DDR5-6000 ECC',
+    psuWatts: 1200,
+    description: 'Uncompromising dual-titan build with 16-Core Zen 5 AVX-512 and 24GB GDDR6X VRAM. Built for local 70B parameter LLM inference and 8K Unreal Engine workflows.',
+    highlights: ['24GB VRAM for large local AI/LLM models', 'Full dual 512-bit AVX-512 instruction throughput', '1200W Platinum ATX 3.0 PSU with 12VHPWR native rail']
+  },
+  {
+    id: 'preset-9800x3d-5080',
+    name: 'Zen 5 3D & Blackwell 4K Prodigy',
+    tierCategory: 'Enthusiast',
+    targetBudgetINR: 285000,
+    resolutionTier: '4K High Refresh',
+    cpuId: 'cpu-amd-9800x3d',
+    gpuId: 'gpu-nvidia-5080',
+    ram: '32GB DDR5-6000 CL30',
+    psuWatts: 850,
+    description: 'The world\'s undisputed fastest gaming processor (Ryzen 7 9800X3D) paired with the next-gen Blackwell RTX 5080 16GB GDDR7. Crushes 1440p and 4K ultra high-FPS competitive esports and ray tracing.',
+    highlights: ['World #1 Gaming CPU (9800X3D with sub-CCD 3D V-Cache)', '16GB ultra-fast 32 Gbps GDDR7 (RTX 5080)', '850W Gold ATX 3.0 PCIe 5.0 headroom']
+  },
+  {
+    id: 'preset-blackwell-5090-apex',
+    name: 'Blackwell Apex & Zen 5 3D Monster',
+    tierCategory: 'Enthusiast',
+    targetBudgetINR: 520000,
+    resolutionTier: '4K High Refresh',
+    cpuId: 'cpu-amd-9950x3d',
+    gpuId: 'gpu-nvidia-5090',
+    ram: '64GB DDR5-6400 CL28',
+    psuWatts: 1500,
+    description: 'The absolute pinnacle of consumer PC computing: NVIDIA GeForce RTX 5090 32GB GDDR7 paired with AMD Ryzen 9 9950X3D (144MB 3D V-Cache). Unlocks 4K 240Hz Path Tracing with DLSS 4 Multi-Frame Generation.',
+    highlights: ['32GB GDDR7 512-bit Blackwell Titan', '144MB 2nd-Gen 3D V-Cache (9950X3D)', 'ATX 3.1 1500W PCIe 5.0 12V-2x6 Rail']
+  }
+];

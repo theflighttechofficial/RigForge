@@ -1,0 +1,839 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #09090b;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 36px 36px, 36px 36px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #121215;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Perfect Navigation Scrollbar */
+.perfect-nav-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(6, 182, 212, 0.45) rgba(24, 24, 27, 0.5);
+}
+.perfect-nav-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+.perfect-nav-scrollbar::-webkit-scrollbar-track {
+  background: rgba(24, 24, 27, 0.5);
+  border-radius: 9999px;
+  margin: 0 4px;
+}
+.perfect-nav-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.5), rgba(59, 130, 246, 0.5));
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+.perfect-nav-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.7);
+}
+
+/* Hide scrollbar for tabs */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Range Slider */
+input[type=range] {
+  -webkit-appearance: none;
+  background: #27272a;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #06b6d4;
+  cursor: pointer;
+  box-shadow: 0 0 10px #06b6d4;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: #22d3ee;
+}
+
+/* Custom Glows */
+.shadow-glow-cyan {
+  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.45);
+}
+.shadow-glow-purple {
+  box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.45);
+}
+.shadow-glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.45);
+}
+.shadow-glow-crimson {
+  box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.5);
+}
+.shadow-glow-amber {
+  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.45);
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ==========================================================================
+   Clean High-Contrast Light Mode Stylesheet
+   ========================================================================== */
+html.light,
+html.light body {
+  background-color: #f8fafc !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 32px 32px, 32px 32px !important;
+  color: #0f172a !important;
+}
+
+/* Primary Glass Header */
+html.light header,
+html.light #app-main-header {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Primary Surface Cards and Modules in Light Mode */
+html.light .bg-zinc-950,
+html.light .bg-zinc-950\/95,
+html.light .bg-zinc-950\/90,
+html.light .bg-zinc-950\/80,
+html.light .bg-zinc-950\/70,
+html.light .bg-zinc-900,
+html.light .bg-zinc-900\/95,
+html.light .bg-zinc-900\/90,
+html.light .bg-zinc-900\/80,
+html.light .bg-zinc-900\/70 {
+  background-color: #ffffff !important;
+}
+
+/* Secondary Wells, Code Blocks, and Inset Containers */
+html.light .bg-zinc-900\/60,
+html.light .bg-zinc-900\/50,
+html.light .bg-zinc-900\/40,
+html.light .bg-zinc-900\/30,
+html.light .bg-zinc-800,
+html.light .bg-zinc-800\/90,
+html.light .bg-zinc-800\/80,
+html.light .bg-zinc-800\/60,
+html.light .bg-zinc-800\/50 {
+  background-color: #f8fafc !important;
+}
+
+/* HUD Overlay Panels in Light Mode */
+html.light .bg-black\/75,
+html.light .bg-black\/70,
+html.light .bg-black\/80,
+html.light .bg-black\/90,
+html.light .bg-black {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Neutral Gradient Containers in Light Mode */
+html.light [class*="from-zinc-950"],
+html.light [class*="from-zinc-900"] {
+  --tw-gradient-from: #ffffff !important;
+  --tw-gradient-stops: #ffffff, #f8fafc, #f1f5f9 !important;
+}
+html.light [class*="via-zinc-950"],
+html.light [class*="via-zinc-900"] {
+  --tw-gradient-via: #f8fafc !important;
+}
+html.light [class*="to-zinc-950"],
+html.light [class*="to-zinc-900"] {
+  --tw-gradient-to: #f1f5f9 !important;
+}
+
+/* Crisp Clean Borders in Light Mode */
+html.light .border-zinc-800,
+html.light .border-zinc-800\/80,
+html.light .border-zinc-800\/60,
+html.light .border-zinc-700,
+html.light .border-zinc-700\/80,
+html.light .border-zinc-850,
+html.light .border-zinc-900,
+html.light .border-zinc-900\/90,
+html.light .border-zinc-900\/60,
+html.light .border-zinc-600,
+html.light .border-zinc-600\/80,
+html.light .border-white\/10,
+html.light .border-white\/5 {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .hover\:border-zinc-700:hover,
+html.light .hover\:border-zinc-800:hover,
+html.light .hover\:border-zinc-600:hover {
+  border-color: #cbd5e1 !important;
+}
+
+/* High Contrast Card Elevations */
+html.light .shadow-2xl,
+html.light .shadow-xl,
+html.light .shadow-lg {
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Text Hierarchy & Contrast in Light Mode */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6 {
+  color: #0f172a !important;
+}
+
+html.light .text-white,
+html.light .text-slate-50,
+html.light .text-slate-100,
+html.light .text-slate-200,
+html.light .text-zinc-50,
+html.light .text-zinc-100,
+html.light .text-zinc-200,
+html.light .text-gray-50,
+html.light .text-gray-100,
+html.light .text-gray-200,
+html.light .text-neutral-50,
+html.light .text-neutral-100,
+html.light .text-neutral-200 {
+  color: #0f172a !important;
+}
+
+html.light .text-cyan-100,
+html.light .text-cyan-200 {
+  color: #0369a1 !important;
+}
+
+html.light .text-purple-100,
+html.light .text-purple-200 {
+  color: #6b21a8 !important;
+}
+
+html.light .text-emerald-100,
+html.light .text-emerald-200 {
+  color: #15803d !important;
+}
+
+html.light .text-amber-100,
+html.light .text-amber-200 {
+  color: #92400e !important;
+}
+
+html.light .text-rose-100,
+html.light .text-rose-200 {
+  color: #9f1239 !important;
+}
+
+html.light .text-zinc-300 {
+  color: #1e293b !important;
+}
+
+html.light .text-zinc-400 {
+  color: #334155 !important;
+}
+
+html.light .text-zinc-500 {
+  color: #475569 !important;
+}
+
+html.light .text-zinc-600 {
+  color: #64748b !important;
+}
+
+/* Icons for text-white in light mode */
+html.light .text-white > svg.lucide,
+html.light svg.lucide.text-white {
+  stroke: #0f172a !important;
+  color: #0f172a !important;
+}
+
+/* Keep Text White on Solid Vibrant Dark Buttons/Gradients */
+html.light [class*="bg-gradient-to-r from-cyan-500"],
+html.light [class*="bg-cyan-600"],
+html.light [class*="bg-blue-600"],
+html.light [class*="bg-purple-600"],
+html.light [class*="bg-emerald-600"],
+html.light [class*="bg-rose-600"],
+html.light [class*="bg-violet-600"],
+html.light button.bg-rose-500,
+html.light button.bg-purple-600,
+html.light button.bg-blue-600,
+html.light button.bg-emerald-600 {
+  color: #ffffff !important;
+}
+html.light [class*="bg-gradient-to-r from-cyan-500"] *,
+html.light [class*="bg-cyan-600"] *,
+html.light [class*="bg-blue-600"] *,
+html.light [class*="bg-purple-600"] *,
+html.light [class*="bg-emerald-600"] *,
+html.light [class*="bg-rose-600"] *,
+html.light button.bg-rose-500 *,
+html.light button.bg-purple-600 *,
+html.light button.bg-blue-600 *,
+html.light button.bg-emerald-600 * {
+  color: #ffffff !important;
+}
+
+/* Bright Cyan, Amber & Emerald Solid Buttons in Light Mode have black text */
+html.light .bg-cyan-500,
+html.light .bg-cyan-400,
+html.light [class*="bg-cyan-500"],
+html.light .bg-amber-500,
+html.light .bg-emerald-500 {
+  color: #09090b !important;
+}
+html.light .bg-cyan-500 *,
+html.light .bg-cyan-400 *,
+html.light [class*="bg-cyan-500"] *,
+html.light .bg-amber-500 *,
+html.light .bg-emerald-500 * {
+  color: #09090b !important;
+}
+
+/* Neutral Buttons in Light Mode */
+html.light button.bg-zinc-800,
+html.light button.bg-zinc-900,
+html.light button.bg-zinc-900\/90 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+html.light button.bg-zinc-800:hover,
+html.light button.bg-zinc-900:hover,
+html.light button.bg-zinc-900\/90:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  color: #0284c7 !important;
+}
+
+/* High Contrast Accent Colors in Light Mode */
+html.light .text-cyan-400,
+html.light .text-cyan-300,
+html.light .text-sky-400 {
+  color: #0284c7 !important;
+}
+
+html.light .text-purple-400,
+html.light .text-purple-300,
+html.light .text-violet-400 {
+  color: #7c3aed !important;
+}
+
+html.light .text-emerald-400,
+html.light .text-emerald-300,
+html.light .text-green-400 {
+  color: #059669 !important;
+}
+
+html.light .text-amber-400,
+html.light .text-amber-300,
+html.light .text-yellow-400 {
+  color: #b45309 !important;
+}
+
+html.light .text-rose-400,
+html.light .text-rose-300,
+html.light .text-red-400 {
+  color: #e11d48 !important;
+}
+
+html.light .text-blue-400,
+html.light .text-blue-300 {
+  color: #2563eb !important;
+}
+
+/* Tinted Badges in Light Mode */
+html.light .bg-cyan-950,
+html.light .bg-cyan-950\/90,
+html.light .bg-cyan-950\/80,
+html.light .bg-cyan-950\/70,
+html.light .bg-cyan-950\/60,
+html.light .bg-cyan-950\/50,
+html.light .bg-cyan-950\/40 {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #bae6fd !important;
+}
+
+html.light .bg-purple-950,
+html.light .bg-purple-950\/90,
+html.light .bg-purple-950\/80,
+html.light .bg-purple-950\/70,
+html.light .bg-purple-950\/40 {
+  background-color: #f3e8ff !important;
+  color: #7e22ce !important;
+  border-color: #e9d5ff !important;
+}
+
+html.light .bg-emerald-950,
+html.light .bg-emerald-950\/90,
+html.light .bg-emerald-950\/80,
+html.light .bg-emerald-950\/70,
+html.light .bg-emerald-950\/40 {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #bbf7d0 !important;
+}
+
+html.light .bg-amber-950,
+html.light .bg-amber-950\/90,
+html.light .bg-amber-950\/80,
+html.light .bg-amber-950\/70,
+html.light .bg-amber-950\/40 {
+  background-color: #fef3c7 !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+}
+
+html.light .bg-rose-950,
+html.light .bg-rose-950\/90,
+html.light .bg-rose-950\/80,
+html.light .bg-rose-950\/70,
+html.light .bg-rose-950\/40 {
+  background-color: #ffe4e6 !important;
+  color: #be123c !important;
+  border-color: #fecdd3 !important;
+}
+
+/* Glow Radiance in Light Mode */
+html.light .shadow-glow-cyan {
+  box-shadow: 0 4px 16px -2px rgba(2, 132, 199, 0.22) !important;
+}
+html.light .shadow-glow-purple {
+  box-shadow: 0 4px 16px -2px rgba(124, 58, 237, 0.22) !important;
+}
+html.light .shadow-glow-emerald {
+  box-shadow: 0 4px 16px -2px rgba(5, 150, 105, 0.22) !important;
+}
+html.light .shadow-glow-crimson {
+  box-shadow: 0 4px 16px -2px rgba(225, 29, 72, 0.22) !important;
+}
+html.light .shadow-glow-amber {
+  box-shadow: 0 4px 16px -2px rgba(217, 119, 6, 0.22) !important;
+}
+
+/* Perfect Nav Scrollbar in Light Mode */
+html.light .perfect-nav-scrollbar {
+  scrollbar-color: rgba(2, 132, 199, 0.6) rgba(226, 232, 240, 0.8) !important;
+}
+html.light .perfect-nav-scrollbar::-webkit-scrollbar-track {
+  background: rgba(226, 232, 240, 0.8) !important;
+}
+html.light .perfect-nav-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #0284c7, #2563eb) !important;
+  box-shadow: 0 0 6px rgba(2, 132, 199, 0.4) !important;
+}
+
+/* Form Controls in Light Mode */
+html.light select,
+html.light input[type="text"],
+html.light input[type="number"],
+html.light input[type="search"],
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+html.light select:focus,
+html.light input[type="text"]:focus,
+html.light input[type="number"]:focus,
+html.light input[type="search"]:focus,
+html.light textarea:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
+}
+html.light select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Tables in Light Mode */
+html.light table {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+html.light th {
+  background-color: #f8fafc !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+html.light td {
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+html.light tr:hover td {
+  background-color: #f1f5f9 !important;
+}
+
+/* Scrollbar & Range in Light Mode */
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+html.light input[type=range] {
+  background: #cbd5e1 !important;
+}
+html.light input[type=range]::-webkit-slider-thumb {
+  background: #0284c7 !important;
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.5) !important;
+}
+
+/* ==========================================================================
+   DYNAMIC THEME-ADAPTIVE ICON SYSTEM (STROKE & FILL COLORS)
+   Ensures visual clarity, contrast, and crisp luminance in Light & Dark modes
+   ========================================================================== */
+
+/* Universal SVG Lucide transition & base styling */
+svg.lucide,
+.lucide {
+  transition: stroke 0.15s ease, fill 0.15s ease, color 0.15s ease, filter 0.15s ease;
+}
+
+/* --------------------------------------------------------------------------
+   DARK THEME ICON RULES (:root:not(.light), html.dark, .dark)
+   Luminous, radiant cyber strokes and neon accents with atmospheric bloom
+   -------------------------------------------------------------------------- */
+:root:not(.light) svg.lucide,
+html.dark svg.lucide,
+.dark svg.lucide {
+  stroke: currentColor;
+}
+
+:root:not(.light) svg.lucide.text-cyan-400,
+html.dark svg.lucide.text-cyan-400,
+:root:not(.light) .text-cyan-400 > svg.lucide,
+html.dark .text-cyan-400 > svg.lucide {
+  stroke: #22d3ee;
+  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.35));
+}
+
+:root:not(.light) svg.lucide.text-purple-400,
+html.dark svg.lucide.text-purple-400,
+:root:not(.light) .text-purple-400 > svg.lucide,
+html.dark .text-purple-400 > svg.lucide {
+  stroke: #c084fc;
+  filter: drop-shadow(0 0 4px rgba(192, 132, 252, 0.35));
+}
+
+:root:not(.light) svg.lucide.text-emerald-400,
+html.dark svg.lucide.text-emerald-400,
+:root:not(.light) .text-emerald-400 > svg.lucide,
+html.dark .text-emerald-400 > svg.lucide {
+  stroke: #34d399;
+  filter: drop-shadow(0 0 4px rgba(52, 211, 153, 0.35));
+}
+
+:root:not(.light) svg.lucide.text-amber-400,
+html.dark svg.lucide.text-amber-400,
+:root:not(.light) .text-amber-400 > svg.lucide,
+html.dark .text-amber-400 > svg.lucide {
+  stroke: #fbbf24;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.35));
+}
+
+:root:not(.light) svg.lucide.text-rose-400,
+html.dark svg.lucide.text-rose-400,
+:root:not(.light) .text-rose-400 > svg.lucide,
+html.dark .text-rose-400 > svg.lucide {
+  stroke: #fb7185;
+  filter: drop-shadow(0 0 4px rgba(251, 113, 133, 0.35));
+}
+
+:root:not(.light) svg.lucide.text-blue-400,
+html.dark svg.lucide.text-blue-400,
+:root:not(.light) .text-blue-400 > svg.lucide,
+html.dark .text-blue-400 > svg.lucide {
+  stroke: #60a5fa;
+  filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.35));
+}
+
+/* Dark mode dynamic fill rules */
+:root:not(.light) svg.lucide.fill-current,
+html.dark svg.lucide.fill-current {
+  fill: currentColor;
+}
+:root:not(.light) svg.lucide.fill-amber-400,
+html.dark svg.lucide.fill-amber-400 {
+  fill: #fbbf24;
+}
+:root:not(.light) svg.lucide.fill-cyan-400,
+html.dark svg.lucide.fill-cyan-400 {
+  fill: #22d3ee;
+}
+:root:not(.light) svg.lucide.fill-emerald-400,
+html.dark svg.lucide.fill-emerald-400 {
+  fill: #34d399;
+}
+:root:not(.light) svg.lucide.fill-purple-400,
+html.dark svg.lucide.fill-purple-400 {
+  fill: #c084fc;
+}
+:root:not(.light) svg.lucide.fill-rose-400,
+html.dark svg.lucide.fill-rose-400 {
+  fill: #fb7185;
+}
+
+/* --------------------------------------------------------------------------
+   LIGHT THEME ICON RULES (html.light, .light)
+   Deep, crisp, high-contrast optical strokes and harmonized solid fills
+   -------------------------------------------------------------------------- */
+
+/* Base Neutral Icons in Light Mode */
+html.light svg.lucide,
+html.light .lucide {
+  stroke: currentColor;
+}
+
+html.light svg.lucide.text-zinc-400,
+html.light svg.lucide.text-zinc-500,
+html.light svg.lucide.text-zinc-600,
+html.light .text-zinc-400 > svg.lucide,
+html.light .text-zinc-500 > svg.lucide,
+html.light .text-zinc-600 > svg.lucide {
+  stroke: #334155 !important; /* Slate-700: deep readable contrast */
+  color: #334155 !important;
+}
+
+html.light svg.lucide.text-zinc-300,
+html.light .text-zinc-300 > svg.lucide {
+  stroke: #1e293b !important; /* Slate-800 */
+  color: #1e293b !important;
+}
+
+/* High-Contrast Dynamic Strokes & Colors in Light Mode */
+html.light svg.lucide.text-cyan-400,
+html.light svg.lucide.text-cyan-300,
+html.light svg.lucide.text-sky-400,
+html.light .text-cyan-400 > svg.lucide,
+html.light .text-cyan-300 > svg.lucide,
+html.light .text-sky-400 > svg.lucide {
+  stroke: #0284c7 !important; /* Sky-600: rich optical clarity */
+  color: #0284c7 !important;
+  filter: none !important;
+}
+
+html.light svg.lucide.text-purple-400,
+html.light svg.lucide.text-purple-300,
+html.light svg.lucide.text-violet-400,
+html.light .text-purple-400 > svg.lucide,
+html.light .text-purple-300 > svg.lucide,
+html.light .text-violet-400 > svg.lucide {
+  stroke: #7c3aed !important; /* Violet-600 */
+  color: #7c3aed !important;
+  filter: none !important;
+}
+
+html.light svg.lucide.text-emerald-400,
+html.light svg.lucide.text-emerald-300,
+html.light svg.lucide.text-green-400,
+html.light .text-emerald-400 > svg.lucide,
+html.light .text-emerald-300 > svg.lucide,
+html.light .text-green-400 > svg.lucide {
+  stroke: #059669 !important; /* Emerald-600 */
+  color: #059669 !important;
+  filter: none !important;
+}
+
+html.light svg.lucide.text-amber-400,
+html.light svg.lucide.text-amber-300,
+html.light svg.lucide.text-yellow-400,
+html.light .text-amber-400 > svg.lucide,
+html.light .text-amber-300 > svg.lucide,
+html.light .text-yellow-400 > svg.lucide {
+  stroke: #b45309 !important; /* Amber-700: deep contrast, never pale yellow */
+  color: #b45309 !important;
+  filter: none !important;
+}
+
+html.light svg.lucide.text-rose-400,
+html.light svg.lucide.text-rose-300,
+html.light svg.lucide.text-red-400,
+html.light .text-rose-400 > svg.lucide,
+html.light .text-rose-300 > svg.lucide,
+html.light .text-red-400 > svg.lucide {
+  stroke: #e11d48 !important; /* Rose-600 */
+  color: #e11d48 !important;
+  filter: none !important;
+}
+
+html.light svg.lucide.text-blue-400,
+html.light svg.lucide.text-blue-300,
+html.light .text-blue-400 > svg.lucide,
+html.light .text-blue-300 > svg.lucide {
+  stroke: #2563eb !important; /* Blue-600 */
+  color: #2563eb !important;
+  filter: none !important;
+}
+
+/* Light Mode Dynamic Fills */
+html.light svg.lucide.fill-current,
+html.light .fill-current {
+  fill: currentColor !important;
+}
+
+html.light svg.lucide.fill-amber-400,
+html.light svg.lucide[class*="fill-amber-400"] {
+  fill: #b45309 !important;
+  stroke: #b45309 !important;
+}
+
+html.light svg.lucide.fill-cyan-400,
+html.light svg.lucide[class*="fill-cyan-400"] {
+  fill: #0284c7 !important;
+  stroke: #0284c7 !important;
+}
+
+html.light svg.lucide.fill-emerald-400,
+html.light svg.lucide[class*="fill-emerald-400"] {
+  fill: #059669 !important;
+  stroke: #059669 !important;
+}
+
+html.light svg.lucide.fill-purple-400,
+html.light svg.lucide[class*="fill-purple-400"] {
+  fill: #7c3aed !important;
+  stroke: #7c3aed !important;
+}
+
+html.light svg.lucide.fill-rose-400,
+html.light svg.lucide[class*="fill-rose-400"] {
+  fill: #e11d48 !important;
+  stroke: #e11d48 !important;
+}
+
+/* Fallback for hardcoded fill-black / fill-zinc-950 and fill-white in Light Mode */
+html.light svg.lucide.fill-black,
+html.light svg.lucide.fill-zinc-950 {
+  fill: #09090b !important;
+}
+
+/* When fill-white appears in light mode on solid dark or colored buttons, retain white fill */
+html.light button[class*="bg-rose-"] svg.lucide.fill-white,
+html.light button[class*="bg-purple-"] svg.lucide.fill-white,
+html.light button[class*="bg-blue-"] svg.lucide.fill-white,
+html.light button[class*="bg-cyan-600"] svg.lucide.fill-white {
+  fill: #ffffff !important;
+}
+
+/* Icons inside Vibrant Solid Buttons in Light Mode */
+html.light button[class*="bg-cyan-400"] svg.lucide,
+html.light button[class*="bg-cyan-500"] svg.lucide,
+html.light button[class*="bg-gradient-to-r from-cyan-"] svg.lucide,
+html.light [class*="bg-cyan-400"] > svg.lucide,
+html.light [class*="bg-cyan-500"] > svg.lucide {
+  stroke: #09090b !important;
+  color: #09090b !important;
+}
+
+html.light button[class*="bg-cyan-400"] svg.lucide.fill-current,
+html.light button[class*="bg-cyan-500"] svg.lucide.fill-current,
+html.light button[class*="bg-gradient-to-r from-cyan-"] svg.lucide.fill-current {
+  fill: #09090b !important;
+}
+
+html.light button[class*="bg-cyan-600"] svg.lucide,
+html.light button[class*="bg-purple-600"] svg.lucide,
+html.light button[class*="bg-rose-600"] svg.lucide,
+html.light button[class*="bg-blue-600"] svg.lucide,
+html.light button[class*="bg-emerald-600"] svg.lucide {
+  stroke: #ffffff !important;
+  color: #ffffff !important;
+}
+
+html.light button[class*="bg-cyan-600"] svg.lucide.fill-current,
+html.light button[class*="bg-purple-600"] svg.lucide.fill-current,
+html.light button[class*="bg-rose-600"] svg.lucide.fill-current,
+html.light button[class*="bg-blue-600"] svg.lucide.fill-current,
+html.light button[class*="bg-emerald-600"] svg.lucide.fill-current {
+  fill: #ffffff !important;
+}
+
+/* Icon Badges & Wrapper Containers in Light Mode */
+html.light [class*="bg-cyan-500/10"],
+html.light [class*="bg-cyan-500/20"] {
+  background-color: #e0f2fe !important;
+  border-color: #bae6fd !important;
+}
+html.light [class*="bg-purple-500/10"],
+html.light [class*="bg-purple-500/20"] {
+  background-color: #f3e8ff !important;
+  border-color: #e9d5ff !important;
+}
+html.light [class*="bg-emerald-500/10"],
+html.light [class*="bg-emerald-500/20"] {
+  background-color: #dcfce7 !important;
+  border-color: #bbf7d0 !important;
+}
+html.light [class*="bg-amber-500/10"],
+html.light [class*="bg-amber-500/20"] {
+  background-color: #fef3c7 !important;
+  border-color: #fde68a !important;
+}
+html.light [class*="bg-rose-500/10"],
+html.light [class*="bg-rose-500/20"] {
+  background-color: #ffe4e6 !important;
+  border-color: #fecdd3 !important;
+}
+html.light [class*="bg-blue-500/10"],
+html.light [class*="bg-blue-500/20"] {
+  background-color: #dbeafe !important;
+  border-color: #bfdbfe !important;
+}
+

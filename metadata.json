@@ -1,0 +1,6 @@
+{
+  "name": "PC Hardware Performance Matrix & Synergy Engine",
+  "description": "Interactive PC hardware benchmark suite, real-time 3D assembly visualizer with snap-in components, 3D desk & room environment planner, AR camera floor projector, and hardware matrix.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
