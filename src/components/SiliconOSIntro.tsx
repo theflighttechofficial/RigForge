@@ -33,7 +33,7 @@ export const SiliconOSIntro: React.FC<SiliconOSIntroProps> = ({ onLaunch, onDire
   }, []);
 
   return (
-    <div ref={hostRef} className="fixed inset-0 z-0" style={{ background: '#09090B' }} />
+    <div ref={hostRef} className="fixed inset-0 z-0" style={{ background: '#09090B', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }} />
   );
 };
 
@@ -89,6 +89,7 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
   const q = <T extends Element = Element>(sel: string): T | null => stageWrap.querySelector<T>(sel);
 
   // ── responsive scale ──────────────────────────────────────
+  const isMobile = window.innerWidth < 768;
   const W = 1440, H = 810;
   function resize() {
     const sw = window.innerWidth, sh = window.innerHeight;
@@ -124,7 +125,9 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
   let t = 0, playing = true, blankUntil = 0, landing = false;
   let reduced = false;
   try { reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches; } catch { /* noop */ }
-  if (reduced) { t = TOTAL; playing = false; landing = true; }
+  // Skip the scaled 1440px cinematic on phones: tap targets shrink too far to use.
+  // Land straight on the touch-native mobile screen instead.
+  if (reduced || isMobile) { t = TOTAL; playing = false; landing = true; }
 
   const sceneEl = q<HTMLElement>('#scenes')!;
   const tcEl = q<HTMLElement>('#timecode')!;
@@ -576,12 +579,72 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
     landing = true;
     (q<HTMLElement>('#btn-skip'))!.style.display = 'none';
     bootHeaderEl.style.display = 'none';
+    if (isMobile) {
+      stageWrap.style.display = 'none';
+      if (!mobileEl) {
+        mobileEl = document.createElement('div');
+        mobileEl.innerHTML = mobileLandingHTML();
+        host.appendChild(mobileEl);
+      }
+      return;
+    }
     sceneEl.innerHTML = '';
     const h = document.createElement('div');
     h.style.cssText = 'position:absolute;left:0;top:0;width:1440px;height:810px;animation:fade .7s ease both';
     h.innerHTML = navHTML() + rigCard() + heroText() + ctaButtons() + taglineBar();
     h.appendChild(caseInLanding());
     sceneEl.appendChild(h);
+  }
+
+  let mobileEl: HTMLDivElement | null = null;
+  const MOBILE_FEATURES: { tab: string; title: string; blurb: string }[] = [
+    { tab: 'digitaltwin', title: 'PC Build Digital Twin', blurb: 'Save your rig as a live twin: telemetry, warranty, upgrade headroom.' },
+    { tab: 'doctor', title: 'AI Build Doctor', blurb: 'Type your parts, get a full health report and upgrade sequence.' },
+    { tab: 'synergy', title: 'Bottleneck & Thermal Lab', blurb: 'CPU/GPU balance per resolution, voltage stability, thermal throttling.' },
+    { tab: 'matrix', title: '2D Price/Performance Matrix', blurb: 'Pareto frontier across ₹ price vs. compute score.' },
+    { tab: 'builder', title: 'Rig Architect', blurb: '8-part Indian PC builder with GST breakdown and presets.' },
+    { tab: 'community', title: 'Community Build Gallery', blurb: 'Browse and fork builds from other users.' }
+  ];
+  function mobileLandingHTML() {
+    const navChips = [
+      { tab: 'intro', label: 'Overview' },
+      { tab: 'digitaltwin', label: 'My Rig' },
+      { tab: 'synergy', label: 'Bottleneck Lab' },
+      { tab: 'spatial3d', label: 'Silicon Lab' },
+      { tab: 'community', label: 'Gallery' }
+    ];
+    return `
+      <div style="min-height:100vh;width:100%;background:#09090B;color:#E4E4E7;font-family:'Instrument Sans','Helvetica Neue',sans-serif">
+        <div style="position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 16px;border-bottom:1px solid #1A1A1F;background:#09090Bf2;backdrop-filter:blur(8px)">
+          <span style="display:flex;align-items:baseline;gap:8px">
+            <span style="font:800 18px/1 'Big Shoulders Display','Barlow Condensed',sans-serif;color:#FAFAFA">RIGFORGE</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${COOL}">SILICON OS</span>
+          </span>
+          <button data-action="overview" style="height:40px;padding:0 14px;border-radius:8px;border:1px solid ${COOL};background:${COOL};color:#04141A;font-size:13px;font-weight:700">Open app</button>
+        </div>
+        <div style="display:flex;gap:8px;overflow-x:auto;padding:12px 16px;-webkit-overflow-scrolling:touch">
+          ${navChips.map((c) => `<button data-tab="${c.tab}" style="flex-shrink:0;height:36px;padding:0 14px;border-radius:999px;border:1px solid #2E2E35;background:#111114;color:#D4D4D8;font-size:13px;white-space:nowrap">${c.label}</button>`).join('')}
+        </div>
+        <div style="padding:12px 20px 8px">
+          <h1 style="margin:0 0 12px;font:800 40px/1.05 'Big Shoulders Display','Barlow Condensed',sans-serif;color:#FAFAFA">BUILD. SIMULATE. UNDERSTAND.</h1>
+          <p style="margin:0 0 20px;font-size:15px;line-height:1.55;color:#A1A1AA">A browser-based lab for PC builders: 3D assembly, clearance checks, thermal/airflow sim, FPS estimates, Indian ₹ pricing and upgrade planning around one digital twin.</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+            <button data-tab="digitaltwin" style="height:52px;border-radius:10px;border:0;background:${COOL};color:#04141A;font-size:16px;font-weight:700">Create your digital twin</button>
+            <button data-action="overview" style="height:52px;border-radius:10px;border:1px solid #2E2E35;background:transparent;color:#E4E4E7;font-size:15px;font-weight:600">Open full workspace</button>
+            <button data-tab="community" style="height:48px;border-radius:10px;border:1px solid #2E2E35;background:transparent;color:#A1A1AA;font-size:14px">Browse community builds</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;padding:4px 20px 32px">
+          ${MOBILE_FEATURES.map((f) => `
+            <button data-tab="${f.tab}" style="text-align:left;padding:16px;border-radius:12px;border:1px solid #232328;background:#111114;display:flex;flex-direction:column;gap:6px">
+              <span style="font-size:15px;font-weight:700;color:#FAFAFA">${f.title}</span>
+              <span style="font-size:13px;line-height:1.5;color:#8A8A93">${f.blurb}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div style="padding:16px 20px 32px;border-top:1px solid #1A1A1F;text-align:center;font-size:12px;color:#52525B">Runs in your browser. Prices in ₹, with GST.</div>
+      </div>
+    `;
   }
 
   function navHTML() {
@@ -710,15 +773,16 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
       if (tab) nav.goTab(tab);
     }
   };
-  stageWrap.addEventListener('click', onDelegatedClick);
+  host.addEventListener('click', onDelegatedClick);
 
-  if (!reduced) { buildScene(0); } else { showLanding(); }
+  if (!reduced && !isMobile) { buildScene(0); } else { showLanding(); }
 
   return () => {
     window.removeEventListener('resize', resize);
     cancelAnimationFrame(rafId);
-    stageWrap.removeEventListener('click', onDelegatedClick);
+    host.removeEventListener('click', onDelegatedClick);
     host.removeChild(stageWrap);
+    if (mobileEl) host.removeChild(mobileEl);
     host.removeChild(styleEl);
   };
 }
