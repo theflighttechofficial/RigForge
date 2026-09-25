@@ -15,7 +15,7 @@ import { IntroPage } from './components/IntroPage';
 import { ComponentDetailsModal } from './components/ComponentDetailsModal';
 import { LiveBenchmarkLab } from './components/LiveBenchmarkLab';
 import { LoadingScreen } from './components/LoadingScreen';
-import { LandingPage } from './components/LandingPage';
+import { SiliconOSIntro } from './components/SiliconOSIntro';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { BattlestationSimulator } from './components/BattlestationSimulator';
 import { ComponentAnatomy } from './components/ComponentAnatomy';
@@ -211,11 +211,9 @@ export default function App() {
             onComplete={handleLoadingComplete}
           />
         )}
-        <LandingPage
+        <SiliconOSIntro
           onLaunch={() => handleLaunchFromLanding('intro')}
           onDirectLaunchWorkspace={(tab) => handleLaunchFromLanding((tab as ActiveTab) || 'matrix')}
-          totalCpus={cpuDataset.length}
-          totalGpus={gpuDataset.length}
           theme={theme}
           onToggleTheme={toggleTheme}
         />
