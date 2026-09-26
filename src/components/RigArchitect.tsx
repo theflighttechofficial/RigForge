@@ -36,6 +36,7 @@ import { PowerConsumptionChart } from './PowerConsumptionChart';
 import { VramAndThermalAdvisor } from './VramAndThermalAdvisor';
 import { CustomPresetsModal } from './CustomPresetsModal';
 import { SavedCustomPreset } from '../types';
+import { buildIntegratedGpu } from '../utils/integratedGraphics';
 
 interface RigArchitectProps {
   cpus: CPUItem[];
@@ -56,10 +57,12 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
 }) => {
   const [cpuId, setCpuId] = useState<string>(defaultCpuId);
   const [gpuId, setGpuId] = useState<string>(defaultGpuId);
+  const [useIntegratedGraphics, setUseIntegratedGraphics] = useState<boolean>(false);
   const [ramType, setRamType] = useState<'DDR4' | 'DDR5'>('DDR5');
   const [ramCapacity, setRamCapacity] = useState<number>(32);
   const [cooler, setCooler] = useState<'Stock' | 'Tower Air' | '240mm AIO' | '360mm AIO'>('Tower Air');
   const [storageCount, setStorageCount] = useState<number>(2);
+  const [storageCapacityGB, setStorageCapacityGB] = useState<number>(1000);
   const [copied, setCopied] = useState<boolean>(false);
   const [activePresetId, setActivePresetId] = useState<string | null>(selectedPresetId || null);
 
@@ -162,6 +165,17 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
   const selectedCpu = useMemo(() => cpus.find(c => c.id === cpuId) || cpus[0], [cpus, cpuId]);
   const selectedGpu = useMemo(() => gpus.find(g => g.id === gpuId) || gpus[0], [gpus, gpuId]);
 
+  // Reset the iGPU toggle if the chosen CPU has no integrated graphics
+  useEffect(() => {
+    if (useIntegratedGraphics && !selectedCpu?.Has_iGPU) {
+      setUseIntegratedGraphics(false);
+    }
+  }, [selectedCpu, useIntegratedGraphics]);
+
+  // Synthetic "GPU" built from the CPU's integrated graphics for no-discrete-card builds
+  const integratedGpu = useMemo(() => buildIntegratedGpu(selectedCpu), [selectedCpu]);
+  const effectiveGpu = (useIntegratedGraphics && integratedGpu) ? integratedGpu : selectedGpu;
+
   // Live Retailer Quotes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const cpuPriceFeed = useMemo(() => fetchLiveIndianRetailerQuotes(selectedCpu), [selectedCpu, priceSyncKey]);
@@ -169,7 +183,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
   const gpuPriceFeed = useMemo(() => fetchLiveIndianRetailerQuotes(selectedGpu), [selectedGpu, priceSyncKey]);
 
   const effectiveCpuPrice = useLivePricing ? cpuPriceFeed.bestPriceINR : selectedCpu.Price_INR;
-  const effectiveGpuPrice = useLivePricing ? gpuPriceFeed.bestPriceINR : selectedGpu.Price_INR;
+  const effectiveGpuPrice = useIntegratedGraphics ? 0 : (useLivePricing ? gpuPriceFeed.bestPriceINR : selectedGpu.Price_INR);
 
   const handleSyncPrices = () => {
     setIsSyncingPrices(true);
@@ -186,7 +200,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
   );
 
   const coolerHeightMm = cooler === 'Stock' ? 65 : cooler === 'Tower Air' ? 158 : 55;
-  const gpuLengthMm = selectedGpu.Length_mm || 285;
+  const gpuLengthMm = effectiveGpu.Length_mm;
 
   const clearanceResult = useMemo(() => {
     return validateCabinetClearances(
@@ -203,9 +217,9 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
 
   // Component Cost Estimations in INR
   const moboCost = selectedCpu.Socket === 'AM5' ? 14999 : selectedCpu.Socket === 'LGA 1700' ? 13499 : 6999;
-  const ramCost = (ramType === 'DDR5' ? (ramCapacity === 16 ? 5499 : ramCapacity === 32 ? 9499 : 18499) : (ramCapacity === 16 ? 3499 : 6499));
+  const ramCost = Math.round(ramCapacity * (ramType === 'DDR5' ? 300 : 205));
   const coolerCost = cooler === 'Stock' ? 0 : cooler === 'Tower Air' ? 2999 : cooler === '240mm AIO' ? 6499 : 9999;
-  const storageCost = storageCount * 5499; // ~1TB NVMe per drive
+  const storageCost = Math.round(storageCount * (storageCapacityGB / 1000) * 5499);
   const caseCost = selectedCabinet.priceINR;
 
   // Selected PSU calculation
@@ -228,9 +242,9 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
 
   // Wattage Calculation
   const cpuWatts = selectedCpu.TDP_Watts;
-  const gpuWatts = selectedGpu.TGP_Watts;
+  const gpuWatts = effectiveGpu.TGP_Watts;
   const moboWatts = 50;
-  const ramWatts = ramCapacity === 64 ? 20 : 12;
+  const ramWatts = Math.max(8, Math.round(ramCapacity * 0.3));
   const coolerWatts = cooler.includes('AIO') ? 25 : 10;
   const storageWatts = storageCount * 8;
   const caseFansWatts = 15;
@@ -250,8 +264,8 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
       `Cooler: ${cooler} - ${formatINR(coolerCost)}`,
       `Motherboard: ${selectedCpu.Socket} Motherboard - ${formatINR(moboCost)}`,
       `RAM: ${ramCapacity}GB ${ramType} [${ramProfile}] - ${formatINR(ramCost)}`,
-      `GPU: ${selectedGpu.Model} (${selectedGpu.VRAM_GB}GB, ${gpuLengthMm}mm) - ${formatINR(effectiveGpuPrice)} (via ${useLivePricing ? gpuPriceFeed.bestRetailer.retailerName : 'MSRP'})`,
-      `Storage: ${storageCount}x 1TB NVMe PCIe 4.0 SSD - ${formatINR(storageCost)}`,
+      `GPU: ${effectiveGpu.Model}${useIntegratedGraphics ? '' : ` (${effectiveGpu.VRAM_GB}GB, ${gpuLengthMm}mm)`} - ${formatINR(effectiveGpuPrice)} ${useIntegratedGraphics ? '(bundled with CPU)' : `(via ${useLivePricing ? gpuPriceFeed.bestRetailer.retailerName : 'MSRP'})`}`,
+      `Storage: ${storageCount}x ${storageCapacityGB >= 1000 ? `${storageCapacityGB / 1000}TB` : `${storageCapacityGB}GB`} NVMe PCIe 4.0 SSD - ${formatINR(storageCost)}`,
       `Cabinet: ${selectedCabinet.name} - ${formatINR(caseCost)} [Fitment: ${clearanceResult.overallCleared ? '100% Cleared' : 'Tolerance Warnings'}]`,
       `Power Supply: ${selectedPsu.name} (${activePsuWattage}W, ${selectedPsu.efficiency}) - ${formatINR(psuCost)} [Load: ${psuCompatibility.loadPercentage}% | Status: ${psuCompatibility.status}]`,
       `-----------------------------------------`,
@@ -414,12 +428,13 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                 <span className="flex items-center gap-1.5">
                   <Monitor className="w-3.5 h-3.5 text-purple-400" /> Graphics Card (GPU)
                 </span>
-                <span className="text-purple-400 font-bold">{formatINR(selectedGpu.Price_INR)}</span>
+                <span className="text-purple-400 font-bold">{useIntegratedGraphics ? 'Bundled' : formatINR(selectedGpu.Price_INR)}</span>
               </label>
               <select
                 value={gpuId}
                 onChange={(e) => setGpuId(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-medium focus:border-purple-500 focus:outline-none"
+                disabled={useIntegratedGraphics}
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-medium focus:border-purple-500 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {gpus.map(g => (
                   <option key={g.id} value={g.id}>
@@ -427,6 +442,21 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                   </option>
                 ))}
               </select>
+              <label
+                className={`flex items-center gap-2 pt-1 text-[11px] font-mono ${
+                  selectedCpu.Has_iGPU ? 'text-zinc-300 cursor-pointer' : 'text-zinc-600 cursor-not-allowed'
+                }`}
+                title={selectedCpu.Has_iGPU ? undefined : `${selectedCpu.Model} has no integrated graphics`}
+              >
+                <input
+                  type="checkbox"
+                  checked={useIntegratedGraphics}
+                  disabled={!selectedCpu.Has_iGPU}
+                  onChange={(e) => setUseIntegratedGraphics(e.target.checked)}
+                  className="w-3.5 h-3.5 accent-purple-500 disabled:opacity-40"
+                />
+                No discrete GPU — use CPU&apos;s integrated graphics
+              </label>
             </div>
 
             {/* RAM Configuration */}
@@ -467,9 +497,12 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                   onChange={(e) => setRamCapacity(Number(e.target.value))}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-cyan-500 focus:outline-none"
                 >
+                  <option value={8}>8 GB Single-Channel</option>
                   <option value={16}>16 GB Dual-Channel</option>
                   <option value={32}>32 GB Dual-Channel</option>
                   <option value={64}>64 GB Quad/Dual</option>
+                  <option value={96}>96 GB Quad/Dual</option>
+                  <option value={128}>128 GB Quad-Channel</option>
                 </select>
               </div>
             </div>
@@ -496,15 +529,27 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                 <label className="text-xs font-mono uppercase text-zinc-400 flex items-center gap-1">
                   <HardDrive className="w-3.5 h-3.5 text-emerald-400" /> NVMe Storage
                 </label>
-                <select
-                  value={storageCount}
-                  onChange={(e) => setStorageCount(Number(e.target.value))}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-cyan-500 focus:outline-none"
-                >
-                  <option value={1}>1x 1TB PCIe 4.0 SSD (₹5,499)</option>
-                  <option value={2}>2x 1TB PCIe 4.0 SSD (₹10,998)</option>
-                  <option value={3}>3x 1TB High Speed NVMe (₹16,497)</option>
-                </select>
+                <div className="flex items-center gap-1.5">
+                  <select
+                    value={storageCapacityGB}
+                    onChange={(e) => setStorageCapacityGB(Number(e.target.value))}
+                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-2 py-2 text-xs text-white font-medium focus:border-cyan-500 focus:outline-none"
+                  >
+                    <option value={500}>500GB</option>
+                    <option value={1000}>1TB</option>
+                    <option value={2000}>2TB</option>
+                    <option value={4000}>4TB</option>
+                  </select>
+                  <select
+                    value={storageCount}
+                    onChange={(e) => setStorageCount(Number(e.target.value))}
+                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-2 py-2 text-xs text-white font-medium focus:border-cyan-500 focus:outline-none"
+                  >
+                    <option value={1}>x1 Drive</option>
+                    <option value={2}>x2 Drives</option>
+                    <option value={3}>x3 Drives</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -787,7 +832,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                 <span className="text-white font-bold">{cpuWatts}W</span>
               </div>
               <div className="flex justify-between">
-                <span>GPU TGP ({selectedGpu.Model.split(' ')[0]}):</span>
+                <span>GPU TGP ({effectiveGpu.Model.split(' ')[0]}):</span>
                 <span className="text-white font-bold">{gpuWatts}W</span>
               </div>
               <div className="flex justify-between">
@@ -865,7 +910,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
 
       {/* D3 Real-Time Power Consumption Breakdown & PSU Headroom Analysis */}
       <PowerConsumptionChart
-        gpuModel={selectedGpu.Model}
+        gpuModel={effectiveGpu.Model}
         gpuWatts={gpuWatts}
         cpuModel={selectedCpu.Model}
         cpuWatts={cpuWatts}
@@ -887,7 +932,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
       {/* VRAM & Resolution Capability Advisor and CPU Thermal Dissipation Engine */}
       <VramAndThermalAdvisor
         cpu={selectedCpu}
-        gpu={selectedGpu}
+        gpu={effectiveGpu}
         cooler={cooler}
         onUpgradeCooler={(newCooler) => setCooler(newCooler)}
       />
@@ -1205,7 +1250,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
       {/* Interactive 2D Silicon Chassis & Physical Fitment Simulator */}
       <VisualChassisSimulator
         cpu={selectedCpu}
-        gpu={selectedGpu}
+        gpu={effectiveGpu}
         ramType={ramType}
         ramCapacity={ramCapacity}
         cooler={cooler}

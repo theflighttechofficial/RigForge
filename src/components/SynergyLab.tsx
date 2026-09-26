@@ -146,7 +146,13 @@ export const SynergyLab: React.FC<SynergyLabProps> = ({
               { title: 'Shadow of Tomb Raider', fps: 135, onePercentLow: 98, settings: 'Highest Preset TAA' }
             ],
         driverHealth: driverHealthData,
-        stabilityIndex: 96
+        // Derived from actual mismatch severity + CPU/GPU load imbalance, not a fixed constant —
+        // a catastrophic pairing or a lopsided bottleneck now genuinely tanks the exported score.
+        stabilityIndex: (() => {
+          const severityPenalty = { NONE: 0, MODERATE: 15, SEVERE: 35, CATASTROPHIC: 55 }[synergy.adverseWarning.severity];
+          const imbalancePenalty = Math.round(Math.abs(synergy.cpuUtilization - synergy.gpuUtilization) * 0.2);
+          return Math.max(10, Math.min(99, 100 - severityPenalty - imbalancePenalty));
+        })()
       });
       setPdfExportSuccess(true);
       setTimeout(() => setPdfExportSuccess(false), 3000);

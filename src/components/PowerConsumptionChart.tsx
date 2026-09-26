@@ -608,10 +608,10 @@ export const PowerConsumptionChart: React.FC<PowerConsumptionChartProps> = ({
           <div className="flex items-center gap-4 text-[11px]">
             <span className="text-white font-bold">{activeSegment.watts} Watts</span>
             <span className="text-cyan-400">
-              {((activeSegment.watts / totalWatts) * 100).toFixed(1)}% of System Load
+              {(totalWatts > 0 ? (activeSegment.watts / totalWatts) * 100 : 0).toFixed(1)}% of System Load
             </span>
             <span className="text-amber-400">
-              {((activeSegment.watts / psuWattage) * 100).toFixed(1)}% of PSU Capacity
+              {(psuWattage > 0 ? (activeSegment.watts / psuWattage) * 100 : 0).toFixed(1)}% of PSU Capacity
             </span>
           </div>
         </div>

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { CPUItem, GPUItem, SavedCustomPreset } from '../types';
 import { formatINR } from '../utils/formatters';
 import { getSavedCustomPresets } from '../utils/customPresetsStorage';
+import { buildIntegratedGpu } from '../utils/integratedGraphics';
 import {
   Monitor,
   Cpu,
@@ -32,6 +33,80 @@ interface BattlestationSimulatorProps {
 
 type RGBTheme = 'cyan-neon' | 'tokyo-purple' | 'matrix-green' | 'amber-sunset' | 'stealth-dark';
 
+interface MonitorOption {
+  id: string;
+  label: string;
+  resTag: '720p' | '1080p' | '1440p' | '4K' | '5K' | '8K';
+  refreshHz: number;
+  panel: 'TN' | 'IPS' | 'Fast IPS' | 'VA' | 'OLED' | 'QD-OLED';
+  priceINR: number;
+}
+
+const MONITOR_OPTIONS: MonitorOption[] = [
+  { id: 'mon-720p-24-75tn', label: '24" 720p 75Hz TN (Basic Office)', resTag: '720p', refreshHz: 75, panel: 'TN', priceINR: 5499 },
+  { id: 'mon-1080p-24-165ips', label: '24" 1080p 165Hz IPS (Esports Entry)', resTag: '1080p', refreshHz: 165, panel: 'IPS', priceINR: 11999 },
+  { id: 'mon-1080p-27-240fips', label: '27" 1080p 240Hz Fast IPS (Competitive)', resTag: '1080p', refreshHz: 240, panel: 'Fast IPS', priceINR: 18999 },
+  { id: 'mon-1440p-27-240fips', label: '27" 1440p 240Hz Fast IPS (Esports)', resTag: '1440p', refreshHz: 240, panel: 'Fast IPS', priceINR: 24999 },
+  { id: 'mon-1440p-27-165oled', label: '27" 1440p 165Hz QD-OLED (Immersion)', resTag: '1440p', refreshHz: 165, panel: 'QD-OLED', priceINR: 46999 },
+  { id: 'mon-1440p-34-uw-oled', label: '34" 3440x1440 175Hz Ultrawide OLED', resTag: '1440p', refreshHz: 175, panel: 'OLED', priceINR: 62999 },
+  { id: 'mon-4k-27-144ips', label: '27" 4K 144Hz IPS (Sharp & Balanced)', resTag: '4K', refreshHz: 144, panel: 'IPS', priceINR: 42999 },
+  { id: 'mon-4k-32-165oled', label: '32" 4K 165Hz QD-OLED (Flagship)', resTag: '4K', refreshHz: 165, panel: 'QD-OLED', priceINR: 69999 },
+  { id: 'mon-5k-27-60ips', label: '27" 5K 60Hz IPS (Creator/Photo)', resTag: '5K', refreshHz: 60, panel: 'IPS', priceINR: 89999 },
+  { id: 'mon-8k-32-60ips', label: '32" 8K 60Hz IPS (Ultra Flagship)', resTag: '8K', refreshHz: 60, panel: 'IPS', priceINR: 249999 }
+];
+
+type RamType = 'DDR3' | 'DDR4' | 'DDR5' | 'LPDDR5X';
+const RAM_TYPE_COST_PER_GB: Record<RamType, number> = { DDR3: 150, DDR4: 240, DDR5: 340, LPDDR5X: 420 };
+const RAM_SIZE_OPTIONS = [8, 16, 32, 64, 96, 128];
+
+type StorageType = 'HDD' | 'SATA SSD' | 'NVMe Gen3' | 'NVMe Gen4' | 'NVMe Gen5';
+const STORAGE_TYPE_INFO: Record<StorageType, { costPerGB: number; readSpeed: string }> = {
+  'HDD': { costPerGB: 3, readSpeed: '160 MB/s (7200 RPM)' },
+  'SATA SSD': { costPerGB: 6, readSpeed: '560 MB/s' },
+  'NVMe Gen3': { costPerGB: 7, readSpeed: '3,500 MB/s' },
+  'NVMe Gen4': { costPerGB: 9, readSpeed: '7,400 MB/s (DirectStorage Ready)' },
+  'NVMe Gen5': { costPerGB: 13, readSpeed: '12,400 MB/s (DirectStorage Ready)' }
+};
+const STORAGE_CAPACITY_OPTIONS_GB = [500, 1000, 2000, 4000, 8000];
+
+// Pixel count relative to 1080p — GPU-bound fps scales ~inversely with pixel count.
+const RESOLUTION_PIXEL_FACTOR: Record<MonitorOption['resTag'], number> = {
+  '720p': 2.25,
+  '1080p': 1,
+  '1440p': 0.56,
+  '4K': 0.25,
+  '5K': 0.14,
+  '8K': 0.0625
+};
+
+interface GameProfile {
+  id: string;
+  name: string;
+  // Higher demand = harder to run; calibrated so a ~80,000 Gaming_Score flagship GPU
+  // lands near a realistic 1080p-ultra fps for this title.
+  gpuDemand: number;
+  usesRayTracing: boolean;
+  // CPU-bound esports titles cap fps hard regardless of GPU; multiplier tuned against
+  // CPU Gaming_Score range (~4,800 low-end to ~55,000 flagship).
+  cpuCapMultiplier: number;
+}
+
+const GAMES: GameProfile[] = [
+  { id: 'valorant', name: 'Valorant', gpuDemand: 200, usesRayTracing: false, cpuCapMultiplier: 0.012 },
+  { id: 'cs2', name: 'Counter-Strike 2', gpuDemand: 229, usesRayTracing: false, cpuCapMultiplier: 0.011 },
+  { id: 'fortnite', name: 'Fortnite (Performance Mode)', gpuDemand: 320, usesRayTracing: false, cpuCapMultiplier: 0.009 },
+  { id: 'apex', name: 'Apex Legends', gpuDemand: 364, usesRayTracing: false, cpuCapMultiplier: 0.008 },
+  { id: 'gta5', name: 'GTA V', gpuDemand: 400, usesRayTracing: false, cpuCapMultiplier: 0.007 },
+  { id: 'cod', name: 'Call of Duty: Warzone', gpuDemand: 444, usesRayTracing: false, cpuCapMultiplier: 0.007 },
+  { id: 'sottr', name: 'Shadow of the Tomb Raider', gpuDemand: 500, usesRayTracing: false, cpuCapMultiplier: 0.006 },
+  { id: 'bg3', name: "Baldur's Gate 3", gpuDemand: 571, usesRayTracing: false, cpuCapMultiplier: 0.006 },
+  { id: 'eldenring', name: 'Elden Ring', gpuDemand: 615, usesRayTracing: false, cpuCapMultiplier: 0.006 },
+  { id: 'minecraft-rtx', name: 'Minecraft RTX', gpuDemand: 800, usesRayTracing: true, cpuCapMultiplier: 0.005 },
+  { id: 'wukong', name: 'Black Myth: Wukong (Ray Tracing)', gpuDemand: 889, usesRayTracing: true, cpuCapMultiplier: 0.004 },
+  { id: 'alanwake2', name: 'Alan Wake 2 (Ray Tracing)', gpuDemand: 1231, usesRayTracing: true, cpuCapMultiplier: 0.004 },
+  { id: 'cyberpunk-pt', name: 'Cyberpunk 2077 (Path Tracing)', gpuDemand: 1067, usesRayTracing: true, cpuCapMultiplier: 0.004 }
+];
+
 export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
   cpus,
   gpus,
@@ -40,10 +115,14 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
   // Setup configuration state
   const [selectedCpuId, setSelectedCpuId] = useState<string>(cpus[0]?.id || 'cpu-amd-9800x3d');
   const [selectedGpuId, setSelectedGpuId] = useState<string>(gpus[0]?.id || 'gpu-nvidia-5080');
+  const [useIntegratedGraphics, setUseIntegratedGraphics] = useState<boolean>(false);
   const [ramSize, setRamSize] = useState<number>(32);
-  const [ramType, setRamType] = useState<'DDR4' | 'DDR5'>('DDR5');
+  const [ramType, setRamType] = useState<RamType>('DDR5');
   const [coolerStyle, setCoolerStyle] = useState<'Air Tower' | '360mm AIO Liquid'>('360mm AIO Liquid');
-  const [monitorType, setMonitorType] = useState<'27" 1440p 240Hz Fast IPS' | '32" 4K 165Hz QD-OLED' | '34" Ultrawide OLED'>('32" 4K 165Hz QD-OLED');
+  const [monitorId, setMonitorId] = useState<string>('mon-4k-32-165oled');
+  const [storageType, setStorageType] = useState<StorageType>('NVMe Gen4');
+  const [storageCapacityGB, setStorageCapacityGB] = useState<number>(2000);
+  const [gameId, setGameId] = useState<string>('cyberpunk-pt');
   const [keyboardSwitch, setKeyboardSwitch] = useState<'Linear Red' | 'Tactile Brown' | 'Hall-Effect Magnetic (Rapid Trigger)'>('Hall-Effect Magnetic (Rapid Trigger)');
   const [rgbTheme, setRgbTheme] = useState<RGBTheme>('cyan-neon');
   const [keyboardLightingEffect, setKeyboardLightingEffect] = useState<'pulse' | 'static' | 'wave'>('wave');
@@ -60,12 +139,55 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
   const selectedCpu = cpus.find((c) => c.id === selectedCpuId) || cpus[0];
   const selectedGpu = gpus.find((g) => g.id === selectedGpuId) || gpus[0];
 
+  // Reset the iGPU toggle if the chosen CPU has no integrated graphics
+  useEffect(() => {
+    if (useIntegratedGraphics && !selectedCpu?.Has_iGPU) {
+      setUseIntegratedGraphics(false);
+    }
+  }, [selectedCpu, useIntegratedGraphics]);
+
+  // Build a synthetic "GPU" record from the CPU's integrated graphics so the rest of
+  // the simulator (chassis card, spec sheet, wattage math) can treat it like a real GPU.
+  const integratedGpu: GPUItem | null = useMemo(() => buildIntegratedGpu(selectedCpu), [selectedCpu]);
+
+  const effectiveGpu: GPUItem = (useIntegratedGraphics && integratedGpu) ? integratedGpu : selectedGpu;
+
+  const selectedMonitor = MONITOR_OPTIONS.find((m) => m.id === monitorId) || MONITOR_OPTIONS[0];
+  const selectedGame = GAMES.find((g) => g.id === gameId) || GAMES[0];
+
+  // Realistic FPS/thermal telemetry: GPU-bound fps from Gaming/RayTracing_Score scaled by
+  // resolution pixel count, hard-capped by a CPU-bound ceiling for esports-style titles.
+  // This keeps an iGPU (Gaming_Score in the low thousands) from ever showing flagship-GPU fps.
+  const telemetry = useMemo(() => {
+    const gpuScoreForGame = selectedGame.usesRayTracing
+      ? effectiveGpu.Gaming_Score * 0.3 + effectiveGpu.RayTracing_Score * 0.7
+      : effectiveGpu.Gaming_Score;
+    const resFactor = RESOLUTION_PIXEL_FACTOR[selectedMonitor.resTag];
+    const gpuBoundFps = (gpuScoreForGame / selectedGame.gpuDemand) * resFactor;
+    const cpuCapFps = Math.max(15, selectedCpu.Gaming_Score * selectedGame.cpuCapMultiplier);
+    const avgFps = Math.max(4, Math.round(Math.min(gpuBoundFps, cpuCapFps)));
+    const onePctLow = Math.max(2, Math.round(avgFps * 0.74));
+
+    const gpuLoadPct = Math.min(99, Math.max(28, Math.round((avgFps / Math.max(1, gpuBoundFps)) * 100)));
+    const cpuLoadPct = Math.min(98, Math.max(12, Math.round((avgFps / Math.max(1, cpuCapFps)) * 100)));
+
+    const gpuIsIntegrated = effectiveGpu.TGP_Watts === 0;
+    const gpuTempC = gpuIsIntegrated
+      ? 45 + Math.round((cpuLoadPct / 100) * 30)
+      : 42 + Math.round((gpuLoadPct / 100) * 42);
+    const cpuTempC = 38 + Math.round((cpuLoadPct / 100) * (selectedCpu.TDP_Watts > 150 ? 55 : 42));
+
+    return { avgFps, onePctLow, gpuLoadPct, cpuLoadPct, gpuTempC, cpuTempC, gpuIsIntegrated };
+  }, [effectiveGpu, selectedCpu, selectedGame, selectedMonitor]);
+
   // Calculated estimates
-  const estTotalWatts = (selectedCpu?.TDP_Watts || 105) + (selectedGpu?.TGP_Watts || 250) + 120;
-  const monitorCost = monitorType.includes('OLED') ? 69999 : 24999;
+  const estTotalWatts = (selectedCpu?.TDP_Watts || 105) + (effectiveGpu?.TGP_Watts || 250) + 120;
+  const monitorCost = selectedMonitor.priceINR;
+  const ramCost = ramSize * RAM_TYPE_COST_PER_GB[ramType];
+  const storageCost = storageCapacityGB * STORAGE_TYPE_INFO[storageType].costPerGB;
   const keyboardCost = keyboardSwitch.includes('Magnetic') ? 13999 : 4999;
   const mouseAndMatCost = 5999;
-  const totalBuildCostINR = (selectedCpu?.Price_INR || 30000) + (selectedGpu?.Price_INR || 60000) + 38000;
+  const totalBuildCostINR = (selectedCpu?.Price_INR || 30000) + (effectiveGpu?.Price_INR || 60000) + ramCost + storageCost + 18500;
   const totalBattlestationCostINR = totalBuildCostINR + monitorCost + keyboardCost + mouseAndMatCost;
 
   // Audio synthesize click effect for mechanical keyboard simulation
@@ -234,12 +356,15 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
             <span className="flex items-center gap-1.5 font-bold">
               <Monitor className="w-3.5 h-3.5 text-purple-400" /> Graphics Card (GPU)
             </span>
-            <span className="text-[10px] text-zinc-500">{selectedGpu.VRAM_GB}GB VRAM</span>
+            <span className="text-[10px] text-zinc-500">
+              {useIntegratedGraphics ? 'Shared RAM' : `${effectiveGpu.VRAM_GB}GB VRAM`}
+            </span>
           </label>
           <select
             value={selectedGpuId}
             onChange={(e) => setSelectedGpuId(e.target.value)}
-            className="w-full bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-purple-400 focus:outline-none"
+            disabled={useIntegratedGraphics}
+            className="w-full bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-purple-400 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {gpus.map((g) => (
               <option key={g.id} value={g.id}>
@@ -247,6 +372,21 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
               </option>
             ))}
           </select>
+          <label
+            className={`flex items-center gap-2 pt-1 text-[11px] font-mono ${
+              selectedCpu.Has_iGPU ? 'text-zinc-300 cursor-pointer' : 'text-zinc-600 cursor-not-allowed'
+            }`}
+            title={selectedCpu.Has_iGPU ? undefined : `${selectedCpu.Model} has no integrated graphics`}
+          >
+            <input
+              type="checkbox"
+              checked={useIntegratedGraphics}
+              disabled={!selectedCpu.Has_iGPU}
+              onChange={(e) => setUseIntegratedGraphics(e.target.checked)}
+              className="w-3.5 h-3.5 accent-purple-500 disabled:opacity-40"
+            />
+            No discrete GPU — use CPU&apos;s integrated graphics
+          </label>
         </div>
 
         {/* Peripherals & Display Preset */}
@@ -258,13 +398,92 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
             <span className="text-[10px] text-emerald-400 font-bold">{formatINR(monitorCost)}</span>
           </label>
           <select
-            value={monitorType}
-            onChange={(e) => setMonitorType(e.target.value as any)}
+            value={monitorId}
+            onChange={(e) => setMonitorId(e.target.value)}
             className="w-full bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-amber-400 focus:outline-none"
           >
-            <option value='27" 1440p 240Hz Fast IPS'>27&quot; 1440p 240Hz Fast IPS (Esports)</option>
-            <option value='32" 4K 165Hz QD-OLED'>32&quot; 4K 165Hz QD-OLED (Immersion)</option>
-            <option value='34" Ultrawide OLED'>34&quot; 3440x1440p 175Hz Ultrawide OLED</option>
+            {MONITOR_OPTIONS.map((m) => (
+              <option key={m.id} value={m.id}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Memory (RAM) Configuration */}
+        <div className="p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 space-y-1.5">
+          <label className="text-xs font-mono uppercase text-zinc-400 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-bold">
+              <HardDrive className="w-3.5 h-3.5 text-blue-400" /> System Memory (RAM)
+            </span>
+            <span className="text-[10px] text-emerald-400 font-bold">{formatINR(ramCost)}</span>
+          </label>
+          <div className="flex items-center gap-2">
+            <select
+              value={ramSize}
+              onChange={(e) => setRamSize(Number(e.target.value))}
+              className="flex-1 bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-blue-400 focus:outline-none"
+            >
+              {RAM_SIZE_OPTIONS.map((size) => (
+                <option key={size} value={size}>{size}GB</option>
+              ))}
+            </select>
+            <select
+              value={ramType}
+              onChange={(e) => setRamType(e.target.value as RamType)}
+              className="flex-1 bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-blue-400 focus:outline-none"
+            >
+              {(Object.keys(RAM_TYPE_COST_PER_GB) as RamType[]).map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Storage Configuration */}
+        <div className="p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 space-y-1.5">
+          <label className="text-xs font-mono uppercase text-zinc-400 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-bold">
+              <HardDrive className="w-3.5 h-3.5 text-emerald-400" /> Storage Drive
+            </span>
+            <span className="text-[10px] text-emerald-400 font-bold">{formatINR(storageCost)}</span>
+          </label>
+          <div className="flex items-center gap-2">
+            <select
+              value={storageCapacityGB}
+              onChange={(e) => setStorageCapacityGB(Number(e.target.value))}
+              className="flex-1 bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-emerald-400 focus:outline-none"
+            >
+              {STORAGE_CAPACITY_OPTIONS_GB.map((gb) => (
+                <option key={gb} value={gb}>{gb >= 1000 ? `${gb / 1000}TB` : `${gb}GB`}</option>
+              ))}
+            </select>
+            <select
+              value={storageType}
+              onChange={(e) => setStorageType(e.target.value as StorageType)}
+              className="flex-1 bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-emerald-400 focus:outline-none"
+            >
+              {(Object.keys(STORAGE_TYPE_INFO) as StorageType[]).map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Game Simulator Selector */}
+        <div className="p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 space-y-1.5">
+          <label className="text-xs font-mono uppercase text-zinc-400 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Game Simulator
+            </span>
+            <span className="text-[10px] text-zinc-500">{telemetry.avgFps} FPS</span>
+          </label>
+          <select
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value)}
+            className="w-full bg-zinc-950 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white font-medium focus:border-emerald-400 focus:outline-none"
+          >
+            {GAMES.map((g) => (
+              <option key={g.id} value={g.id}>{g.name}{g.usesRayTracing ? ' (RT)' : ''}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -302,7 +521,7 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
                 <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-[11px] font-mono text-zinc-300 z-20">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-bold text-white tracking-wide">{monitorType}</span>
+                    <span className="font-bold text-white tracking-wide">{selectedMonitor.label}</span>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -325,33 +544,40 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl mx-auto">
                     <div className="p-3 rounded-xl bg-black/70 border border-white/10 backdrop-blur-md">
                       <div className="text-[10px] font-mono uppercase text-zinc-400">Avg Gaming FPS</div>
-                      <div className="text-2xl font-black font-mono text-emerald-400">184 FPS</div>
-                      <div className="text-[9px] text-zinc-500 font-mono">1% Low: 138 FPS</div>
+                      <div className="text-2xl font-black font-mono text-emerald-400">{telemetry.avgFps} FPS</div>
+                      <div className="text-[9px] text-zinc-500 font-mono">1% Low: {telemetry.onePctLow} FPS</div>
                     </div>
 
                     <div className="p-3 rounded-xl bg-black/70 border border-white/10 backdrop-blur-md">
-                      <div className="text-[10px] font-mono uppercase text-zinc-400">GPU Temp / Load</div>
-                      <div className="text-2xl font-black font-mono text-cyan-400">62°C</div>
-                      <div className="text-[9px] text-zinc-500 font-mono">Load: 97% • {selectedGpu.TGP_Watts}W</div>
+                      <div className="text-[10px] font-mono uppercase text-zinc-400">
+                        {telemetry.gpuIsIntegrated ? 'iGPU Temp / Load' : 'GPU Temp / Load'}
+                      </div>
+                      <div className="text-2xl font-black font-mono text-cyan-400">{telemetry.gpuTempC}°C</div>
+                      <div className="text-[9px] text-zinc-500 font-mono">
+                        Load: {telemetry.gpuLoadPct}% • {telemetry.gpuIsIntegrated ? 'Shared w/ CPU' : `${effectiveGpu.TGP_Watts}W`}
+                      </div>
                     </div>
 
                     <div className="p-3 rounded-xl bg-black/70 border border-white/10 backdrop-blur-md">
                       <div className="text-[10px] font-mono uppercase text-zinc-400">CPU Temp / Load</div>
-                      <div className="text-2xl font-black font-mono text-purple-400">58°C</div>
-                      <div className="text-[9px] text-zinc-500 font-mono">Load: 42% • {selectedCpu.TDP_Watts}W</div>
+                      <div className="text-2xl font-black font-mono text-purple-400">{telemetry.cpuTempC}°C</div>
+                      <div className="text-[9px] text-zinc-500 font-mono">Load: {telemetry.cpuLoadPct}% • {selectedCpu.TDP_Watts}W</div>
                     </div>
 
                     <div className="p-3 rounded-xl bg-black/70 border border-white/10 backdrop-blur-md">
                       <div className="text-[10px] font-mono uppercase text-zinc-400">Resolution Mode</div>
                       <div className="text-2xl font-black font-mono text-amber-400">
-                        {monitorType.includes('4K') ? '4K UHD' : '1440p'}
+                        {selectedMonitor.resTag}
                       </div>
-                      <div className="text-[9px] text-zinc-500 font-mono">DLSS 3.7 Quality</div>
+                      <div className="text-[9px] text-zinc-500 font-mono">{selectedMonitor.refreshHz}Hz {selectedMonitor.panel}</div>
                     </div>
                   </div>
 
                   <div className="text-xs font-mono text-zinc-400">
-                    Active Game Simulator: <span className="text-white font-bold">Cyberpunk 2077: Phantom Liberty (Path Tracing ON)</span>
+                    Active Game Simulator: <span className="text-white font-bold">{selectedGame.name}</span>
+                    {telemetry.gpuIsIntegrated && (
+                      <span className="ml-2 text-amber-400">(iGPU — expect low/medium settings)</span>
+                    )}
                   </div>
                 </div>
 
@@ -408,7 +634,7 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
                       </div>
                     </div>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-950 text-cyan-400 font-bold border border-zinc-800">
-                      58°C
+                      {telemetry.cpuTempC}°C
                     </span>
                   </div>
 
@@ -438,10 +664,10 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] font-black text-white">{selectedGpu.Model}</span>
+                        <span className="text-[11px] font-black text-white">{effectiveGpu.Model}</span>
                       </div>
                       <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-950/80 border border-purple-800/60 text-purple-300 font-bold">
-                        {selectedGpu.VRAM_GB}GB
+                        {effectiveGpu.VRAM_GB}GB
                       </span>
                     </div>
 
@@ -461,7 +687,7 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
                   <span className="flex items-center gap-1">
                     <Zap className="w-3 h-3 text-amber-400" /> ATX 3.1 PSU Shroud
                   </span>
-                  <span className="text-zinc-500">2x Gen4 NVMe</span>
+                  <span className="text-zinc-500">1x {storageType}</span>
                 </div>
               </div>
 
@@ -660,13 +886,13 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
               <span className="text-xs font-mono font-bold text-purple-400 uppercase flex items-center gap-1.5">
                 <Monitor className="w-3.5 h-3.5" /> Graphics Card
               </span>
-              <span className="text-xs font-mono font-bold text-emerald-400">{formatINR(selectedGpu.Price_INR)}</span>
+              <span className="text-xs font-mono font-bold text-emerald-400">{formatINR(effectiveGpu.Price_INR)}</span>
             </div>
-            <div className="text-sm font-bold text-white">{selectedGpu.Model}</div>
+            <div className="text-sm font-bold text-white">{effectiveGpu.Model}</div>
             <div className="text-xs text-zinc-400 space-y-1">
-              <div>• VRAM: {selectedGpu.VRAM_GB}GB {selectedGpu.Memory_Type}</div>
-              <div>• Memory Bus: {selectedGpu.Bus_Width_Bit}-bit ({selectedGpu.Bandwidth_GBs} GB/s)</div>
-              <div>• Board Power: {selectedGpu.TGP_Watts}W • Architecture: {selectedGpu.Architecture}</div>
+              <div>• VRAM: {effectiveGpu.VRAM_GB}GB {effectiveGpu.Memory_Type}</div>
+              <div>• Memory Bus: {effectiveGpu.Bus_Width_Bit}-bit ({effectiveGpu.Bandwidth_GBs} GB/s)</div>
+              <div>• Board Power: {effectiveGpu.TGP_Watts}W • Architecture: {effectiveGpu.Architecture}</div>
             </div>
           </div>
 
@@ -678,7 +904,7 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
               </span>
               <span className="text-xs font-mono font-bold text-emerald-400">{formatINR(monitorCost)}</span>
             </div>
-            <div className="text-sm font-bold text-white">{monitorType}</div>
+            <div className="text-sm font-bold text-white">{selectedMonitor.label}</div>
             <div className="text-xs text-zinc-400 space-y-1">
               <div>• Response Time: 0.03ms GtG (OLED Instant)</div>
               <div>• Color Gamut: 99% DCI-P3 Professional</div>
@@ -692,12 +918,12 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
               <span className="text-xs font-mono font-bold text-blue-400 uppercase flex items-center gap-1.5">
                 <HardDrive className="w-3.5 h-3.5" /> RAM & High-Speed NVMe
               </span>
-              <span className="text-xs font-mono font-bold text-emerald-400">{formatINR(19999)}</span>
+              <span className="text-xs font-mono font-bold text-emerald-400">{formatINR(ramCost + storageCost)}</span>
             </div>
-            <div className="text-sm font-bold text-white">{ramSize}GB {ramType} + 2TB Gen4 SSD</div>
+            <div className="text-sm font-bold text-white">{ramSize}GB {ramType} + {storageCapacityGB >= 1000 ? `${storageCapacityGB / 1000}TB` : `${storageCapacityGB}GB`} {storageType}</div>
             <div className="text-xs text-zinc-400 space-y-1">
               <div>• RAM Speed: 6000 MT/s CL30 Dual-Channel</div>
-              <div>• NVMe Read Speed: 7,400 MB/s (DirectStorage Ready)</div>
+              <div>• {storageType} Read Speed: {STORAGE_TYPE_INFO[storageType].readSpeed}</div>
             </div>
           </div>
 

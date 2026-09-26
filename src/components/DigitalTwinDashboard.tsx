@@ -182,6 +182,16 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
     };
   }, [activeTwin]);
 
+  // Live workload load bars — scaled off the twin's actual CPU/GPU/RAM specs instead of a
+  // fixed 75%/88%/50% shown for every rig regardless of what hardware is installed.
+  const workloadStats = useMemo(() => {
+    const cpuLoadPct = Math.min(92, Math.max(35, Math.round(40 + (activeTwin.cpu.tdpWatts / 250) * 45)));
+    const gpuLoadPct = Math.min(99, Math.max(80, Math.round(92 + (activeTwin.gpu.tgpWatts - 220) * 0.02)));
+    const assumedUsedGb = Math.min(activeTwin.ram.capacityGb - 2, 16);
+    const ramLoadPct = Math.min(95, Math.max(10, Math.round((assumedUsedGb / activeTwin.ram.capacityGb) * 100)));
+    return { cpuLoadPct, gpuLoadPct, ramLoadPct };
+  }, [activeTwin]);
+
   // Export JSON
   const handleExportJSON = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(activeTwin, null, 2));
@@ -491,8 +501,8 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                {renderBars(12, 16, 'bg-cyan-400')}
-                <span className="text-xs font-bold text-cyan-400 w-10 text-right">75%</span>
+                {renderBars(Math.round((workloadStats.cpuLoadPct / 100) * 16), 16, 'bg-cyan-400')}
+                <span className="text-xs font-bold text-cyan-400 w-10 text-right">{workloadStats.cpuLoadPct}%</span>
               </div>
             </div>
 
@@ -506,8 +516,8 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                {renderBars(14, 16, 'bg-purple-400')}
-                <span className="text-xs font-bold text-purple-400 w-10 text-right">88%</span>
+                {renderBars(Math.round((workloadStats.gpuLoadPct / 100) * 16), 16, 'bg-purple-400')}
+                <span className="text-xs font-bold text-purple-400 w-10 text-right">{workloadStats.gpuLoadPct}%</span>
               </div>
             </div>
 
@@ -521,8 +531,8 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                {renderBars(8, 16, 'bg-emerald-400')}
-                <span className="text-xs font-bold text-emerald-400 w-10 text-right">50%</span>
+                {renderBars(Math.round((workloadStats.ramLoadPct / 100) * 16), 16, 'bg-emerald-400')}
+                <span className="text-xs font-bold text-emerald-400 w-10 text-right">{workloadStats.ramLoadPct}%</span>
               </div>
             </div>
 
@@ -1030,7 +1040,7 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
                   </div>
                   <strong className="text-white text-sm block">{activeTwin.display.model}</strong>
                   <div className="text-zinc-400 space-y-1 text-[11px]">
-                    <div>Resolution: {activeTwin.display.resolution} (2560x1440)</div>
+                    <div>Resolution: {activeTwin.display.resolution}</div>
                     <div>Refresh Rate: {activeTwin.display.refreshRateHz} Hz OLED (0.03ms GtG)</div>
                     <div>Adaptive Sync: {activeTwin.display.syncTechnology}</div>
                   </div>
