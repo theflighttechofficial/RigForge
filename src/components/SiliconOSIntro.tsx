@@ -68,20 +68,20 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
         <span id="timecode">00:00 / 00:24</span>
         <div id="chapters"></div>
       </div>
-      <button id="btn-skip" class="som-abs" style="right:32px;top:72px;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:8px;border:1px solid ${COOL};background:${COOL};color:#04141A;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 0 18px rgba(92,225,255,.45)">
-        Skip intro
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 5l8 7-8 7M17 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div id="boot-header" class="som-abs som-row" style="left:0;top:0;width:1440px;height:56px;align-items:center;justify-content:space-between;padding:0 32px;background:linear-gradient(#09090B,rgba(9,9,11,.82));border-bottom:1px solid #1A1A1F;z-index:5">
-        <span style="display:flex;align-items:baseline;gap:10px">
-          <span style="font:800 19px/1 'Big Shoulders Display','Barlow Condensed',sans-serif;letter-spacing:.02em;color:#FAFAFA">RIGFORGE</span>
-          <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;color:${COOL};letter-spacing:.03em">// SILICON OS</span>
-        </span>
-        <span id="boot-status" style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;color:#8A8A93;letter-spacing:.02em;display:flex;align-items:center;gap:8px">
-          <span style="width:6px;height:6px;border-radius:3px;background:${COOL};display:block;animation:pulse 1.4s ease-in-out infinite"></span>
-          <span id="boot-status-text">Booting up…</span>
-        </span>
-      </div>
+    </div>
+    <button id="btn-skip" style="position:fixed;right:16px;top:calc(env(safe-area-inset-top, 0px) + 66px);z-index:10;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:8px;border:1px solid ${COOL};background:${COOL};color:#04141A;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 0 18px rgba(92,225,255,.45)">
+      Skip intro
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 5l8 7-8 7M17 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div id="boot-header" style="position:fixed;left:0;top:0;right:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:linear-gradient(#09090B,rgba(9,9,11,.82));border-bottom:1px solid #1A1A1F;z-index:8">
+      <span style="display:flex;align-items:baseline;gap:8px;min-width:0">
+        <span style="font:800 17px/1 'Big Shoulders Display','Barlow Condensed',sans-serif;letter-spacing:.02em;color:#FAFAFA;white-space:nowrap">RIGFORGE</span>
+        <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:${COOL};letter-spacing:.03em;white-space:nowrap">// SILICON OS</span>
+      </span>
+      <span id="boot-status" style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:#8A8A93;letter-spacing:.02em;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;margin-left:10px">
+        <span style="width:6px;height:6px;border-radius:3px;background:${COOL};display:block;animation:pulse 1.4s ease-in-out infinite;flex-shrink:0"></span>
+        <span id="boot-status-text">Booting up…</span>
+      </span>
     </div>
   `;
   host.appendChild(stageWrap);
@@ -125,9 +125,9 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
   let t = 0, playing = true, blankUntil = 0, landing = false;
   let reduced = false;
   try { reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches; } catch { /* noop */ }
-  // Skip the scaled 1440px cinematic on phones: tap targets shrink too far to use.
-  // Land straight on the touch-native mobile screen instead.
-  if (reduced || isMobile) { t = TOTAL; playing = false; landing = true; }
+  // Cinematic plays on every device (skip/boot-header sit outside the scaled stage so they
+  // stay full touch/legible size). Only reduced-motion users jump straight to landing.
+  if (reduced) { t = TOTAL; playing = false; landing = true; }
 
   const sceneEl = q<HTMLElement>('#scenes')!;
   const tcEl = q<HTMLElement>('#timecode')!;
@@ -775,7 +775,7 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
   };
   host.addEventListener('click', onDelegatedClick);
 
-  if (!reduced && !isMobile) { buildScene(0); } else { showLanding(); }
+  if (!reduced) { buildScene(0); } else { showLanding(); }
 
   return () => {
     window.removeEventListener('resize', resize);

@@ -152,36 +152,36 @@ export const Header: React.FC<HeaderProps> = ({
           : 'border-zinc-800 bg-zinc-950/90 text-zinc-100 shadow-lg'
       }`}
     >
-      <div className="w-full px-3 sm:px-6 lg:px-8">
+      <div className="w-full px-2.5 sm:px-6 lg:px-8 overflow-x-hidden">
         {/* Main Header Bar */}
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-1.5 sm:gap-4">
           {/* Brand & Identity */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
             <button
               onClick={() => setActiveTab('intro')}
-              className="flex items-center gap-3 text-left group cursor-pointer focus:outline-none"
+              className="flex items-center gap-2 sm:gap-3 text-left group cursor-pointer focus:outline-none min-w-0"
               title="Return to System Overview"
             >
               <div
-                className={`flex items-center justify-center w-9 h-9 rounded-xl transition-colors shadow-sm ${
+                className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl transition-colors shadow-sm shrink-0 ${
                   isLight
                     ? 'bg-cyan-50 border border-cyan-200 text-cyan-700 group-hover:border-cyan-500'
                     : 'bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:border-cyan-400'
                 }`}
               >
-                <Cpu className="w-5 h-5" />
+                <Cpu className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <span
-                    className={`text-sm sm:text-base font-black tracking-wider font-mono transition-colors ${
+                    className={`text-xs sm:text-base font-black tracking-wider font-mono transition-colors truncate ${
                       isLight ? 'text-slate-900 group-hover:text-cyan-700' : 'text-white group-hover:text-cyan-300'
                     }`}
                   >
                     SILICON MATRIX
                   </span>
                   <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${
+                    className={`hidden sm:inline-block text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold shrink-0 ${
                       isLight
                         ? 'bg-cyan-50 border border-cyan-200 text-cyan-800 font-bold'
                         : 'bg-cyan-950/80 border border-cyan-800/60 text-cyan-400'
@@ -191,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                 </div>
                 <div
-                  className={`flex items-center gap-2 text-[10px] font-mono ${
+                  className={`hidden sm:flex items-center gap-2 text-[10px] font-mono ${
                     isLight ? 'text-slate-500' : 'text-zinc-400'
                   }`}
                 >
@@ -236,12 +236,12 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           {/* Right Action Tools: Category Toggle & Diagnostics */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Mobile/Compact Search Icon Button */}
             {onOpenSearch && (
               <button
                 onClick={onOpenSearch}
-                className={`lg:hidden flex items-center justify-center p-2 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                className={`lg:hidden flex items-center justify-center p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer shadow-sm ${
                   isLight
                     ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700 hover:text-cyan-700'
                     : 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-zinc-300 hover:text-cyan-400'
@@ -254,14 +254,14 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Quick CPU / GPU Category Toggle */}
             <div
-              className={`inline-flex p-1 rounded-xl border shadow-inner ${
+              className={`inline-flex p-1 rounded-xl border shadow-inner shrink-0 ${
                 isLight ? 'bg-slate-100 border-slate-200' : 'bg-zinc-900 border-zinc-800'
               }`}
             >
               <button
                 id="btn-cat-cpu"
                 onClick={() => setCategory('CPU')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   category === 'CPU'
                     ? 'bg-cyan-500 text-zinc-950 shadow-sm font-black'
                     : isLight
@@ -288,7 +288,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="btn-cat-gpu"
                 onClick={() => setCategory('GPU')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   category === 'GPU'
                     ? 'bg-purple-500 text-white shadow-sm font-black'
                     : isLight
@@ -334,7 +334,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="btn-global-theme-toggle"
                 onClick={onToggleTheme}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono transition-all cursor-pointer shadow-sm ${
+                className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border text-xs font-mono transition-all cursor-pointer shadow-sm ${
                   isLight
                     ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800 hover:border-purple-300'
                     : 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 hover:border-amber-500/50 text-zinc-300'
@@ -347,7 +347,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ) : (
                   <Sun className="w-4 h-4 text-amber-400" />
                 )}
-                <span className={`text-[11px] font-bold ${isLight ? 'text-slate-800' : 'text-zinc-300'}`}>
+                <span className={`hidden sm:inline text-[11px] font-bold ${isLight ? 'text-slate-800' : 'text-zinc-300'}`}>
                   {isLight ? 'Dark' : 'Light'}
                 </span>
               </button>

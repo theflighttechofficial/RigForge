@@ -224,7 +224,7 @@ export default function App() {
   // 2. Main Website UI Experience (Top bar navigation + content views)
   return (
     <div
-      className={`min-h-screen flex flex-col selection:bg-cyan-500 selection:text-black transition-colors duration-200 ${
+      className={`min-h-screen w-full flex flex-col overflow-x-hidden selection:bg-cyan-500 selection:text-black transition-colors duration-200 ${
         theme === 'light' ? 'bg-slate-50 text-slate-900' : 'bg-zinc-950 text-zinc-100'
       }`}
     >
