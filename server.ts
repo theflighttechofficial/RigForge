@@ -4,6 +4,9 @@ import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
+import { scanSystemSpecs, readUserHardwareDb } from './systemSpecs';
+import { parseUnixDump, unixAgentScript } from './unixAgent';
+import { createScanSession, getScanSession, reportFromAgent, windowsAgentScript } from './deviceAgent';
 
 dotenv.config();
 
@@ -198,6 +201,68 @@ async function startServer() {
       time: new Date().toISOString(),
       hasGeminiApiKey: Boolean(process.env.GEMINI_API_KEY)
     });
+  });
+
+  // Hardware scan reads the machine running this server, so only answer loopback callers
+  const isLoopback = (req: express.Request) => {
+    const ip = req.socket.remoteAddress || '';
+    return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+  };
+
+  app.get('/api/system-specs', async (req, res) => {
+    if (!isLoopback(req)) {
+      return res.status(403).json({ error: 'System scan is only available when the site runs on this computer (localhost).' });
+    }
+    try {
+      res.json(await scanSystemSpecs());
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message || 'System scan failed' });
+    }
+  });
+
+  // Hosted flow: browser gets consent, opens a session, visitor runs the agent, agent posts back
+  const originOf = (req: express.Request) => `${req.get('x-forwarded-proto') || req.protocol}://${req.get('host')}`;
+
+  app.post('/api/system-specs/session', (req, res) => {
+    const token = createScanSession();
+    res.json({
+      token,
+      agentUrl: `${originOf(req)}/api/system-specs/agent/${token}`,
+      local: isLoopback(req)
+    });
+  });
+
+  app.get('/api/system-specs/agent/:token', (req, res) => {
+    if (!getScanSession(req.params.token)) return res.status(404).send('# Scan session expired. Start a new scan in the browser.');
+    const origin = originOf(req);
+    if (req.query.os === 'unix') {
+      res.type('text/plain').attachment('silicon-matrix-scan.sh').send(unixAgentScript(origin, req.params.token));
+    } else {
+      res.type('text/plain').attachment('silicon-matrix-scan.ps1').send(windowsAgentScript(origin, req.params.token));
+    }
+  });
+
+  app.post('/api/system-specs/report/:token', express.json({ limit: '200kb' }), express.text({ limit: '2mb' }), (req, res) => {
+    const session = getScanSession(req.params.token);
+    if (!session) return res.status(404).json({ error: 'Scan session expired' });
+    if (session.report) return res.status(409).json({ error: 'Scan session already used' });
+    try {
+      // Windows agent posts JSON; the macOS/Linux agent posts sectioned command output
+      session.report = reportFromAgent(typeof req.body === 'string' ? parseUnixDump(req.body) : req.body);
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(400).json({ error: err?.message || 'Invalid scan data' });
+    }
+  });
+
+  app.get('/api/system-specs/session/:token', (req, res) => {
+    const session = getScanSession(req.params.token);
+    if (!session) return res.status(404).json({ error: 'Scan session expired' });
+    res.json({ status: session.report ? 'complete' : 'pending', report: session.report });
+  });
+
+  app.get('/api/user-hardware-db', (req, res) => {
+    res.json(readUserHardwareDb());
   });
 
   // AI Build Doctor Diagnostic Route

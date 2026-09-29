@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ActiveTab, ComponentCategory } from '../types';
 import {
   Cpu,
@@ -19,13 +19,15 @@ import {
   BookOpen,
   Laptop,
   Box,
-  ChevronLeft,
-  ChevronRight,
+  ChevronDown,
+  ArrowRight,
+  LayoutGrid,
   Stethoscope,
   HardDrive,
   Calculator,
   Trophy,
-  Users
+  Users,
+  ScanLine
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -43,6 +45,7 @@ interface HeaderProps {
 
 const navTabs: { id: ActiveTab; label: string; shortLabel: string; icon: React.FC<{ className?: string }>; color: string }[] = [
   { id: 'intro', label: 'Overview', shortLabel: 'Overview', icon: Sparkles, color: 'text-cyan-400' },
+  { id: 'myspecs', label: 'My PC Specs', shortLabel: 'My Specs', icon: ScanLine, color: 'text-cyan-400' },
   { id: 'digitaltwin', label: 'My Rig (Digital Twin)', shortLabel: 'My Rig', icon: Laptop, color: 'text-cyan-400' },
   { id: 'doctor', label: 'AI Build Doctor', shortLabel: 'AI Doctor', icon: Stethoscope, color: 'text-cyan-400' },
   { id: 'matrix', label: '2D Value Matrix', shortLabel: '2D Matrix', icon: BarChart3, color: 'text-cyan-400' },
@@ -64,6 +67,11 @@ const navTabs: { id: ActiveTab; label: string; shortLabel: string; icon: React.F
   { id: 'catalog', label: 'Catalog', shortLabel: 'Catalog', icon: TableProperties, color: 'text-rose-400' }
 ];
 
+// Max 5 tabs stay in the bar; the rest live in the "More" dropdown
+const PRIMARY_TAB_IDS: ActiveTab[] = ['intro', 'myspecs', 'digitaltwin', 'builder', 'catalog'];
+const primaryTabs = PRIMARY_TAB_IDS.map((id) => navTabs.find((t) => t.id === id)!);
+const moreTabs = navTabs.filter((t) => !PRIMARY_TAB_IDS.includes(t.id));
+
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   setActiveTab,
@@ -76,72 +84,51 @@ export const Header: React.FC<HeaderProps> = ({
   theme = 'dark',
   onToggleTheme
 }) => {
-  const navContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
-  const [canScrollRight, setCanScrollRight] = useState<boolean>(false);
-  const [scrollProgress, setScrollProgress] = useState<number>(0);
-
-  const updateScrollState = useCallback(() => {
-    const el = navContainerRef.current;
-    if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    setCanScrollLeft(el.scrollLeft > 6);
-    setCanScrollRight(el.scrollLeft < maxScroll - 6);
-    setScrollProgress(maxScroll > 0 ? Math.min(100, Math.max(0, (el.scrollLeft / maxScroll) * 100)) : 0);
-  }, []);
-
-  useEffect(() => {
-    const el = navContainerRef.current;
-    if (!el) return;
-    updateScrollState();
-    el.addEventListener('scroll', updateScrollState, { passive: true });
-    window.addEventListener('resize', updateScrollState);
-    return () => {
-      el.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('resize', updateScrollState);
-    };
-  }, [updateScrollState]);
-
-  // Center active tab smoothly on change
-  useEffect(() => {
-    const activeTabEl = document.getElementById(`tab-${activeTab}`);
-    if (activeTabEl && navContainerRef.current) {
-      activeTabEl.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center'
-      });
-      // update scroll indicators after smooth scroll
-      setTimeout(updateScrollState, 250);
+  const [moreOpen, setMoreOpen] = useState<boolean>(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const activeMoreTab = moreTabs.find((t) => t.id === activeTab);
+  const [showMoreHint, setShowMoreHint] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('silicon_matrix_more_hint_seen') !== '1';
+    } catch {
+      return true;
     }
-  }, [activeTab, updateScrollState]);
-
-  // Convert mouse wheel vertical scroll into smooth horizontal panning inside topnavbar
-  useEffect(() => {
-    const el = navContainerRef.current;
-    if (!el) return;
-    const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && el.scrollWidth > el.clientWidth) {
-        e.preventDefault();
-        el.scrollBy({
-          left: e.deltaY * 1.2,
-          behavior: 'auto'
-        });
-      }
-    };
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, []);
-
-  const handleScrollStep = (direction: 'left' | 'right') => {
-    if (!navContainerRef.current) return;
-    const scrollAmount = direction === 'left' ? -220 : 220;
-    navContainerRef.current.scrollBy({
-      left: scrollAmount,
-      behavior: 'smooth'
-    });
+  });
+  const dismissMoreHint = () => {
+    setShowMoreHint(false);
+    try {
+      localStorage.setItem('silicon_matrix_more_hint_seen', '1');
+    } catch {
+      // ignore
+    }
   };
+
+  // Close the dropdown on outside click or Escape
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onPointer = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMoreOpen(false);
+    };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [moreOpen]);
+
   const isLight = theme === 'light';
+  const activeClass = isLight
+    ? 'bg-cyan-600 text-white font-bold border border-cyan-500 shadow-md shadow-cyan-600/20'
+    : 'bg-zinc-800 text-white font-bold border border-zinc-600/80 shadow-md shadow-cyan-950/20';
+  const idleClass = isLight
+    ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 border border-transparent'
+    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/90 border border-transparent';
+  const iconClass = (active: boolean, color: string) =>
+    active ? (isLight ? 'text-white' : color) : isLight ? 'text-slate-500 group-hover:text-slate-900' : 'text-zinc-400 group-hover:text-zinc-200';
 
   return (
     <header
@@ -152,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
           : 'border-zinc-800 bg-zinc-950/90 text-zinc-100 shadow-lg'
       }`}
     >
-      <div className="w-full px-2.5 sm:px-6 lg:px-8 overflow-x-hidden">
+      <div className="w-full px-2.5 sm:px-6 lg:px-8">
         {/* Main Header Bar */}
         <div className="flex items-center justify-between h-14 sm:h-16 gap-1.5 sm:gap-4">
           {/* Brand & Identity */}
@@ -355,63 +342,13 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Top Navigation Bar with Perfect Scrollbar */}
-        <div className={`relative border-t group/nav ${isLight ? 'border-slate-200' : 'border-zinc-900/90'}`}>
-          {/* Left Overflow Fade Mask & Scroll Button */}
-          {canScrollLeft && (
-            <div
-              className={`absolute left-0 top-0 bottom-0 z-20 flex items-center pr-4 pl-0 pointer-events-none ${
-                isLight
-                  ? 'bg-gradient-to-r from-white via-white/95 to-transparent'
-                  : 'bg-gradient-to-r from-zinc-950 via-zinc-950/90 to-transparent'
-              }`}
-            >
-              <button
-                onClick={() => handleScrollStep('left')}
-                className={`pointer-events-auto p-1.5 rounded-lg border transition-all shadow-md cursor-pointer hover:scale-105 active:scale-95 ${
-                  isLight
-                    ? 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700 hover:text-cyan-700'
-                    : 'bg-zinc-900/90 hover:bg-zinc-800 border-zinc-700 text-zinc-300 hover:text-cyan-400'
-                }`}
-                title="Scroll left (or use mouse wheel)"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-
-          {/* Right Overflow Fade Mask & Scroll Button */}
-          {canScrollRight && (
-            <div
-              className={`absolute right-0 top-0 bottom-0 z-20 flex items-center pl-4 pr-0 pointer-events-none ${
-                isLight
-                  ? 'bg-gradient-to-l from-white via-white/95 to-transparent'
-                  : 'bg-gradient-to-l from-zinc-950 via-zinc-950/90 to-transparent'
-              }`}
-            >
-              <button
-                onClick={() => handleScrollStep('right')}
-                className={`pointer-events-auto p-1.5 rounded-lg border transition-all shadow-md cursor-pointer hover:scale-105 active:scale-95 ${
-                  isLight
-                    ? 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700 hover:text-cyan-700'
-                    : 'bg-zinc-900/90 hover:bg-zinc-800 border-zinc-700 text-zinc-300 hover:text-cyan-400'
-                }`}
-                title="Scroll right (or use mouse wheel)"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-
-          {/* Nav Tabs Container with custom smooth scrollbar */}
-          <nav
-            ref={navContainerRef}
-            className="flex items-center gap-1.5 pt-2 pb-2.5 overflow-x-auto perfect-nav-scrollbar scroll-smooth select-none"
-            aria-label="Application sections navigation"
-          >
-            {navTabs.map((tab) => {
+        {/* Top Navigation: primary tabs plus a "More" dropdown for everything else */}
+        <div className={`relative border-t ${isLight ? 'border-slate-200' : 'border-zinc-900/90'}`}>
+          {/* 3-column grid keeps the primary tabs centred with "More" pinned right */}
+          <nav className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5 pt-2 pb-2.5 select-none" aria-label="Application sections navigation">
+            <div aria-hidden />
+            <div className="flex items-center justify-center gap-1.5">
+            {primaryTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
@@ -419,44 +356,92 @@ export const Header: React.FC<HeaderProps> = ({
                   key={tab.id}
                   id={`tab-${tab.id}`}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`group flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
-                    isActive
-                      ? isLight
-                        ? 'bg-cyan-600 text-white font-bold border border-cyan-500 shadow-md shadow-cyan-600/20'
-                        : 'bg-zinc-800 text-white font-bold border border-zinc-600/80 shadow-md shadow-cyan-950/20'
-                      : isLight
-                      ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 border border-transparent'
-                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/90 border border-transparent'
+                  title={tab.label}
+                  className={`group flex items-center gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer min-w-0 ${
+                    isActive ? activeClass : idleClass
                   }`}
                 >
-                  <Icon
-                    className={`w-3.5 h-3.5 shrink-0 transition-colors ${
-                      isActive
-                        ? isLight
-                          ? 'text-white'
-                          : tab.color
-                        : isLight
-                        ? 'text-slate-500 group-hover:text-slate-900'
-                        : 'text-zinc-400 group-hover:text-zinc-200'
-                    }`}
-                  />
-                  <span className="hidden md:inline">{tab.label}</span>
-                  <span className="md:hidden">{tab.shortLabel}</span>
+                  <Icon className={`w-3.5 h-3.5 shrink-0 ${iconClass(isActive, tab.color)}`} />
+                  <span className="hidden lg:inline">{tab.label}</span>
+                  <span className="hidden sm:inline lg:hidden">{tab.shortLabel}</span>
                 </button>
               );
             })}
-          </nav>
 
-          {/* Micro Progress Bar Track for Scroll Context */}
-          <div className={`h-[2px] w-full rounded-full overflow-hidden ${isLight ? 'bg-slate-200' : 'bg-zinc-900/60'}`}>
-            <div
-              className="h-full bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-500 transition-all duration-150 ease-out"
-              style={{
-                width: canScrollLeft || canScrollRight ? `${Math.max(8, scrollProgress)}%` : '100%',
-                opacity: canScrollLeft || canScrollRight ? 0.85 : 0.2
-              }}
-            />
-          </div>
+            </div>
+
+            <div ref={moreRef} className="relative justify-self-end flex items-center gap-2">
+              {/* Hint pointing at "More" until the user opens it once */}
+              {showMoreHint && !moreOpen && (
+                <span
+                  aria-hidden
+                  className={`hidden md:flex items-center gap-1 text-[11px] font-bold whitespace-nowrap pointer-events-none animate-pulse ${
+                    isLight ? 'text-cyan-700' : 'text-cyan-400'
+                  }`}
+                >
+                  Explore more
+                  <ArrowRight className="w-3.5 h-3.5 animate-[nudge_1s_ease-in-out_infinite]" />
+                </span>
+              )}
+              <button
+                id="tab-more"
+                onClick={() => {
+                  setMoreOpen((o) => !o);
+                  dismissMoreHint();
+                }}
+                aria-haspopup="menu"
+                aria-expanded={moreOpen}
+                className={`group flex items-center gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                  activeMoreTab ? activeClass : idleClass
+                }`}
+              >
+                {activeMoreTab ? (
+                  <activeMoreTab.icon className={`w-3.5 h-3.5 shrink-0 ${iconClass(true, activeMoreTab.color)}`} />
+                ) : (
+                  <LayoutGrid className={`w-3.5 h-3.5 shrink-0 ${iconClass(false, '')}`} />
+                )}
+                <span className="max-w-[9rem] truncate">{activeMoreTab ? activeMoreTab.shortLabel : 'More'}</span>
+                <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform ${moreOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {moreOpen && (
+                <div
+                  role="menu"
+                  className={`absolute right-0 top-full mt-2 z-50 w-[min(34rem,calc(100vw-1.25rem))] rounded-2xl border p-2 shadow-2xl grid grid-cols-1 sm:grid-cols-2 gap-0.5 ${
+                    isLight ? 'bg-white border-slate-200' : 'bg-zinc-950 border-zinc-800'
+                  }`}
+                >
+                  {moreTabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        id={`tab-${tab.id}`}
+                        role="menuitem"
+                        onClick={() => {
+                          setActiveTab(tab.id);
+                          setMoreOpen(false);
+                        }}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-left cursor-pointer ${
+                          isActive
+                            ? isLight
+                              ? 'bg-cyan-50 text-cyan-800'
+                              : 'bg-zinc-800 text-white'
+                            : isLight
+                            ? 'text-slate-700 hover:bg-slate-100'
+                            : 'text-zinc-300 hover:bg-zinc-900'
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${tab.color}`} />
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </nav>
         </div>
       </div>
     </header>

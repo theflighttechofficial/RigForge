@@ -1,0 +1,76 @@
+﻿{
+    "system":  {
+                   "manufacturer":  "Dell Inc.",
+                   "model":  "Inspiron 15 3511",
+                   "os":  "Microsoft Windows 11 Home 10.0.26200 (64-bit)",
+                   "hostname":  "VARUNS-DELL-INS"
+               },
+    "cpu":  {
+                "maxMHz":  2803,
+                "socket":  "CPU 1",
+                "manufacturer":  "GenuineIntel",
+                "virtualization":  false,
+                "l2KB":  5120,
+                "l3KB":  12288,
+                "threads":  8,
+                "name":  "11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz",
+                "cores":  4
+            },
+    "totalMemoryBytes":  16901771264,
+    "memory":  [
+                   {
+                       "formFactor":  12,
+                       "manufacturer":  "80AD000080AD",
+                       "smbiosType":  26,
+                       "bank":  "DIMM A",
+                       "sizeBytes":  8589934592,
+                       "partNumber":  "HMAA1GS6CJR6N-XN    ",
+                       "speed":  2667
+                   },
+                   {
+                       "formFactor":  12,
+                       "manufacturer":  "80AD000080AD",
+                       "smbiosType":  26,
+                       "bank":  "DIMM B",
+                       "sizeBytes":  8589934592,
+                       "partNumber":  "HMAA1GS6CJR6N-XN    ",
+                       "speed":  2667
+                   }
+               ],
+    "disks":  [
+
+              ],
+    "gpus":  [
+                 {
+                     "pnp":  "PCI\\VEN_8086\u0026DEV_9A49\u0026SUBSYS_0AB01028\u0026REV_01\\3\u002611583659\u00260\u002610",
+                     "name":  "Intel(R) Iris(R) Xe Graphics",
+                     "vramBytes":  2147479552,
+                     "driverVersion":  "32.0.101.7085",
+                     "vendor":  "Intel Corporation"
+                 }
+             ],
+    "displays":  [
+                     {
+                         "main":  true,
+                         "width":  1920,
+                         "name":  "Intel(R) Iris(R) Xe Graphics",
+                         "height":  1080,
+                         "refresh":  60
+                     }
+                 ],
+    "network":  [
+                    {
+                        "name":  "WiFi",
+                        "speedBps":  325000000,
+                        "description":  "Realtek 8821CE Wireless LAN 802.11ac PCI-E NIC",
+                        "mac":  "C8-94-02-12-3C-55",
+                        "wireless":  true,
+                        "status":  "Up"
+                    }
+                ],
+    "wifi":  {
+                 "ssid":  "Airtel_Airtel kavin",
+                 "band":  "5 GHz",
+                 "signalPercent":  "97 "
+             }
+}

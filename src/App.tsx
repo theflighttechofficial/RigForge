@@ -28,6 +28,7 @@ import { BuildCostOptimizer } from './components/BuildCostOptimizer';
 import { BuildChallengeMode } from './components/BuildChallengeMode';
 import { CommunityBuildGallery } from './components/CommunityBuildGallery';
 import { TroubleshootingWizard } from './components/TroubleshootingWizard';
+import { MyPCSpecs } from './components/MyPCSpecs';
 
 const TAB_DISPLAY_NAMES: Record<ActiveTab, string> = {
   intro: 'System Overview & Architecture Guide',
@@ -49,7 +50,8 @@ const TAB_DISPLAY_NAMES: Record<ActiveTab, string> = {
   benchmarks: 'Live Real-Time Benchmark Lab',
   roi: 'Generational Upgrade ROI Engine',
   cost: 'Indian Electricity & TCO Calculator',
-  catalog: 'Complete Hardware Spec Database'
+  catalog: 'Complete Hardware Spec Database',
+  myspecs: 'My PC Specs // Live System Hardware Scan'
 };
 
 export default function App() {
@@ -272,6 +274,15 @@ export default function App() {
                 onSelectPreset={handleSelectPreset}
                 totalCpus={cpuDataset.length}
                 totalGpus={gpuDataset.length}
+              />
+            )}
+
+            {/* Live scan of the user's own hardware */}
+            {activeTab === 'myspecs' && (
+              <MyPCSpecs
+                cpus={cpuDataset}
+                gpus={gpuDataset}
+                onInspectDetails={setModalItem}
               />
             )}
 

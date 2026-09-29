@@ -837,3 +837,9 @@ html.light [class*="bg-blue-500/20"] {
   border-color: #bfdbfe !important;
 }
 
+
+/* Nudges the "Explore more" arrow toward the More tab */
+@keyframes nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
