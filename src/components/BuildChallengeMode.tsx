@@ -28,6 +28,7 @@ import {
   Wrench,
   RotateCcw
 } from 'lucide-react';
+import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface BuildChallengeModeProps {
   cpus: CPUItem[];
@@ -67,7 +68,8 @@ export const BuildChallengeMode: React.FC<BuildChallengeModeProps> = ({
 
   // Selected CPU / GPU
   const chosenCpu = useMemo(() => cpus.find((c) => c.id === userConfig.cpuId) || cpus[0], [cpus, userConfig.cpuId]);
-  const chosenGpu = useMemo(() => gpus.find((g) => g.id === userConfig.gpuId) || gpus[0], [gpus, userConfig.gpuId]);
+  const chosenDiscreteGpu = useMemo(() => gpus.find((g) => g.id === userConfig.gpuId) || gpus[0], [gpus, userConfig.gpuId]);
+  const { useIntegrated: useIgpu, setUseIntegrated: setUseIgpu, effectiveGpu: chosenGpu } = useIntegratedGraphics(chosenCpu, chosenDiscreteGpu);
 
   // Calculate Live Challenge Scorecard
   const scoreResult: ChallengeScoreResult = useMemo(() => {
@@ -189,7 +191,7 @@ export const BuildChallengeMode: React.FC<BuildChallengeModeProps> = ({
             <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">
               2. Select Graphics Card (GPU)
             </label>
-            <select
+            <select disabled={useIgpu}
               value={userConfig.gpuId}
               onChange={(e) => setUserConfig({ ...userConfig, gpuId: e.target.value })}
               className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none cursor-pointer"
@@ -200,6 +202,7 @@ export const BuildChallengeMode: React.FC<BuildChallengeModeProps> = ({
                 </option>
               ))}
             </select>
+            <IntegratedGraphicsToggle cpu={chosenCpu} checked={useIgpu} onChange={setUseIgpu} />
           </div>
 
           {/* RAM & Storage */}

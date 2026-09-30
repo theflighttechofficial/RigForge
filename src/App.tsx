@@ -63,6 +63,8 @@ export default function App() {
   const [loadingTargetTab, setLoadingTargetTab] = useState<ActiveTab>('intro');
   const [loadingDisplayName, setLoadingDisplayName] = useState<string>('System Overview & Architecture Guide');
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(undefined);
+  // Parts handed to Rig Architect from other pages; the nonce remounts it with the new defaults
+  const [builderParts, setBuilderParts] = useState<{ cpuId: string; gpuId: string; nonce: number } | null>(null);
 
   // Global theme state ('dark' or 'light')
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -265,7 +267,8 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full"
+            // Cap line length on ultrawide monitors; smaller screens are unaffected
+            className="w-full max-w-[1920px] mx-auto"
           >
             {/* Overview Content Page */}
             {activeTab === 'intro' && (
@@ -313,8 +316,8 @@ export default function App() {
             {activeTab === 'doctor' && (
               <AIBuildDoctor
                 onNavigateToBuilder={(cpuId, gpuId) => {
-                  setSynergyCpuId(cpuId);
-                  setSynergyGpuId(gpuId);
+                  setSelectedPresetId(undefined);
+                  setBuilderParts({ cpuId, gpuId, nonce: Date.now() });
                   setActiveTab('builder');
                 }}
                 onNavigateToSynergy={(cpuId, gpuId) => {
@@ -426,9 +429,12 @@ export default function App() {
             {/* Rig Architect Indian PC Builder */}
             {activeTab === 'builder' && (
               <RigArchitect
+                key={builderParts?.nonce ?? 'default'}
                 cpus={cpuDataset}
                 gpus={gpuDataset}
-                presetId={selectedPresetId}
+                defaultCpuId={builderParts?.cpuId}
+                defaultGpuId={builderParts?.gpuId}
+                selectedPresetId={selectedPresetId}
               />
             )}
 

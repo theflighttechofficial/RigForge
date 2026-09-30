@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 import { CPUItem, GPUItem } from '../types';
 import { AssemblyCanvas3D } from './spatial/AssemblyCanvas3D';
 import { DeskPlannerCanvas3D, DeskType, DeskFinish, ChairType, MonitorArmConfig } from './spatial/DeskPlannerCanvas3D';
@@ -45,7 +46,7 @@ export type SpatialStudioMode = 'assembly' | 'clearance' | 'airflow' | 'rgb' | '
 
 export const Spatial3DStudio: React.FC<Spatial3DStudioProps> = ({
   selectedCpu,
-  selectedGpu,
+  selectedGpu: selectedDiscreteGpu,
   allCpus,
   allGpus,
   onSelectCpu,
@@ -53,6 +54,8 @@ export const Spatial3DStudio: React.FC<Spatial3DStudioProps> = ({
   onOpenRigArchitect,
   theme = 'dark'
 }) => {
+  // iGPU-only builds render with no graphics card in the chassis
+  const { useIntegrated: useIgpu, setUseIntegrated: setUseIgpu, effectiveGpu: selectedGpu } = useIntegratedGraphics(selectedCpu, selectedDiscreteGpu);
   const [activeMode, setActiveMode] = useState<SpatialStudioMode>('assembly');
   const [isArModalOpen, setIsArModalOpen] = useState<boolean>(false);
   const [arTargetObject, setArTargetObject] = useState<'tower' | 'desk'>('tower');
@@ -78,7 +81,7 @@ export const Spatial3DStudio: React.FC<Spatial3DStudioProps> = ({
 
   const totalHardwareCostINR =
     (selectedCpu.Price_INR || 30000) +
-    (selectedGpu.Price_INR || 75000) +
+    (useIgpu ? 0 : selectedGpu.Price_INR || 75000) +
     (ramCapacity >= 64 ? 18000 : 9500) +
     (coolerType === '360mm AIO' ? 11500 : 4500) +
     18500 + // Motherboard
@@ -274,7 +277,8 @@ export const Spatial3DStudio: React.FC<Spatial3DStudioProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-zinc-500 font-bold uppercase">GPU:</span>
             <select
-              value={selectedGpu.id}
+              disabled={useIgpu}
+              value={selectedDiscreteGpu.id}
               onChange={(e) => {
                 const found = allGpus.find((g) => g.id === e.target.value);
                 if (found) onSelectGpu(found);
@@ -287,6 +291,7 @@ export const Spatial3DStudio: React.FC<Spatial3DStudioProps> = ({
                 </option>
               ))}
             </select>
+            <IntegratedGraphicsToggle cpu={selectedCpu} checked={useIgpu} onChange={setUseIgpu} className="pt-0" />
           </div>
 
           {/* Cooler Toggle */}

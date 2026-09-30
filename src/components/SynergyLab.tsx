@@ -31,6 +31,7 @@ import { StabilityTestLab } from './StabilityTestLab';
 import { DriverHealthPanel } from './DriverHealthPanel';
 import { TDPBatteryEstimator } from './TDPBatteryEstimator';
 import { generateHardwareDiagnosticPDF } from '../utils/pdfExport';
+import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface SynergyLabProps {
   cpus: CPUItem[];
@@ -65,9 +66,10 @@ export const SynergyLab: React.FC<SynergyLabProps> = ({
     return cpus.find(c => c.id === selectedCpuId) || cpus[0];
   }, [cpus, selectedCpuId]);
 
-  const selectedGpu = useMemo(() => {
+  const selectedDiscreteGpu = useMemo(() => {
     return gpus.find(g => g.id === selectedGpuId) || gpus[0];
   }, [gpus, selectedGpuId]);
+  const { useIntegrated: useIgpu, setUseIntegrated: setUseIgpu, effectiveGpu: selectedGpu } = useIntegratedGraphics(selectedCpu, selectedDiscreteGpu);
 
   // Synergy Physics Output
   const synergy = useMemo(() => {
@@ -329,7 +331,7 @@ export const SynergyLab: React.FC<SynergyLabProps> = ({
               <Monitor className="w-3.5 h-3.5 text-purple-400" />
               Graphics Card (GPU) &bull; {selectedGpu.Era}
             </label>
-            <select
+            <select disabled={useIgpu}
               value={selectedGpuId}
               onChange={(e) => setSelectedGpuId(e.target.value)}
               className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-medium focus:border-purple-500 focus:outline-none"
@@ -340,6 +342,7 @@ export const SynergyLab: React.FC<SynergyLabProps> = ({
                 </option>
               ))}
             </select>
+            <IntegratedGraphicsToggle cpu={selectedCpu} checked={useIgpu} onChange={setUseIgpu} />
           </div>
 
           {/* Resolution Mode */}

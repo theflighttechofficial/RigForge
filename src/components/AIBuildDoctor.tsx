@@ -25,6 +25,9 @@ import {
   Info
 } from 'lucide-react';
 import { cpuDataset, gpuDataset } from '../data/hardwareData';
+import { buildIntegratedGpu } from '../utils/integratedGraphics';
+import { generateDeterministicReport } from '../utils/doctorReport';
+import { IntegratedGraphicsToggle } from './IntegratedGraphicsToggle';
 import { BuildDoctorReport, CPUItem, GPUItem } from '../types';
 
 interface AIBuildDoctorProps {
@@ -76,6 +79,13 @@ export const AIBuildDoctor: React.FC<AIBuildDoctorProps> = ({
   const [nlInput, setNlInput] = useState('Ryzen 5 3600 + RTX 4070 + 16GB RAM');
   const [selectedCpuName, setSelectedCpuName] = useState('AMD Ryzen 5 3600');
   const [selectedGpuName, setSelectedGpuName] = useState('NVIDIA GeForce RTX 4070 12GB');
+  const [useIgpu, setUseIgpu] = useState(false);
+  // Name of the CPU's integrated graphics, when it has one
+  const igpuFor = (cpuName: string) => {
+    const cpu = cpuDataset.find((c) => c.Model === cpuName);
+    return cpu ? buildIntegratedGpu(cpu)?.Model : undefined;
+  };
+  const gpuFor = (cpuName: string, gpuName: string, igpu = useIgpu) => (igpu && igpuFor(cpuName)) || gpuName;
   const [selectedRam, setSelectedRam] = useState('16GB');
 
   // Diagnostic state
@@ -84,171 +94,9 @@ export const AIBuildDoctor: React.FC<AIBuildDoctorProps> = ({
   const [report, setReport] = useState<BuildDoctorReport | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  // Client-side grounded deterministic generator (runs instantly or as bulletproof fallback)
-  const generateClientReport = (cpu: string, gpu: string, ram: string): BuildDoctorReport => {
-    const cpuLower = cpu.toLowerCase();
-    const gpuLower = gpu.toLowerCase();
-    const ramLower = ram.toLowerCase();
-
-    // 1. Platform Evaluation
-    let socket = 'AM4';
-    let platformStatusText = 'AM4 → upgrade path available';
-    let platformAnalysis =
-      'The AM4 platform offers a mature, drop-in upgrade path. Users can upgrade directly to 3D V-Cache architecture (5700X3D / 5800X3D) on existing B450/B550/X570 motherboards after a simple BIOS flash, bypassing the need for a costly DDR5 + AM5 motherboard overhaul.';
-    let maxCpu = 'Ryzen 7 5700X3D / 5800X3D';
-    let upgradePotential: 'high' | 'moderate' | 'dead_end' = 'high';
-
-    if (cpuLower.includes('am5') || cpuLower.includes('7600') || cpuLower.includes('7700') || cpuLower.includes('7800x3d') || cpuLower.includes('9600') || cpuLower.includes('9800x3d')) {
-      socket = 'AM5';
-      platformStatusText = 'AM5 → premier longevity platform';
-      platformAnalysis = 'Modern PCIe 5.0 and high-speed DDR5 memory architecture supported through 2027+. Supports drop-in Zen 5 and Zen 6 upgrades.';
-      maxCpu = 'Ryzen 7 9800X3D / 9950X3D';
-      upgradePotential = 'high';
-    } else if (cpuLower.includes('12400') || cpuLower.includes('12600') || cpuLower.includes('13400') || cpuLower.includes('13600') || cpuLower.includes('14600') || cpuLower.includes('14700') || cpuLower.includes('lga 1700')) {
-      socket = 'LGA 1700';
-      platformStatusText = 'LGA 1700 → mature platform, end of generational life';
-      platformAnalysis = 'Supports 12th–14th Gen Intel Core. Transitioning to newer architecture requires a new LGA 1851 motherboard.';
-      maxCpu = 'Core i7-13700K / 14700K';
-      upgradePotential = 'moderate';
-    } else if (cpuLower.includes('10400') || cpuLower.includes('10700') || cpuLower.includes('11400') || cpuLower.includes('11700') || cpuLower.includes('lga 1200')) {
-      socket = 'LGA 1200';
-      platformStatusText = 'LGA 1200 → legacy platform (dead-end)';
-      platformAnalysis = 'Limited to 11th Gen Rocket Lake. Higher memory latency and PCIe limits make future upgrades require a full platform migration.';
-      maxCpu = 'Core i7-11700K';
-      upgradePotential = 'dead_end';
-    } else if (cpuLower.includes('fx-8350') || cpuLower.includes('4790k') || cpuLower.includes('7700k')) {
-      socket = 'Legacy Platform';
-      platformStatusText = 'Legacy Socket → architectural bottleneck';
-      platformAnalysis = 'Severe instruction pipeline and PCIe bandwidth constraints. Modern GPUs are heavily starved of instructions.';
-      maxCpu = 'Requires full CPU+Motherboard+RAM rebuild';
-      upgradePotential = 'dead_end';
-    }
-
-    // 2. Memory Evaluation
-    let memoryStatusText = '16GB → potential limitation for modern AAA workloads';
-    let memorySeverity: 'optimal' | 'moderate' | 'critical' = 'moderate';
-    let memoryAnalysis =
-      '16GB was the golden standard for DDR4 gaming, but modern Unreal Engine 5 titles (Hogwarts Legacy, Cyberpunk 2077, Star Wars Jedi: Survivor) frequently consume 14GB–18GB of system RAM when combined with Discord, browser tabs, and background OS processes. Running in single-channel or encountering swap-file paging introduces severe 1% frametime micro-stutter.';
-    let memoryHitching = 'Moderate risk in 2024–2025 titles with ray tracing and background multitasking.';
-
-    if (ramLower.includes('8gb')) {
-      memoryStatusText = '8GB → critical system limitation';
-      memorySeverity = 'critical';
-      memoryAnalysis = '8GB is insufficient for modern computing. Windows reserves 3.5GB–4.5GB, forcing AAA game engines to thrash disk virtual memory.';
-      memoryHitching = 'Extreme micro-stutter and aggressive texture pop-in.';
-    } else if (ramLower.includes('32gb') || ramLower.includes('64gb')) {
-      memoryStatusText = `${ram.toUpperCase()} → optimal headroom for modern gaming & creator workloads`;
-      memorySeverity = 'optimal';
-      memoryAnalysis = 'Ample dual-channel buffer completely prevents OS swap file paging and accommodates high-resolution texture streaming with background applications open.';
-      memoryHitching = 'Near-zero memory-induced frame-time variance.';
-    }
-
-    // 3. CPU -> GPU Balance across resolutions
-    const isZen2OrOlder = cpuLower.includes('3600') || cpuLower.includes('2600') || cpuLower.includes('1600') || cpuLower.includes('10400') || cpuLower.includes('9400');
-    const isHighTierGpu = gpuLower.includes('4070') || gpuLower.includes('4080') || gpuLower.includes('4090') || gpuLower.includes('3080') || gpuLower.includes('7800 xt') || gpuLower.includes('7900');
-
-    let res1080pStatus: 'CPU constrained' | 'GPU dominant' | 'Balanced' = 'CPU constrained';
-    let res1440pStatus: 'CPU constrained' | 'GPU dominant' | 'Balanced' = 'GPU dominant';
-    let res4kStatus: 'CPU constrained' | 'GPU dominant' | 'Balanced' = 'GPU dominant';
-
-    let res1080pExp = 'At 1080p, graphical rasterization resolves so quickly that frame production is strictly constrained by processor single-thread instruction throughput and L3 cache access latency. The CPU cannot dispatch draw calls fast enough to saturate the GPU.';
-    let res1440pExp = 'At 1440p QHD, pixel fill-rate increases dramatically over 1080p. The workload shifts heavily onto GPU shader arrays and memory bandwidth, bringing GPU utilization to ~90%–96% with balanced frametimes.';
-    let res4kExp = 'At 3840x2160, the GPU renders over 8.29 million pixels per frame. Compute units, RT cores, and GDDR6X bandwidth are 98%–100% saturated. The CPU instruction queue has ample time to keep up.';
-
-    let cpu1080pLoad = 94;
-    let gpu1080pLoad = 62;
-    let cpu1440pLoad = 72;
-    let gpu1440pLoad = 94;
-    let cpu4kLoad = 48;
-    let gpu4kLoad = 99;
-
-    if (!isZen2OrOlder && isHighTierGpu) {
-      res1080pStatus = 'Balanced';
-      res1080pExp = 'High-IPC modern CPU architecture keeps pace with GPU draw call requests across high refresh rate esports workloads.';
-      cpu1080pLoad = 78;
-      gpu1080pLoad = 92;
-    }
-
-    // 4. Upgrade Sequence Formulation
-    const upgradeSequence = [
-      {
-        step: 1,
-        target: 'RAM → 32GB',
-        priority: 'Immediate' as const,
-        costINR: 3499,
-        rationale:
-          'Lowest cost upgrade with immediate stability impact. Dual-channel 2x16GB 3200/3600MHz DDR4 completely eradicates asset-streaming micro-stutter in open-world UE5 games and ensures 1% low frametimes remain smooth without OS page-file thrashing.'
-      },
-      {
-        step: 2,
-        target: socket === 'AM4' ? 'CPU → 5700X3D' : 'CPU → Modern Architectural Core',
-        priority: 'Secondary' as const,
-        costINR: socket === 'AM4' ? 18999 : 24999,
-        rationale: socket === 'AM4'
-          ? 'Massive 96MB 3D V-Cache slashes DRAM roundtrip latency by up to 60%. Eliminates the 1080p/1440p CPU bottleneck for the RTX 4070 without needing a new motherboard or DDR5 memory kit. Boosts competitive Esports 1% minimum FPS by ~40%–55%.'
-          : 'Upgrading the core processor elevates single-thread instruction dispatch and eliminates frame delivery bottlenecks for modern high-performance GPUs.'
-      },
-      {
-        step: 3,
-        target: 'GPU → keep current',
-        priority: 'Keep' as const,
-        costINR: 0,
-        rationale:
-          'The RTX 4070 / 4070 Super is a tier-leading 1440p and entry 4K GPU featuring 12GB high-speed VRAM, DLSS 3 Frame Generation, 3rd-Gen RT cores, and outstanding 200W efficiency. Replacing it is unnecessary; unlocking its full potential merely requires feeding it faster CPU draw calls and dual-channel RAM.'
-      }
-    ];
-
-    const detailedRationale = [
-      `Resolution Physics: At 1080p, the ${gpu} renders frames in under 4ms, but the ${cpu}'s Zen 2 IPC requires ~7ms to calculate game physics, AI pathfinding, and draw calls. This creates a ~35% frame delivery bottleneck. As resolution scales to 1440p and 4K, the GPU takes 8ms–16ms to shade pixels, making the GPU the natural and optimal limit.`,
-      `Memory Headroom Economics: Upgrading from 16GB to 32GB is the highest ROI fix in the build. At ~₹3,499 in the Indian retail market, it provides 100% capacity headroom, allowing Windows 11 caching and heavy titles (Cyberpunk 2077, Starfield, Flight Simulator) to run unconstrained without disk swap file hits.`,
-      `Platform Longevity on ${socket}: Upgrading to the AMD Ryzen 7 5700X3D allows the user to extract maximum life from the AM4 socket. You avoid spending ₹35,000+ on a new AM5 motherboard and DDR5 kit while achieving ~92% of the gaming performance of a Ryzen 7 7800X3D.`,
-      `GPU Retention Strategy: Keeping the ${gpu} preserves your capital. With 12GB GDDR6X and Ada Lovelace architecture, it has at least 3–4 years of high-fidelity AAA gaming headroom when properly paired with an X3D processor and 32GB RAM.`
-    ];
-
-    return {
-      timestamp: new Date().toISOString(),
-      config: { cpu, gpu, ram },
-      overallHealthScore: 74,
-      overallVerdict: 'Capable 1440p Rig with Moderate CPU Constraint at High Refresh Rates',
-      balance: {
-        res1080p: {
-          status: res1080pStatus,
-          explanation: res1080pExp,
-          cpuLoadEst: cpu1080pLoad,
-          gpuLoadEst: gpu1080pLoad
-        },
-        res1440p: {
-          status: res1440pStatus,
-          explanation: res1440pExp,
-          cpuLoadEst: cpu1440pLoad,
-          gpuLoadEst: gpu1440pLoad
-        },
-        res4k: {
-          status: res4kStatus,
-          explanation: res4kExp,
-          cpuLoadEst: cpu4kLoad,
-          gpuLoadEst: gpu4kLoad
-        }
-      },
-      memory: {
-        capacity: ram,
-        statusText: memoryStatusText,
-        severity: memorySeverity,
-        analysis: memoryAnalysis,
-        hitchingRisk: memoryHitching
-      },
-      platform: {
-        socket,
-        statusText: platformStatusText,
-        upgradePotential,
-        analysis: platformAnalysis,
-        maxRecommendedCpu: maxCpu
-      },
-      upgradeSequence,
-      detailedRationale,
-      aiGenerated: false
-    };
-  };
+  // Same catalog-driven generator the server uses, for when the API is unreachable
+  const generateClientReport = (cpu: string, gpu: string, ram: string): BuildDoctorReport =>
+    generateDeterministicReport(cpu, gpu, ram);
 
   // Natural Language Parser
   const parseNaturalLanguage = (text: string) => {
@@ -523,8 +371,11 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
               value={selectedCpuName}
               onChange={(e) => {
                 setSelectedCpuName(e.target.value);
-                setNlInput(`${e.target.value} + ${selectedGpuName} + ${selectedRam} RAM`);
-                runDiagnosis(e.target.value, selectedGpuName, selectedRam);
+                const keepIgpu = useIgpu && Boolean(igpuFor(e.target.value));
+                if (!keepIgpu) setUseIgpu(false);
+                const gpu = gpuFor(e.target.value, selectedGpuName, keepIgpu);
+                setNlInput(`${e.target.value} + ${gpu} + ${selectedRam} RAM`);
+                runDiagnosis(e.target.value, gpu, selectedRam);
               }}
               className="w-full px-3 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-200 text-sm focus:outline-none focus:border-cyan-500"
             >
@@ -543,6 +394,7 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
             </label>
             <select
               id="select-gpu-picker"
+              disabled={useIgpu}
               value={selectedGpuName}
               onChange={(e) => {
                 setSelectedGpuName(e.target.value);
@@ -557,6 +409,16 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                 </option>
               ))}
             </select>
+            <IntegratedGraphicsToggle
+              cpu={cpuDataset.find((c) => c.Model === selectedCpuName)}
+              checked={useIgpu}
+              onChange={(on) => {
+                setUseIgpu(on);
+                const gpu = gpuFor(selectedCpuName, selectedGpuName, on);
+                setNlInput(`${selectedCpuName} + ${gpu} + ${selectedRam} RAM`);
+                runDiagnosis(selectedCpuName, gpu, selectedRam);
+              }}
+            />
           </div>
 
           <div>
@@ -571,8 +433,8 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                   type="button"
                   onClick={() => {
                     setSelectedRam(ramOption);
-                    setNlInput(`${selectedCpuName} + ${selectedGpuName} + ${ramOption} RAM`);
-                    runDiagnosis(selectedCpuName, selectedGpuName, ramOption);
+                    setNlInput(`${selectedCpuName} + ${gpuFor(selectedCpuName, selectedGpuName)} + ${ramOption} RAM`);
+                    runDiagnosis(selectedCpuName, gpuFor(selectedCpuName, selectedGpuName), ramOption);
                   }}
                   className={`py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                     selectedRam === ramOption
@@ -853,11 +715,17 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                       </p>
                     </div>
 
-                    {step.target.includes('5700X3D') && onNavigateToBuilder && (
+                    {/^(CPU|GPU) → /.test(step.target) && step.priority !== 'Keep' && onNavigateToBuilder && (
                       <button
-                        onClick={() => onNavigateToBuilder('cpu-amd-5700x3d', 'gpu-nvidia-4070')}
+                        onClick={() => {
+                          // Load the recommended part into Rig Architect alongside the rest of the current build
+                          const name = step.target.replace(/^(CPU|GPU) → /, '');
+                          const cpuPick = step.target.startsWith('CPU') ? cpuDataset.find((c) => c.Model === name) : undefined;
+                          const gpuPick = step.target.startsWith('GPU') ? gpuDataset.find((g) => g.Model === name) : undefined;
+                          onNavigateToBuilder((cpuPick ?? matchedCpuItem).id, (gpuPick ?? matchedGpuItem).id);
+                        }}
                         className="w-full py-2 text-xs font-bold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-zinc-950 transition-colors flex items-center justify-center gap-1.5 cursor-pointer mt-auto"
-                        id="btn-apply-5700x3d-upgrade"
+                        id={`btn-apply-upgrade-${step.step}`}
                       >
                         <span>Configure in Rig Architect</span>
                         <ArrowRight className="w-3.5 h-3.5" />

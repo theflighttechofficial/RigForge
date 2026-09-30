@@ -13,18 +13,49 @@ export function buildIntegratedGpu(cpu: CPUItem): GPUItem | null {
   let tier = 30;
 
   if (cpu.Brand === 'Intel') {
-    if (arch.includes('arrow lake') || arch.includes('meteor lake') || arch.includes('lunar lake')) {
-      name = 'Intel Arc Graphics (iGPU)';
-      tier = 45;
-    } else if (arch.includes('alder lake') || arch.includes('raptor lake')) {
-      name = 'Intel UHD Graphics 770 (iGPU)';
+    const isLaptop = !cpu.Socket.startsWith('LGA');
+    if (arch.includes('arrow lake-s')) {
+      name = 'Intel Graphics 4 Xe-core (iGPU)';
       tier = 20;
-    } else {
+    } else if (arch.includes('arrow lake') || arch.includes('meteor lake') || arch.includes('lunar lake')) {
+      name = 'Intel Arc Graphics (iGPU)';
+      tier = 38;
+    } else if ((arch.includes('alder lake') || arch.includes('raptor lake')) && isLaptop && !arch.includes('-hx')) {
+      name = 'Intel Iris Xe Graphics 96EU (iGPU)';
+      tier = 18;
+    } else if (arch.includes('alder lake') || arch.includes('raptor lake')) {
+      // Desktop parts and HX laptops use the 32EU UHD block
+      name = isLaptop ? 'Intel UHD Graphics 32EU (iGPU)' : 'Intel UHD Graphics 770 (iGPU)';
+      tier = 12;
+    } else if (arch.includes('tiger lake') || arch.includes('ice lake')) {
       name = 'Intel Iris Xe Graphics (iGPU)';
-      tier = 28;
+      tier = 18;
+    } else if (arch.includes('rocket lake')) {
+      name = 'Intel UHD Graphics 750 (iGPU)';
+      tier = 9;
+    } else if (arch.includes('comet lake') || arch.includes('coffee lake') || arch.includes('kaby lake')) {
+      name = arch.includes('kaby lake') ? 'Intel HD Graphics 630 (iGPU)' : 'Intel UHD Graphics 630 (iGPU)';
+      tier = 6;
+    } else if (arch.includes('haswell')) {
+      name = 'Intel HD Graphics 4600 (iGPU)';
+      tier = 4;
+    } else if (arch.includes('sandy bridge') || arch.includes('ivy bridge')) {
+      name = arch.includes('ivy') ? 'Intel HD Graphics 4000 (iGPU)' : 'Intel HD Graphics 3000 (iGPU)';
+      tier = 2;
+    } else {
+      name = 'Intel HD / UHD Graphics (iGPU)';
+      tier = 10;
     }
   } else if (cpu.Brand === 'AMD') {
-    if (arch.includes('strix') || arch.includes('zen 5')) {
+    const isApu = /\d{4}G\b/i.test(cpu.Model) || /phoenix|hawk|strix|rembrandt|cezanne|renoir/.test(arch);
+    if (arch.includes('dragon range') || arch.includes('fire range')) {
+      name = 'AMD Radeon 610M (iGPU)';
+      tier = 10;
+    } else if (cpu.Socket === 'AM5' && !isApu) {
+      // Desktop Ryzen 7000/9000 (Raphael / Granite Ridge) carry only a 2-CU display iGPU
+      name = 'AMD Radeon Graphics 2CU (iGPU)';
+      tier = 10;
+    } else if (arch.includes('strix') || arch.includes('zen 5')) {
       name = 'AMD Radeon 890M (iGPU)';
       tier = 48;
     } else if (arch.includes('phoenix') || arch.includes('zen 4')) {
@@ -46,10 +77,11 @@ export function buildIntegratedGpu(cpu: CPUItem): GPUItem | null {
     Era: cpu.Era,
     Price_INR: 0,
     Price_USD: 0,
-    Benchmark_Score: tier * 400,
-    Gaming_Score: tier * 380,
-    RayTracing_Score: Math.round(tier * 120),
-    Compute_Score: tier * 350,
+    // Calibrated so a Radeon 780M (tier 40) lands near a GTX 1650 in the catalog
+    Benchmark_Score: tier * 200,
+    Gaming_Score: tier * 195,
+    RayTracing_Score: Math.round(tier * 60),
+    Compute_Score: tier * 180,
     VRAM_GB: 0,
     Memory_Type: 'Shared System RAM',
     Bus_Width_Bit: 128,

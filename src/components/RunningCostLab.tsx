@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Power
 } from 'lucide-react';
+import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface RunningCostLabProps {
   cpus: CPUItem[];
@@ -51,7 +52,8 @@ export const RunningCostLab: React.FC<RunningCostLabProps> = ({
   const [selectedUpsId, setSelectedUpsId] = useState<string>('ups-1100va');
 
   const selectedCpu = useMemo(() => cpus.find(c => c.id === cpuId) || cpus[0], [cpus, cpuId]);
-  const selectedGpu = useMemo(() => gpus.find(g => g.id === gpuId) || gpus[0], [gpus, gpuId]);
+  const selectedDiscreteGpu = useMemo(() => gpus.find(g => g.id === gpuId) || gpus[0], [gpus, gpuId]);
+  const { useIntegrated: useIgpu, setUseIntegrated: setUseIgpu, effectiveGpu: selectedGpu } = useIntegratedGraphics(selectedCpu, selectedDiscreteGpu);
 
   const powerMetrics = useMemo(() => {
     return calculateOperatingCost(
@@ -129,7 +131,7 @@ export const RunningCostLab: React.FC<RunningCostLabProps> = ({
             </span>
             <span className="text-purple-400 font-bold">{selectedGpu.TGP_Watts}W TGP</span>
           </label>
-          <select
+          <select disabled={useIgpu}
             value={gpuId}
             onChange={(e) => setGpuId(e.target.value)}
             className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:border-purple-500 focus:outline-none"
@@ -140,6 +142,7 @@ export const RunningCostLab: React.FC<RunningCostLabProps> = ({
               </option>
             ))}
           </select>
+          <IntegratedGraphicsToggle cpu={selectedCpu} checked={useIgpu} onChange={setUseIgpu} />
         </div>
 
         {/* Daily Usage Slider */}

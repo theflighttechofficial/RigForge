@@ -843,3 +843,119 @@ html.light [class*="bg-blue-500/20"] {
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(4px); }
 }
+
+select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Light mode: variants the base light sheet above does not cover
+   ========================================================================== */
+html.light .bg-zinc-950\/85,
+html.light .bg-zinc-950\/75,
+html.light .bg-zinc-950\/60,
+html.light .bg-zinc-950\/50,
+html.light .bg-zinc-950\/40 {
+  background-color: #ffffff !important;
+}
+
+/* Chips, meters and tracks */
+html.light .bg-zinc-850,
+html.light .bg-zinc-700,
+html.light .bg-zinc-700\/80,
+html.light .bg-zinc-600 {
+  background-color: #e2e8f0 !important;
+}
+
+html.light .bg-black\/85 {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  color: #0f172a !important;
+}
+html.light .bg-black\/60,
+html.light .bg-black\/50,
+html.light .bg-black\/40,
+html.light .bg-black\/20 {
+  background-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+html.light [class*="border-zinc-7"],
+html.light [class*="border-zinc-8"],
+html.light [class*="border-zinc-9"],
+html.light .border-zinc-600\/60,
+html.light .border-white\/15 {
+  border-color: #e2e8f0 !important;
+}
+html.light [class*="divide-zinc-"] > :not(:last-child) {
+  border-color: #e2e8f0 !important;
+}
+
+html.light [class*="placeholder-zinc-"]::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Hover surfaces that would turn dark on a light page */
+html.light .hover\:bg-zinc-950:hover,
+html.light .hover\:bg-zinc-950\/60:hover,
+html.light .hover\:bg-zinc-900:hover,
+html.light .hover\:bg-zinc-900\/90:hover,
+html.light .hover\:bg-zinc-900\/80:hover,
+html.light .hover\:bg-zinc-900\/60:hover,
+html.light .hover\:bg-zinc-800:hover,
+html.light .hover\:bg-zinc-800\/90:hover,
+html.light .hover\:bg-zinc-800\/80:hover,
+html.light .hover\:bg-zinc-800\/60:hover,
+html.light .hover\:bg-zinc-800\/50:hover,
+html.light .hover\:bg-zinc-800\/40:hover,
+html.light .hover\:bg-zinc-750:hover,
+html.light .hover\:bg-zinc-700:hover {
+  background-color: #f1f5f9 !important;
+}
+html.light .hover\:border-zinc-500:hover {
+  border-color: #94a3b8 !important;
+}
+
+/* Hover text that would vanish (white on white); coloured buttons keep their own colours */
+html.light .hover\:text-white:hover:not([class*="bg-cyan-6"]):not([class*="bg-blue-6"]):not([class*="bg-purple-6"]):not([class*="bg-emerald-6"]):not([class*="bg-rose-"]):not([class*="bg-violet-6"]),
+html.light .hover\:text-zinc-100:hover,
+html.light .hover\:text-zinc-200:hover,
+html.light .hover\:text-zinc-300:hover,
+html.light .group:hover .group-hover\:text-white,
+html.light .group:hover .group-hover\:text-zinc-200 {
+  color: #0f172a !important;
+}
+
+/* Light accents that the base sheet leaves at dark-mode brightness */
+html.light .text-orange-300, html.light .text-orange-400 { color: #c2410c !important; }
+html.light .text-pink-300, html.light .text-pink-400 { color: #be185d !important; }
+html.light .text-indigo-300, html.light .text-indigo-400 { color: #4338ca !important; }
+html.light .text-teal-300, html.light .text-teal-400 { color: #0f766e !important; }
+html.light .text-lime-300, html.light .text-lime-400 { color: #4d7c0f !important; }
+html.light .text-fuchsia-300, html.light .text-fuchsia-400 { color: #a21caf !important; }
+html.light .text-red-300 { color: #b91c1c !important; }
+html.light .text-green-300 { color: #15803d !important; }
+html.light .text-yellow-300 { color: #a16207 !important; }
+html.light .text-sky-300 { color: #0369a1 !important; }
+html.light .text-violet-300 { color: #6d28d9 !important; }
+
+/* Light mode: dark hue tints (bg-*-950 / bg-*-900) become pale tints of the same hue */
+html.light [class*="bg-cyan-950"]:not([class*="from-"]), html.light [class*="bg-cyan-900"]:not([class*="from-"]) { background-color: #ecfeff !important; }
+html.light [class*="bg-emerald-950"]:not([class*="from-"]), html.light [class*="bg-emerald-900"]:not([class*="from-"]) { background-color: #ecfdf5 !important; }
+html.light [class*="bg-amber-950"]:not([class*="from-"]), html.light [class*="bg-amber-900"]:not([class*="from-"]) { background-color: #fffbeb !important; }
+html.light [class*="bg-rose-950"]:not([class*="from-"]), html.light [class*="bg-rose-900"]:not([class*="from-"]) { background-color: #fff1f2 !important; }
+html.light [class*="bg-purple-950"]:not([class*="from-"]), html.light [class*="bg-purple-900"]:not([class*="from-"]) { background-color: #faf5ff !important; }
+html.light [class*="bg-violet-950"]:not([class*="from-"]), html.light [class*="bg-violet-900"]:not([class*="from-"]) { background-color: #f5f3ff !important; }
+html.light [class*="bg-sky-950"]:not([class*="from-"]), html.light [class*="bg-sky-900"]:not([class*="from-"]) { background-color: #f0f9ff !important; }
+html.light [class*="bg-blue-950"]:not([class*="from-"]), html.light [class*="bg-blue-900"]:not([class*="from-"]) { background-color: #eff6ff !important; }
+html.light [class*="bg-red-950"]:not([class*="from-"]), html.light [class*="bg-red-900"]:not([class*="from-"]) { background-color: #fef2f2 !important; }
+html.light [class*="bg-green-950"]:not([class*="from-"]), html.light [class*="bg-green-900"]:not([class*="from-"]) { background-color: #f0fdf4 !important; }
+html.light [class*="bg-yellow-950"]:not([class*="from-"]), html.light [class*="bg-yellow-900"]:not([class*="from-"]) { background-color: #fefce8 !important; }
+html.light [class*="bg-orange-950"]:not([class*="from-"]), html.light [class*="bg-orange-900"]:not([class*="from-"]) { background-color: #fff7ed !important; }
+html.light [class*="bg-indigo-950"]:not([class*="from-"]), html.light [class*="bg-indigo-900"]:not([class*="from-"]) { background-color: #eef2ff !important; }
+html.light [class*="bg-teal-950"]:not([class*="from-"]), html.light [class*="bg-teal-900"]:not([class*="from-"]) { background-color: #f0fdfa !important; }
+html.light [class*="bg-pink-950"]:not([class*="from-"]), html.light [class*="bg-pink-900"]:not([class*="from-"]) { background-color: #fdf2f8 !important; }
+html.light [class*="bg-fuchsia-950"]:not([class*="from-"]), html.light [class*="bg-fuchsia-900"]:not([class*="from-"]) { background-color: #fdf4ff !important; }
+html.light [class*="bg-lime-950"]:not([class*="from-"]), html.light [class*="bg-lime-900"]:not([class*="from-"]) { background-color: #f7fee7 !important; }
+
+/* Decorative blurred glow blobs: multiply so they tint the page without washing out text above them */
+html.light .pointer-events-none[class*="blur-"][class*="rounded-full"] { mix-blend-mode: multiply; }

@@ -12,7 +12,7 @@ const COOL = '#5CE1FF';
 const HEAT = '#FF8A3D';
 
 /**
- * Ported from silicon-os-intro.html. The intro plays a five-chapter cinematic
+ * Originally ported from a standalone HTML prototype. The intro plays a five-chapter cinematic
  * (power-on -> assembly -> thermal sim -> die map -> wordmark reveal), then
  * settles into a landing screen whose nav/CTA buttons route into the real app
  * via the onLaunch / onDirectLaunchWorkspace callbacks instead of `#` links.

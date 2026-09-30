@@ -18,6 +18,7 @@ import {
   HardDrive,
   Layers
 } from 'lucide-react';
+import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface UpgradeROIProps {
   cpus: CPUItem[];
@@ -36,10 +37,12 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
   const [resolution, setResolution] = useState<ResolutionMode>('1440p');
 
   const currentCpu = useMemo(() => cpus.find(c => c.id === currentCpuId) || cpus[0], [cpus, currentCpuId]);
-  const currentGpu = useMemo(() => gpus.find(g => g.id === currentGpuId) || gpus[0], [gpus, currentGpuId]);
+  const currentDiscreteGpu = useMemo(() => gpus.find(g => g.id === currentGpuId) || gpus[0], [gpus, currentGpuId]);
+  const { useIntegrated: currentIgpu, setUseIntegrated: setCurrentIgpu, effectiveGpu: currentGpu } = useIntegratedGraphics(currentCpu, currentDiscreteGpu);
 
   const targetCpu = useMemo(() => cpus.find(c => c.id === targetCpuId) || cpus[0], [cpus, targetCpuId]);
-  const targetGpu = useMemo(() => gpus.find(g => g.id === targetGpuId) || gpus[0], [gpus, targetGpuId]);
+  const targetDiscreteGpu = useMemo(() => gpus.find(g => g.id === targetGpuId) || gpus[0], [gpus, targetGpuId]);
+  const { useIntegrated: targetIgpu, setUseIntegrated: setTargetIgpu, effectiveGpu: targetGpu } = useIntegratedGraphics(targetCpu, targetDiscreteGpu);
 
   const roi = useMemo(() => {
     return calculateUpgradeROI(currentCpu, currentGpu, targetCpu, targetGpu, resolution);
@@ -178,7 +181,7 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
 
             <div>
               <label className="text-xs font-mono text-zinc-400 block mb-1">Current Graphics Card (GPU)</label>
-              <select
+              <select disabled={currentIgpu}
                 value={currentGpuId}
                 onChange={(e) => setCurrentGpuId(e.target.value)}
                 className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:border-purple-500 focus:outline-none"
@@ -189,6 +192,7 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
                   </option>
                 ))}
               </select>
+              <IntegratedGraphicsToggle cpu={currentCpu} checked={currentIgpu} onChange={setCurrentIgpu} />
             </div>
           </div>
 
@@ -229,7 +233,7 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
 
             <div>
               <label className="text-xs font-mono text-zinc-400 block mb-1">Proposed Graphics Card (GPU)</label>
-              <select
+              <select disabled={targetIgpu}
                 value={targetGpuId}
                 onChange={(e) => setTargetGpuId(e.target.value)}
                 className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
@@ -240,6 +244,7 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
                   </option>
                 ))}
               </select>
+              <IntegratedGraphicsToggle cpu={targetCpu} checked={targetIgpu} onChange={setTargetIgpu} />
             </div>
           </div>
 

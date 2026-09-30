@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Tv
 } from 'lucide-react';
+import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface LiveBenchmarkLabProps {
   cpus: CPUItem[];
@@ -132,7 +133,8 @@ export const LiveBenchmarkLab: React.FC<LiveBenchmarkLabProps> = ({
   const [copied, setCopied] = useState<boolean>(false);
 
   const selectedCpu = useMemo(() => cpus.find(c => c.id === selectedCpuId) || cpus[0], [cpus, selectedCpuId]);
-  const selectedGpu = useMemo(() => gpus.find(g => g.id === selectedGpuId) || gpus[0], [gpus, selectedGpuId]);
+  const selectedDiscreteGpu = useMemo(() => gpus.find(g => g.id === selectedGpuId) || gpus[0], [gpus, selectedGpuId]);
+  const { useIntegrated: useIgpu, setUseIntegrated: setUseIgpu, effectiveGpu: selectedGpu } = useIntegratedGraphics(selectedCpu, selectedDiscreteGpu);
   const isBlackwellGpu = useMemo(() => {
     return selectedGpu.Architecture.toLowerCase().includes('blackwell') ||
       selectedGpu.Model.includes('5090') ||
@@ -397,7 +399,7 @@ export const LiveBenchmarkLab: React.FC<LiveBenchmarkLabProps> = ({
             </span>
             <span className="text-purple-400 font-bold">{formatINR(selectedGpu.Price_INR)}</span>
           </label>
-          <select
+          <select disabled={useIgpu}
             value={selectedGpuId}
             onChange={(e) => setSelectedGpuId(e.target.value)}
             className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white font-medium focus:border-purple-500 focus:outline-none cursor-pointer"
@@ -408,6 +410,7 @@ export const LiveBenchmarkLab: React.FC<LiveBenchmarkLabProps> = ({
               </option>
             ))}
           </select>
+          <IntegratedGraphicsToggle cpu={selectedCpu} checked={useIgpu} onChange={setUseIgpu} />
         </div>
       </div>
 

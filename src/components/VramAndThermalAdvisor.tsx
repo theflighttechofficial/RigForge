@@ -18,7 +18,7 @@ import {
 interface VramAndThermalAdvisorProps {
   cpu: CPUItem;
   gpu: GPUItem;
-  cooler: 'Air Cooler' | '240mm AIO' | '360mm AIO';
+  cooler: 'Stock' | 'Tower Air' | 'Air Cooler' | '240mm AIO' | '360mm AIO';
   onUpgradeCooler?: (newCooler: '240mm AIO' | '360mm AIO') => void;
 }
 
@@ -38,6 +38,8 @@ export const VramAndThermalAdvisor: React.FC<VramAndThermalAdvisorProps> = ({
 
   // Cooler Heat Dissipation Capacity (Watts)
   const coolerDissipationRating: Record<typeof cooler, number> = {
+    Stock: 95,
+    'Tower Air': 200,
     'Air Cooler': 180,
     '240mm AIO': 250,
     '360mm AIO': 320
