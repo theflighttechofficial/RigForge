@@ -51,6 +51,16 @@ function detectOs(): AgentOs {
   return /mac/.test(p) ? 'mac' : /linux|x11|cros/.test(p) && !/android/.test(p) ? 'linux' : 'windows';
 }
 
+// Static hosts answer /api/* with index.html or an empty 404, which res.json() cannot parse
+async function readJson(res: Response): Promise<any> {
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`The scan API is not running on this host (HTTP ${res.status}). Deploy the Node server (server.ts), not only the static build.`);
+  }
+}
+
 const fmtGB = (gb: number) => (gb >= 1000 ? `${(gb / 1000).toFixed(2)} TB` : `${gb} GB`);
 
 const Card: React.FC<{ title: string; icon: React.FC<{ className?: string }>; children: React.ReactNode }> = ({ title, icon: Icon, children }) => (
@@ -97,7 +107,7 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
 
   const loadDb = useCallback(async () => {
     const dbRes = await fetch('/api/user-hardware-db');
-    if (dbRes.ok) setDb(await dbRes.json());
+    if (dbRes.ok) setDb(await readJson(dbRes).catch(() => []));
   }, []);
 
   // Runs only after the user grants permission
@@ -109,12 +119,12 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
     setReport(null);
     try {
       const sessionRes = await fetch('/api/system-specs/session', { method: 'POST' });
-      const session = await sessionRes.json();
+      const session = await readJson(sessionRes);
       if (!sessionRes.ok) throw new Error(session.error || `Could not start scan (${sessionRes.status})`);
       if (session.local) {
         // Site runs on this PC, so the server can read the hardware directly
         const res = await fetch('/api/system-specs');
-        const body = await res.json();
+        const body = await readJson(res);
         if (!res.ok) throw new Error(body.error || `Scan failed (${res.status})`);
         setReport(body);
         setScanning(false);
@@ -134,7 +144,7 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
     const timer = setInterval(async () => {
       try {
         const res = await fetch(`/api/system-specs/session/${agent.token}`);
-        const body = await res.json();
+        const body = await readJson(res);
         if (!res.ok) throw new Error(body.error);
         if (body.status === 'complete') {
           clearInterval(timer);

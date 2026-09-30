@@ -1,5 +1,6 @@
 import crypto from 'crypto';
-import { cpuDataset, gpuDataset } from './src/data/hardwareData';
+import { getSessionValue, setSessionValue } from './store.js';
+import { cpuDataset, gpuDataset } from './src/data/hardwareData.js';
 import {
   classifyGpu,
   DetectedCpu,
@@ -12,7 +13,7 @@ import {
   registerUnknowns,
   SystemSpecsReport,
   toGB
-} from './systemSpecs';
+} from './systemSpecs.js';
 
 // Browsers cannot read hardware, so a hosted site asks the visitor for consent and then has
 // them run a small read-only agent script on their own PC. The agent posts its findings back
@@ -43,7 +44,7 @@ const ramVendor = (raw: string) => {
 // MSFT_PhysicalDisk.BusType
 const BUS_TYPE: Record<number, string> = { 3: 'ATA', 7: 'USB', 8: 'RAID', 11: 'SATA', 12: 'SD', 17: 'NVMe' };
 
-export function reportFromAgent(raw: any): SystemSpecsReport {
+export async function reportFromAgent(raw: any): Promise<SystemSpecsReport> {
   const c = raw?.cpu || {};
   const cpuModel = str(c.name).replace(/\s+/g, ' ');
   const maxGHz = Math.round(num(c.maxMHz) / 10) / 100;
@@ -153,7 +154,7 @@ export function reportFromAgent(raw: any): SystemSpecsReport {
     network,
     newlyRegistered: []
   };
-  report.newlyRegistered = registerUnknowns(report);
+  report.newlyRegistered = await registerUnknowns(report);
   return report;
 }
 
@@ -162,24 +163,23 @@ interface ScanSession {
   report: SystemSpecsReport | null;
 }
 
-const sessions = new Map<string, ScanSession>();
-const SESSION_TTL_MS = 15 * 60 * 1000;
+const SESSION_TTL_SECONDS = 15 * 60;
 
-export function createScanSession(): string {
-  const now = Date.now();
-  for (const [token, s] of sessions) if (now - s.createdAt > SESSION_TTL_MS) sessions.delete(token);
+export async function createScanSession(): Promise<string> {
   const token = crypto.randomBytes(16).toString('hex');
-  sessions.set(token, { createdAt: now, report: null });
+  await setSessionValue(token, { createdAt: Date.now(), report: null } satisfies ScanSession, SESSION_TTL_SECONDS);
   return token;
 }
 
-export function getScanSession(token: string): ScanSession | undefined {
-  const s = sessions.get(token);
-  if (s && Date.now() - s.createdAt > SESSION_TTL_MS) {
-    sessions.delete(token);
-    return undefined;
-  }
-  return s;
+export async function getScanSession(token: string): Promise<ScanSession | null> {
+  if (!/^[0-9a-f]{32}$/.test(token)) return null;
+  return getSessionValue<ScanSession>(token);
+}
+
+// Keeps the original expiry so a finished session still disappears 15 minutes after it started
+export async function completeScanSession(token: string, session: ScanSession, report: SystemSpecsReport): Promise<void> {
+  const remaining = Math.max(60, SESSION_TTL_SECONDS - Math.floor((Date.now() - session.createdAt) / 1000));
+  await setSessionValue(token, { ...session, report }, remaining);
 }
 
 export function windowsAgentScript(origin: string, token: string): string {

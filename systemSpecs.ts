@@ -1,7 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-import si from 'systeminformation';
-import { cpuDataset, gpuDataset } from './src/data/hardwareData';
+import { cpuDataset, gpuDataset } from './src/data/hardwareData.js';
+import { loadDbEntries, saveDbEntries } from './store.js';
 
 export type SpecCategory = 'CPU' | 'GPU' | 'RAM' | 'Storage' | 'Network';
 
@@ -92,19 +90,8 @@ export interface UserHardwareEntry {
   timesSeen: number;
 }
 
-const DB_PATH = path.join(process.cwd(), 'data', 'user-hardware-db.json');
-
-export function readUserHardwareDb(): UserHardwareEntry[] {
-  try {
-    return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-  } catch {
-    return [];
-  }
-}
-
-function writeUserHardwareDb(entries: UserHardwareEntry[]) {
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  fs.writeFileSync(DB_PATH, JSON.stringify(entries, null, 2));
+export function readUserHardwareDb(): Promise<UserHardwareEntry[]> {
+  return loadDbEntries<UserHardwareEntry>();
 }
 
 export const toGB = (bytes: number) => Math.round((bytes / 1024 ** 3) * 10) / 10;
@@ -147,23 +134,31 @@ export function classifyGpu(vendor: string, model: string, vramMB: number | null
   return 'Unknown';
 }
 
-function upsertEntries(found: Omit<UserHardwareEntry, 'firstSeen' | 'lastSeen' | 'timesSeen'>[]): UserHardwareEntry[] {
-  const db = readUserHardwareDb();
+async function upsertEntries(found: Omit<UserHardwareEntry, 'firstSeen' | 'lastSeen' | 'timesSeen'>[]): Promise<UserHardwareEntry[]> {
+  const db = await readUserHardwareDb();
   const now = new Date().toISOString();
   const added: UserHardwareEntry[] = [];
+  const changed = new Map<string, UserHardwareEntry>();
   for (const f of found) {
     const existing = db.find((e) => e.id === f.id);
     if (existing) {
       existing.lastSeen = now;
       existing.timesSeen += 1;
       existing.specs = { ...existing.specs, ...f.specs };
+      changed.set(existing.id, existing);
     } else {
       const entry = { ...f, firstSeen: now, lastSeen: now, timesSeen: 1 };
       db.push(entry);
       added.push(entry);
+      changed.set(entry.id, entry);
     }
   }
-  writeUserHardwareDb(db);
+  // A storage failure must not break the scan itself
+  try {
+    await saveDbEntries([...changed.values()], db);
+  } catch (err: any) {
+    console.warn('Could not save user hardware database:', err?.message || err);
+  }
   return added;
 }
 
@@ -171,6 +166,8 @@ const slug = (category: SpecCategory, model: string) =>
   `user-${category.toLowerCase()}-${normalize(model).replace(/ /g, '-') || 'unknown'}`;
 
 export async function scanSystemSpecs(): Promise<SystemSpecsReport> {
+  // Loaded lazily: only the local (same-PC) scan needs it, not the serverless API
+  const si = (await import('systeminformation')).default;
   const [system, osInfo, cpu, mem, memLayout, disks, graphics, netIfaces, wifiIfaces, wifiConns] = await Promise.all([
     si.system(),
     si.osInfo(),
@@ -294,12 +291,12 @@ export async function scanSystemSpecs(): Promise<SystemSpecsReport> {
     network,
     newlyRegistered: []
   };
-  report.newlyRegistered = registerUnknowns(report);
+  report.newlyRegistered = await registerUnknowns(report);
   return report;
 }
 
 // Add every CPU/GPU the catalog lacks, plus RAM, drives and Wi-Fi adapters (the catalog has none of those)
-export function registerUnknowns(report: SystemSpecsReport): UserHardwareEntry[] {
+export function registerUnknowns(report: SystemSpecsReport): Promise<UserHardwareEntry[]> {
   const { cpu: detectedCpu, gpus, storage, network } = report;
   const modules = report.ram.modules;
   const toRegister: Omit<UserHardwareEntry, 'firstSeen' | 'lastSeen' | 'timesSeen'>[] = [];
