@@ -23,7 +23,7 @@ import {
   Thermometer,
   Gauge,
   Activity
-} from 'lucide-react';
+} from './icons';
 
 interface ComponentSection {
   id: string;
@@ -81,7 +81,7 @@ const PC_COMPONENTS_DATA: ComponentSection[] = [
       engineeringTradeoffs: 'Higher clock speeds and core counts demand exponentially more voltage ($V^2 \\times f$), creating extreme heat densities that require high-performance thermal throttling mechanisms ($T_j \\text{ Max}$ at 95°C-100°C).'
     },
     buyingTraps: [
-      'Buying an expensive high-end CPU but pairing it with a cheap GPU for gaming — you will be GPU bottlenecked at 1440p and 4K.',
+      'Buying an expensive high-end CPU but pairing it with a cheap GPU for gaming, you will be GPU bottlenecked at 1440p and 4K.',
       'Buying a power-hungry 200W+ CPU without buying a capable cooler or putting it on an uncooled budget motherboard that throttles its VRMs.',
       'Assuming more cores automatically means faster gaming. Single-core speed and L3 cache often matter much more than having 24 cores in games.'
     ],
@@ -121,7 +121,7 @@ const PC_COMPONENTS_DATA: ComponentSection[] = [
     },
     buyingTraps: [
       'Buying an 8GB VRAM card for high-end 1440p or 4K gaming in 2024–2026. High-res textures will overflow system RAM, causing stuttering.',
-      'Not checking physical card length against your cabinet — modern 3-fan GPUs can be 300mm–340mm long and won’t fit in budget cases.',
+      'Not checking physical card length against your cabinet, modern 3-fan GPUs can be 300mm–340mm long and won’t fit in budget cases.',
       'Buying a monster GPU without checking if your power supply has the necessary PCIe 8-pin or ATX 3.0 12V-2x6 connectors.'
     ],
     proTips: [
@@ -161,11 +161,11 @@ const PC_COMPONENTS_DATA: ComponentSection[] = [
     buyingTraps: [
       'Buying an entry-level motherboard without VRM heatsinks (bare MOSFET chips) for a 150W+ CPU. The VRMs will hit 110°C and throttle CPU performance.',
       'Buying an Intel motherboard for an AMD CPU or vice-versa. CPU sockets are completely proprietary and physically incompatible.',
-      'Buying a Mini-ITX motherboard unless you are intentionally building a shoebox PC — Mini-ITX carries a steep price premium and has only 2 RAM slots.'
+      'Buying a Mini-ITX motherboard unless you are intentionally building a shoebox PC, Mini-ITX carries a steep price premium and has only 2 RAM slots.'
     ],
     proTips: [
       'A quality B-series chipset (AMD B650 or Intel B760) gives 95% of users identical gaming performance to high-end X670 or Z790 boards at half the price.',
-      'Look for boards with a "BIOS Flashback" physical button on the rear I/O shield — it allows updating BIOS using a USB drive without needing a working CPU installed.'
+      'Look for boards with a "BIOS Flashback" physical button on the rear I/O shield, it allows updating BIOS using a USB drive without needing a working CPU installed.'
     ]
   },
   {
@@ -199,7 +199,7 @@ const PC_COMPONENTS_DATA: ComponentSection[] = [
     },
     buyingTraps: [
       'Using a single stick of RAM (single-channel mode). This cuts memory bandwidth in half and can penalize 1% low gaming FPS by 20% to 35%!',
-      'Buying high-speed RAM and forgetting to enable XMP or EXPO in the BIOS — it will run at slow default base speeds (e.g. 4800 MT/s instead of 6000 MT/s).',
+      'Buying high-speed RAM and forgetting to enable XMP or EXPO in the BIOS, it will run at slow default base speeds (e.g. 4800 MT/s instead of 6000 MT/s).',
       'Buying giant tall RGB RAM heatspreaders that collide with your CPU air cooler tower.'
     ],
     proTips: [
@@ -220,7 +220,7 @@ const PC_COMPONENTS_DATA: ComponentSection[] = [
       analogy: 'If RAM is your desk surface, the SSD is your ultra-fast electronic filing cabinet. An old mechanical hard drive (HDD) was like having a filing clerk who had to walk across the warehouse on foot.',
       whatItDoes: 'Boots Windows in 6 to 10 seconds, loads modern open-world games almost instantaneously, and allows smooth file transfers without stuttering.',
       keySpecsToLookFor: [
-        'Form Factor: M.2 NVMe (looks like a stick of chewing gum that screws directly into the motherboard — zero cables!).',
+        'Form Factor: M.2 NVMe (looks like a stick of chewing gum that screws directly into the motherboard, zero cables!).',
         'PCIe Generation: Gen 3 (~3,500 MB/s), Gen 4 (~7,000 MB/s, standard today), Gen 5 (up to 14,000 MB/s, runs very hot).',
         'DRAM Cache vs HMB: SSDs with dedicated onboard DRAM or Host Memory Buffer maintain fast write speeds when moving large multi-gigabyte files.'
       ],
@@ -277,12 +277,12 @@ const PC_COMPONENTS_DATA: ComponentSection[] = [
     },
     buyingTraps: [
       'NEVER buy a cheap, unbranded, or generic power supply (e.g. "free PSU included with ₹1,200 case"). When cheap PSUs fail, they frequently take out the motherboard and GPU with them.',
-      'NEVER mix and match modular cables between different PSU brands or models — pinouts at the power supply side are NOT standardized and will fry your drives!',
+      'NEVER mix and match modular cables between different PSU brands or models, pinouts at the power supply side are NOT standardized and will fry your drives!',
       'Under-sizing your PSU for high-end GPUs like the RTX 4080/5080 or RX 7900 XTX that produce sudden transient micro-spikes.'
     ],
     proTips: [
-      'Always aim for a PSU where your estimated system load sits between 50% and 75% of the rated capacity — this is the efficiency and fan-silence sweet spot.',
-      'Check the independent Cultists Network PSU Tier List — aim for Tier A or Tier B for any build with a dedicated graphics card.'
+      'Always aim for a PSU where your estimated system load sits between 50% and 75% of the rated capacity, this is the efficiency and fan-silence sweet spot.',
+      'Check the independent Cultists Network PSU Tier List, aim for Tier A or Tier B for any build with a dedicated graphics card.'
     ]
   },
   {
@@ -359,7 +359,7 @@ const PC_COMPONENTS_DATA: ComponentSection[] = [
       'Buying a case without removable dust filters in dusty room environments.'
     ],
     proTips: [
-      'Always check if the case includes a built-in GPU anti-sag support bracket — modern 3-fan graphics cards will bend your PCIe slot over time without one.',
+      'Always check if the case includes a built-in GPU anti-sag support bracket, modern 3-fan graphics cards will bend your PCIe slot over time without one.',
       'A case with a rubber grommet cable management track behind the motherboard tray makes building 10x easier and keeps airflow paths clean.'
     ]
   }

@@ -106,7 +106,7 @@ export interface SystemBuild {
   coolerType: 'Stock' | 'Tower Air' | '240mm AIO' | '360mm AIO';
 }
 
-export type ActiveTab = 'intro' | 'digitaltwin' | 'doctor' | 'matrix' | 'compare' | 'synergy' | 'storagelab' | 'ramlab' | 'costoptimizer' | 'challengemode' | 'community' | 'troubleshoot' | 'builder' | 'spatial3d' | 'battlestation' | 'anatomy' | 'benchmarks' | 'roi' | 'cost' | 'catalog' | 'myspecs';
+export type ActiveTab = 'intro' | 'digitaltwin' | 'doctor' | 'matrix' | 'compare' | 'synergy' | 'storagelab' | 'ramlab' | 'costoptimizer' | 'challengemode' | 'community' | 'troubleshoot' | 'builder' | 'spatial3d' | 'battlestation' | 'anatomy' | 'benchmarks' | 'roi' | 'cost' | 'catalog' | 'myspecs' | 'terms' | 'privacy' | 'contact' | 'thanks' | 'notfound';
 
 export interface ComponentRecord {
   model: string;

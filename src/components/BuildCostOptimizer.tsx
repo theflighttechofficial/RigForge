@@ -29,7 +29,7 @@ import {
   Wrench,
   SlidersHorizontal,
   Info
-} from 'lucide-react';
+} from './icons';
 
 interface BuildCostOptimizerProps {
   cpus: CPUItem[];

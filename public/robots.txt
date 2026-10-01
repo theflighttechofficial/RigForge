@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+# API routes and one-time scan scripts are not pages
+Disallow: /api/
+
+Sitemap: https://rigforge-livid.vercel.app/sitemap.xml

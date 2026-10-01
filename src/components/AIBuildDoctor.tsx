@@ -23,11 +23,13 @@ import {
   Sliders,
   ChevronRight,
   Info
-} from 'lucide-react';
+} from './icons';
 import { cpuDataset, gpuDataset } from '../data/hardwareData';
 import { buildIntegratedGpu } from '../utils/integratedGraphics';
 import { generateDeterministicReport } from '../utils/doctorReport';
 import { IntegratedGraphicsToggle } from './IntegratedGraphicsToggle';
+import { SkeletonBlock } from './Skeleton';
+import { FieldError, errorBorder } from './FieldError';
 import { BuildDoctorReport, CPUItem, GPUItem } from '../types';
 
 interface AIBuildDoctorProps {
@@ -93,6 +95,7 @@ export const AIBuildDoctor: React.FC<AIBuildDoctorProps> = ({
   const [copied, setCopied] = useState(false);
   const [report, setReport] = useState<BuildDoctorReport | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [nlError, setNlError] = useState<string | undefined>();
 
   // Same catalog-driven generator the server uses, for when the API is unreachable
   const generateClientReport = (cpu: string, gpu: string, ram: string): BuildDoctorReport =>
@@ -196,7 +199,16 @@ export const AIBuildDoctor: React.FC<AIBuildDoctorProps> = ({
 
   const handleNaturalLanguageSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = parseNaturalLanguage(nlInput);
+    const text = nlInput.trim();
+    if (!text) return setNlError('Type a build, for example "Ryzen 5 3600 + RTX 4070 + 16GB RAM".');
+    // At least one model number has to match the catalog, otherwise the old selection would be diagnosed silently
+    const modelTokens = new Set(
+      [...cpuDataset, ...gpuDataset].flatMap((i) => i.Model.toLowerCase().split(/[^a-z0-9]+/).filter((t) => /\d/.test(t) && t.length > 2))
+    );
+    const recognised = text.toLowerCase().split(/[^a-z0-9]+/).some((t) => modelTokens.has(t));
+    if (!recognised) return setNlError('No CPU or GPU model was recognised. Include a model number such as 7800X3D, 13600K or 4070.');
+    setNlError(undefined);
+    const parsed = parseNaturalLanguage(text);
     runDiagnosis(parsed.cpu, parsed.gpu, parsed.ram);
   };
 
@@ -268,7 +280,7 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
               </span>
             </h1>
             <p className="text-sm md:text-base text-zinc-400 max-w-2xl">
-              Beyond simple bottleneck percentages. Get an in-depth, resolution-aware Build Health Report with platform longevity analysis, memory paging impact, and prioritized upgrade paths with explicit engineering rationales.
+              Enter a CPU, GPU and memory size. You get how the pair behaves at 1080p, 1440p and 4K, whether your memory is enough, where your platform can go next, and which upgrade to buy first.
             </p>
           </div>
 
@@ -302,16 +314,22 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
           <label htmlFor="nl-query-input" className="block text-xs font-bold uppercase tracking-wider text-zinc-400">
             Natural Language Rig Input
           </label>
-          <form onSubmit={handleNaturalLanguageSubmit} className="flex flex-col sm:flex-row gap-3">
+          <form onSubmit={handleNaturalLanguageSubmit} noValidate className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <input
                 id="nl-query-input"
                 type="text"
                 value={nlInput}
-                onChange={(e) => setNlInput(e.target.value)}
+                onChange={(e) => {
+                  setNlInput(e.target.value);
+                  setNlError(undefined);
+                }}
+                aria-invalid={Boolean(nlError)}
+                aria-describedby={nlError ? 'nl-query-error' : undefined}
                 placeholder="e.g. Ryzen 5 3600 + RTX 4070 + 16GB RAM"
-                className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-cyan-500 text-sm md:text-base transition-colors"
+                className={`w-full px-4 py-3 bg-zinc-950 border rounded-xl text-zinc-100 placeholder-zinc-500 focus:outline-none text-sm md:text-base transition-colors ${errorBorder(Boolean(nlError))}`}
               />
+              <div className="mt-1.5"><FieldError id="nl-query-error" message={nlError} /></div>
             </div>
             <button
               type="submit"
@@ -451,18 +469,24 @@ ${report.detailedRationale.map((r, i) => `${i + 1}. ${r}`).join('\n')}
         </div>
       </div>
 
-      {/* Loading Scanning Telemetry */}
+      {/* Report skeleton while the diagnosis runs */}
       {isScanning && (
-        <div className="bg-zinc-900/90 rounded-2xl border border-cyan-500/40 p-8 text-center space-y-4 shadow-lg shadow-cyan-500/5 animate-pulse">
-          <div className="inline-flex p-3 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-            <Activity className="w-8 h-8 animate-spin" />
+        <div className="space-y-4" role="status" aria-label="Running diagnosis">
+          <div className="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)]">
+            <SkeletonBlock className="h-40" />
+            <div className="space-y-3">
+              <SkeletonBlock className="h-6 w-2/3" />
+              <SkeletonBlock className="h-4 w-full" />
+              <SkeletonBlock className="h-4 w-5/6" />
+              <SkeletonBlock className="h-20" />
+            </div>
           </div>
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold text-white">Running Silicon Diagnostic Scans...</h2>
-            <p className="text-sm text-zinc-400">
-              Evaluating instruction dispatch queue, 1080p/1440p/4K raster loads, memory paging risk, and socket upgrade paths.
-            </p>
+          <div className="grid gap-4 md:grid-cols-3">
+            <SkeletonBlock className="h-36" />
+            <SkeletonBlock className="h-36" />
+            <SkeletonBlock className="h-36" />
           </div>
+          <span className="sr-only">Running diagnosis</span>
         </div>
       )}
 

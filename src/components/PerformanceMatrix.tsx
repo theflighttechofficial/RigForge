@@ -18,7 +18,7 @@ import {
   calculateParetoCurve
 } from '../utils/formatters';
 import { evaluateUsedMarketPrice, UsedMarketValuation } from '../utils/usedMarketPricing';
-import { Sliders, RotateCcw, IndianRupee, Target, Layers, Award, Zap, Leaf, Info, GitCompare, GitMerge, ShoppingBag, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Sliders, RotateCcw, IndianRupee, Target, Layers, Award, Zap, Leaf, Info, GitCompare, GitMerge, ShoppingBag, ShieldAlert, CheckCircle2 } from './icons';
 
 Chart.register(...registerables);
 
@@ -295,14 +295,14 @@ export const PerformanceMatrix: React.FC<PerformanceMatrixProps> = ({
             },
             ticks: {
               color: '#71717a',
-              font: { family: 'JetBrains Mono', size: 11 },
+              font: { family: 'IBM Plex Mono', size: 11 },
               callback: (val) => formatINR(Number(val))
             },
             title: {
               display: true,
               text: 'Market Price in INR (₹)',
               color: '#a1a1aa',
-              font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }
+              font: { family: 'IBM Plex Mono', size: 12, weight: 'bold' }
             }
           },
           y: {
@@ -312,14 +312,14 @@ export const PerformanceMatrix: React.FC<PerformanceMatrixProps> = ({
             },
             ticks: {
               color: '#71717a',
-              font: { family: 'JetBrains Mono', size: 11 },
+              font: { family: 'IBM Plex Mono', size: 11 },
               callback: (val) => formatScore(Number(val))
             },
             title: {
               display: true,
               text: `${workload === 'gaming' ? 'Gaming Index' : workload === 'productivity' ? 'Multi-Core / Compute Score' : 'Composite Benchmark Score'}`,
               color: '#a1a1aa',
-              font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }
+              font: { family: 'IBM Plex Mono', size: 12, weight: 'bold' }
             }
           }
         }

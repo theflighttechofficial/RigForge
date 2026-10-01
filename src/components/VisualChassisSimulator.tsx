@@ -16,7 +16,7 @@ import {
   Maximize2,
   Compass,
   Palette
-} from 'lucide-react';
+} from './icons';
 
 interface VisualChassisSimulatorProps {
   cpu: CPUItem;

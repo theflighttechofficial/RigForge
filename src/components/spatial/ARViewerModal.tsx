@@ -20,7 +20,7 @@ import {
   RotateCw,
   Compass,
   ArrowUp
-} from 'lucide-react';
+} from '../icons';
 import { CPUItem, GPUItem } from '../../types';
 
 export interface ARViewerModalProps {
@@ -662,7 +662,7 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
                 }`}
                 title="Reset to 100% True 1:1 Scale"
               >
-                {Math.round(scaleFactor * 100)}% {scaleFactor === 1.0 && '✓'}
+                {Math.round(scaleFactor * 100)}%
               </button>
             </div>
 

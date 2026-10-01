@@ -15,7 +15,7 @@ import {
   Layers,
   Sparkles,
   Volume2
-} from 'lucide-react';
+} from '../icons';
 
 export type CoolingArchitecture = 'aio-top' | 'aio-front' | 'custom-loop' | 'air-tower';
 

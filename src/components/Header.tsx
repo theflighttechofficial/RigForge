@@ -11,7 +11,6 @@ import {
   TrendingUp,
   Zap,
   Sparkles,
-  Activity,
   Gauge,
   Sun,
   Moon,
@@ -28,7 +27,7 @@ import {
   Trophy,
   Users,
   ScanLine
-} from 'lucide-react';
+} from './icons';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -37,7 +36,6 @@ interface HeaderProps {
   setCategory: (cat: ComponentCategory) => void;
   cpuCount: number;
   gpuCount: number;
-  onRunDiagnostics?: () => void;
   onOpenSearch?: () => void;
   theme?: 'dark' | 'light';
   onToggleTheme?: () => void;
@@ -55,7 +53,7 @@ const navTabs: { id: ActiveTab; label: string; shortLabel: string; icon: React.F
   { id: 'ramlab', label: 'RAM Config Lab', shortLabel: 'RAM Lab', icon: Cpu, color: 'text-cyan-400' },
   { id: 'costoptimizer', label: 'Build Cost Optimizer', shortLabel: 'Cost Optimizer', icon: Calculator, color: 'text-emerald-400' },
   { id: 'challengemode', label: 'PC Build Challenge', shortLabel: 'Challenge', icon: Trophy, color: 'text-amber-400' },
-  { id: 'community', label: 'Community Build Gallery', shortLabel: 'Community', icon: Users, color: 'text-cyan-400' },
+  { id: 'community', label: 'Build Gallery', shortLabel: 'Gallery', icon: Users, color: 'text-cyan-400' },
   { id: 'troubleshoot', label: 'Troubleshooting Wizard', shortLabel: 'Troubleshoot', icon: Stethoscope, color: 'text-rose-400' },
   { id: 'builder', label: 'Rig Architect', shortLabel: 'Architect', icon: Wrench, color: 'text-blue-400' },
   { id: 'spatial3d', label: '3D Hardware Simulators & AR', shortLabel: 'Simulators', icon: Box, color: 'text-cyan-400' },
@@ -79,7 +77,6 @@ export const Header: React.FC<HeaderProps> = ({
   setCategory,
   cpuCount,
   gpuCount,
-  onRunDiagnostics,
   onOpenSearch,
   theme = 'dark',
   onToggleTheme
@@ -182,13 +179,8 @@ export const Header: React.FC<HeaderProps> = ({
                     isLight ? 'text-slate-500' : 'text-zinc-400'
                   }`}
                 >
-                  <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    ONLINE
-                  </span>
-                  <span className={isLight ? 'text-slate-300' : 'text-zinc-700'}>&bull;</span>
-                  <span className={isLight ? 'text-emerald-700 font-semibold' : 'text-emerald-400 font-semibold'}>
-                    INR (₹) Retail Engine
+                  <span className={isLight ? 'text-slate-600 font-semibold' : 'text-zinc-400 font-semibold'}>
+                    PC hardware planner &bull; prices in INR
                   </span>
                 </div>
               </div>
@@ -260,7 +252,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <Cpu className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">CPUs</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                  className={`hidden sm:inline text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                     category === 'CPU'
                       ? 'bg-cyan-950/40 text-zinc-950 font-extrabold'
                       : isLight
@@ -287,7 +279,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <Monitor className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">GPUs</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                  className={`hidden sm:inline text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                     category === 'GPU'
                       ? 'bg-purple-950/40 text-white font-extrabold'
                       : isLight
@@ -299,22 +291,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </button>
             </div>
-
-            {/* Quick Diagnostic Calibration Button */}
-            {onRunDiagnostics && (
-              <button
-                onClick={onRunDiagnostics}
-                className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono transition-all cursor-pointer shadow-sm ${
-                  isLight
-                    ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700 hover:text-cyan-700'
-                    : 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 hover:border-cyan-500/50 text-zinc-300 hover:text-cyan-300'
-                }`}
-                title="Re-run Silicon Hardware Diagnostic Calibration"
-              >
-                <Activity className={`w-3.5 h-3.5 animate-pulse ${isLight ? 'text-cyan-600' : 'text-cyan-400'}`} />
-                <span>Diagnostics</span>
-              </button>
-            )}
 
             {/* Global High-Contrast / Light Theme Toggle Button */}
             {onToggleTheme && (
@@ -375,12 +351,12 @@ export const Header: React.FC<HeaderProps> = ({
               {showMoreHint && !moreOpen && (
                 <span
                   aria-hidden
-                  className={`hidden md:flex items-center gap-1 text-[11px] font-bold whitespace-nowrap pointer-events-none animate-pulse ${
+                  className={`hidden md:flex items-center gap-1 text-[11px] font-bold whitespace-nowrap pointer-events-none ${
                     isLight ? 'text-cyan-700' : 'text-cyan-400'
                   }`}
                 >
                   Explore more
-                  <ArrowRight className="w-3.5 h-3.5 animate-[nudge_1s_ease-in-out_infinite]" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               )}
               <button

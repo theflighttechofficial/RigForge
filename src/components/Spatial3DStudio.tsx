@@ -29,7 +29,7 @@ import {
   Wind,
   ShieldAlert,
   Sun
-} from 'lucide-react';
+} from './icons';
 
 export interface Spatial3DStudioProps {
   selectedCpu: CPUItem;

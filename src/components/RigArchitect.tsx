@@ -27,7 +27,7 @@ import {
   HelpCircle,
   Bookmark,
   Plus
-} from 'lucide-react';
+} from './icons';
 import { VisualChassisSimulator } from './VisualChassisSimulator';
 import { fetchLiveIndianRetailerQuotes, LivePriceFeed } from '../utils/liveRetailerPricing';
 import { POPULAR_INDIAN_CABINETS, validateCabinetClearances, CabinetSpecs } from '../data/cabinetData';
@@ -269,7 +269,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
       `Cabinet: ${selectedCabinet.name} - ${formatINR(caseCost)} [Fitment: ${clearanceResult.overallCleared ? '100% Cleared' : 'Tolerance Warnings'}]`,
       `Power Supply: ${selectedPsu.name} (${activePsuWattage}W, ${selectedPsu.efficiency}) - ${formatINR(psuCost)} [Load: ${psuCompatibility.loadPercentage}% | Status: ${psuCompatibility.status}]`,
       `-----------------------------------------`,
-      `Estimated Peak Power Draw: ~${totalWatts} Watts (PSU Load: ${psuCompatibility.loadPercentage}% of ${activePsuWattage}W - ${psuCompatibility.isOver80Percent ? '⚠️ EXCEEDS 80% SAFETY CEILING' : '✅ SAFE'})`,
+      `Estimated Peak Power Draw: ~${totalWatts} Watts (PSU Load: ${psuCompatibility.loadPercentage}% of ${activePsuWattage}W - ${psuCompatibility.isOver80Percent ? 'EXCEEDS 80% SAFETY CEILING' : 'SAFE'})`,
       `Total Estimated Rig Cost: ${formatINR(totalBuildCost)}`,
       `Live Pricing Engine: ${useLivePricing ? 'Enabled (Best Pan-India Retailer Rates)' : 'MSRP Reference'}`
     ].join('\n');
@@ -455,7 +455,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                   onChange={(e) => setUseIntegratedGraphics(e.target.checked)}
                   className="w-3.5 h-3.5 accent-purple-500 disabled:opacity-40"
                 />
-                No discrete GPU — use CPU&apos;s integrated graphics
+                No discrete GPU (use CPU&apos;s integrated graphics)
               </label>
             </div>
 
@@ -620,7 +620,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
               >
                 {POPULAR_INDIAN_PSUS.map((psu) => (
                   <option key={psu.id} value={psu.id}>
-                    {psu.brand} {psu.name} ({psu.wattage}W, {psu.efficiency}, {psu.atxStandard}) — {formatINR(psu.priceINR)}
+                    {psu.brand} {psu.name} ({psu.wattage}W, {psu.efficiency}, {psu.atxStandard}), {formatINR(psu.priceINR)}
                   </option>
                 ))}
               </select>
@@ -703,7 +703,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                       : 'text-emerald-400'
                   }`}
                 >
-                  {psuCompatibility.loadPercentage}% Load {psuCompatibility.isOver80Percent ? '⚠️ EXCEEDS 80%' : '✅ SAFE'}
+                  {psuCompatibility.loadPercentage}% Load {psuCompatibility.isOver80Percent ? 'EXCEEDS 80%' : 'SAFE'}
                 </span>
               </div>
 
@@ -884,7 +884,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
             <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs font-mono">
               <span className="text-zinc-400 flex items-center gap-1.5">
                 <Store className="w-3.5 h-3.5 text-emerald-400" />
-                Live Indian Retailer Pricing:
+                Estimated retailer pricing:
               </span>
               <button
                 onClick={() => setUseLivePricing(!useLivePricing)}
@@ -944,14 +944,14 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
             <div className="flex items-center gap-2">
               <Store className="w-4 h-4 text-emerald-400" />
               <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold">
-                Indian Hardware E-Commerce Price Engine
+                Price estimates
               </span>
             </div>
             <h3 className="text-lg font-black text-white flex items-center gap-2">
-              Live Indian Retailer Price Comparator
+              Estimated Indian Retailer Prices
             </h3>
             <p className="text-xs text-zinc-400">
-              Aggregated live pricing and inventory status across dominant Indian PC distributors: MDComputers, PrimeABGB, Vedant Computers, EliteHubs, and Amazon.in.
+              Modelled price ranges for MDComputers, PrimeABGB, Vedant Computers, EliteHubs and Amazon.in, based on catalog MRP. These are estimates, not live store data. Use Check Store to see the real listing.
             </p>
           </div>
 
@@ -981,7 +981,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-mono text-zinc-200 border border-zinc-700 transition-all"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncingPrices ? 'animate-spin text-emerald-400' : 'text-zinc-400'}`} />
-              <span className="hidden sm:inline">{isSyncingPrices ? 'Scraping...' : 'Sync Live'}</span>
+              <span className="hidden sm:inline">{isSyncingPrices ? 'Recalculating...' : 'Recalculate'}</span>
             </button>
           </div>
         </div>
@@ -1026,12 +1026,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                       <div className="text-lg font-black font-mono text-white">
                         {formatINR(quote.priceINR)}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <span className={`w-1.5 h-1.5 rounded-full ${quote.stockStatus === 'IN_STOCK' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                        <span className="text-[10px] font-mono text-zinc-400">
-                          {quote.stockStatus === 'IN_STOCK' ? 'In Stock' : 'Low Stock'}
-                        </span>
-                      </div>
+                      
                       <div className="text-[10px] text-zinc-500 mt-0.5">
                         {quote.shippingDays}
                       </div>
@@ -1043,7 +1038,7 @@ export const RigArchitect: React.FC<RigArchitectProps> = ({
                       rel="noopener noreferrer"
                       className="flex items-center justify-center gap-1 w-full py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[11px] font-mono text-zinc-300 hover:text-white border border-zinc-800 transition-all"
                     >
-                      <span>Check Store</span>
+                      <span>Check store</span>
                       <ExternalLink className="w-3 h-3 text-zinc-400" />
                     </a>
                   </div>

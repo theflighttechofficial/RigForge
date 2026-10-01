@@ -29,13 +29,15 @@ import {
   Cpu,
   Flame,
   ArrowUpRight
-} from 'lucide-react';
+} from './icons';
+import { FieldError, errorBorder } from './FieldError';
 
 interface CommunityBuildGalleryProps {
   cpus: CPUItem[];
   gpus: GPUItem[];
   onForkToBuilder?: (build: CommunityBuild) => void;
   onOpen3DView?: (build: CommunityBuild) => void;
+  onSaved?: () => void;
   theme?: 'dark' | 'light';
 }
 
@@ -44,12 +46,14 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
   gpus,
   onForkToBuilder,
   onOpen3DView,
+  onSaved,
   theme = 'dark'
 }) => {
   const [builds, setBuilds] = useState<CommunityBuild[]>(() => getStoredCommunityBuilds());
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedTag, setSelectedTag] = useState<string>('ALL');
   const [showPublishModal, setShowPublishModal] = useState<boolean>(false);
+  const [formErrors, setFormErrors] = useState<{ title?: string; author?: string }>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Form State for Publishing Build
@@ -93,7 +97,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
     const shareText = `${build.title} by ${build.author}\n` +
       `Specs: ${build.specs.cpu} | ${build.specs.gpu} | ${build.specs.ram}\n` +
       `Price: ${formatINR(build.totalPriceINR)}\n` +
-      `Explore on Silicon PC Builder Community Gallery!`;
+      `Shared from the Silicon Matrix build gallery`;
     navigator.clipboard.writeText(shareText);
     setCopiedId(build.id);
     setTimeout(() => setCopiedId(null), 3000);
@@ -102,7 +106,15 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
   // Handle Publish Form Submission
   const handlePublishSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle || !newAuthor) return;
+    const title = newTitle.trim();
+    const author = newAuthor.trim();
+    const errors: typeof formErrors = {};
+    if (title.length < 3) errors.title = 'Give the build a name of at least 3 characters.';
+    else if (title.length > 60) errors.title = 'Keep the name under 60 characters.';
+    if (author.length < 2) errors.author = 'Enter your name (at least 2 characters).';
+    else if (author.length > 40) errors.author = 'Keep your name under 40 characters.';
+    setFormErrors(errors);
+    if (errors.title || errors.author) return;
 
     const chosenCpu = cpus.find((c) => c.id === newCpuId) || cpus[0];
     const chosenGpu = gpus.find((g) => g.id === newGpuId) || gpus[0];
@@ -111,10 +123,10 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
 
     const publishedBuild: CommunityBuild = {
       id: `build-user-${Date.now()}`,
-      title: newTitle.toUpperCase().startsWith('🖥️') ? newTitle : `🖥️ ${newTitle.toUpperCase()}`,
-      author: newAuthor,
-      authorRole: 'Community Architect',
-      likes: 1,
+      title: title.toUpperCase(),
+      author,
+      authorRole: 'Saved build',
+      likes: 0,
       forksCount: 0,
       tag: newTag,
       totalPriceINR: totalPrice,
@@ -127,7 +139,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
         psu: '750W 80+ Gold Fully Modular ATX 3.0',
         case: 'Mid-Tower ARGB Airflow Chassis'
       },
-      description: newDescription || 'Custom custom community build shared via Silicon PC Builder.',
+      description: newDescription || 'Custom build saved from Silicon Matrix.',
       publishedAt: 'Just now',
       commentsCount: 0
     };
@@ -139,6 +151,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
     setNewTitle('');
     setNewAuthor('');
     setNewDescription('');
+    onSaved?.();
   };
 
   return (
@@ -152,14 +165,14 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest text-cyan-400">
-                GitHub for PC Builds
+                Saved in this browser
               </span>
               <span className="px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300">
-                COMMUNITY GALLERY
+                BUILD GALLERY
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
-              Community Build Social Layer
+              Build Gallery
             </h1>
           </div>
         </div>
@@ -170,7 +183,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
           className="w-full md:w-auto px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/10 cursor-pointer"
         >
           <PlusCircle className="w-4 h-4 text-black" />
-          <span>PUBLISH YOUR BUILD</span>
+          <span>SAVE A BUILD</span>
         </button>
       </div>
 
@@ -181,7 +194,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
           <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search builds by name, author, CPU (e.g. 7800X3D), or GPU..."
+            placeholder="Search builds by name, CPU (e.g. 7800X3D) or GPU"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50"
@@ -340,7 +353,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
               <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
                 <div className="flex items-center gap-2">
                   <PlusCircle className="w-5 h-5 text-cyan-400" />
-                  <h2 className="text-lg font-bold text-white">Publish Rig to Community Gallery</h2>
+                  <h2 className="text-lg font-bold text-white">Save Build to Gallery</h2>
                 </div>
                 <button
                   onClick={() => setShowPublishModal(false)}
@@ -350,31 +363,45 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
                 </button>
               </div>
 
-              <form onSubmit={handlePublishSubmit} className="space-y-4 text-xs">
+              <form onSubmit={handlePublishSubmit} noValidate className="space-y-4 text-xs">
                 {/* Title & Author */}
                 <div className="space-y-1.5">
-                  <label className="font-bold text-zinc-400 block">Build Title</label>
+                  <label htmlFor="gallery-title" className="font-bold text-zinc-400 block">Build Title</label>
                   <input
+                    id="gallery-title"
                     type="text"
                     required
-                    placeholder="e.g. VARUN'S BLACKOUT BUILD"
+                    aria-invalid={Boolean(formErrors.title)}
+                    aria-describedby={formErrors.title ? 'gallery-title-error' : undefined}
+                    placeholder="e.g. WHITE SFF 1440P BUILD"
                     value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:border-cyan-500/50"
+                    onChange={(e) => {
+                      setNewTitle(e.target.value);
+                      if (formErrors.title) setFormErrors({ ...formErrors, title: undefined });
+                    }}
+                    className={`w-full p-3 rounded-xl bg-zinc-950 border text-white focus:outline-none ${errorBorder(Boolean(formErrors.title))}`}
                   />
+                  <FieldError id="gallery-title-error" message={formErrors.title} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="font-bold text-zinc-400 block">Your Name</label>
+                    <label htmlFor="gallery-author" className="font-bold text-zinc-400 block">Your Name</label>
                     <input
+                      id="gallery-author"
                       type="text"
                       required
-                      placeholder="e.g. Varun Sharma"
+                      aria-invalid={Boolean(formErrors.author)}
+                      aria-describedby={formErrors.author ? 'gallery-author-error' : undefined}
+                      placeholder="Your name"
                       value={newAuthor}
-                      onChange={(e) => setNewAuthor(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:border-cyan-500/50"
+                      onChange={(e) => {
+                        setNewAuthor(e.target.value);
+                        if (formErrors.author) setFormErrors({ ...formErrors, author: undefined });
+                      }}
+                      className={`w-full p-3 rounded-xl bg-zinc-950 border text-white focus:outline-none ${errorBorder(Boolean(formErrors.author))}`}
                     />
+                    <FieldError id="gallery-author-error" message={formErrors.author} />
                   </div>
 
                   <div className="space-y-1.5">
@@ -449,7 +476,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
                     type="submit"
                     className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold cursor-pointer"
                   >
-                    Publish Build
+                    Save Build
                   </button>
                 </div>
               </form>

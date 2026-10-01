@@ -35,7 +35,7 @@ export const METRIC_LEXICON: Record<string, MetricDefinition> = {
     title: 'Clock Speed (GHz) vs. IPC (Instructions Per Cycle)',
     tag: 'CLOCK SPEED VS. IPC',
     definition: 'Effective single-core computational output is calculated as: Effective Performance = Clock Frequency (GHz) × IPC. Clock frequency is the internal cycle oscillation rate, whereas IPC measures how many instructions the core\'s execution engine actually retires per clock cycle.',
-    gamingSignificance: 'Why Clock Speed vs IPC Matters for Gaming: High gigahertz alone is deceptive! An older CPU clocked at 5.0 GHz with weak IPC will easily lose in gaming to a modern 4.2 GHz CPU with 30% higher IPC. Game engines are dominated by a primary render thread handling draw-call dispatch, physics, and game-loop logic—making IPC and low cache latency far more crucial than raw frequency.',
+    gamingSignificance: 'Why Clock Speed vs IPC Matters for Gaming: High gigahertz alone is deceptive! An older CPU clocked at 5.0 GHz with weak IPC will easily lose in gaming to a modern 4.2 GHz CPU with 30% higher IPC. Game engines are dominated by a primary render thread handling draw-call dispatch, physics, and game-loop logic, making IPC and low cache latency far more crucial than raw frequency.',
     architecturalTip: 'Never compare clock speeds across different architectures (e.g. Intel vs AMD or older vs newer generations). Always evaluate IPC-normalized single-core benchmarks and cache sizes.'
   },
   singleCoreScore: {

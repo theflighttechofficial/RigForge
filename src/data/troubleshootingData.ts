@@ -107,11 +107,11 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
     contextNote: 'Check if there is any sign of electrical life or power movement inside the case.',
     options: [
       {
-        label: 'YES — Fans spin & lights turn on',
+        label: 'Yes: Fans spin & lights turn on',
         nextStepId: 'node-boot-display'
       },
       {
-        label: 'NO — Completely dead (Zero lights/fans)',
+        label: 'No: Completely dead (Zero lights/fans)',
         nextStepId: 'node-boot-psu-dead'
       }
     ]
@@ -121,7 +121,7 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
     question: 'Is the rear PSU rocker switch turned on (I position), and is the wall outlet powered?',
     options: [
       {
-        label: 'YES — Rocker is on and wall socket works',
+        label: 'Yes: Rocker is on and wall socket works',
         solution: {
           title: 'PSU Fault or Front Panel Power Switch Disconnected',
           probableCause: 'Blown PSU fuse, loose 24-pin ATX motherboard connector, or loose front panel PWR_BTN header wire.',
@@ -137,7 +137,7 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
         }
       },
       {
-        label: 'NO — Switch was turned off or socket dead',
+        label: 'No: Switch was turned off or socket dead',
         solution: {
           title: 'Power Line Interruption',
           probableCause: 'Interrupted power source or flipped rear PSU switch.',
@@ -158,11 +158,11 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
     question: 'Does your monitor receive any video display signal (BIOS splash logo or screen backlight)?',
     options: [
       {
-        label: 'NO — Monitor says "No Signal" or stays black',
+        label: 'No: Monitor says "No Signal" or stays black',
         nextStepId: 'node-boot-ram-check'
       },
       {
-        label: 'YES — Shows BIOS logo but gets stuck before Windows',
+        label: 'Yes: Shows BIOS logo but gets stuck before Windows',
         nextStepId: 'node-boot-loop'
       }
     ]
@@ -211,7 +211,7 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
     question: 'Is Windows stuck on a spinning wheel or "Preparing Automatic Repair"?',
     options: [
       {
-        label: 'YES — Infinite repair loop',
+        label: 'Yes: Infinite repair loop',
         solution: {
           title: 'Corrupt Windows Boot Loader (BCD) or SSD File System Failure',
           probableCause: 'Corrupted Windows system files, failed Windows update, or SSD file system error.',
@@ -249,7 +249,7 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
     question: 'Does the PC instantly shut off as if unplugged from the wall under gaming load?',
     options: [
       {
-        label: 'YES — Instant power cutoff under load',
+        label: 'Yes: Instant power cutoff under load',
         solution: {
           title: 'PSU Over-Current Protection (OCP) Tripped or Thermal Shutdown',
           probableCause: 'Power supply wattage is insufficient for GPU transient power spikes, or CPU/GPU hitting thermal limit.',
@@ -264,7 +264,7 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
         }
       },
       {
-        label: 'NO — Game closes to desktop or screen freezes',
+        label: 'No: Game closes to desktop or screen freezes',
         solution: {
           title: 'Unstable Memory Profile (XMP/EXPO) or GPU Overclock',
           probableCause: 'RAM operating at unstable XMP/EXPO frequency or factory GPU VRAM instability.',
@@ -285,7 +285,7 @@ export const DECISION_NODES: Record<string, DecisionNode> = {
     question: 'Are you using unstable CPU voltage offsets or undervolting curve optimizer?',
     options: [
       {
-        label: 'YES — Custom undervolt / PBO Curve Optimizer active',
+        label: 'Yes: Custom undervolt / PBO Curve Optimizer active',
         solution: {
           title: 'Low-Load CPU Core Instability',
           probableCause: 'Excessive negative Curve Optimizer offset (e.g. -30) causing low-load C-state voltage drops.',

@@ -19,7 +19,7 @@ import {
   Tv,
   Power,
   RotateCcw
-} from 'lucide-react';
+} from './icons';
 
 interface TDPBatteryEstimatorProps {
   cpu: CPUItem;

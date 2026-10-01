@@ -98,6 +98,6 @@ export function buildIntegratedGpu(cpu: CPUItem): GPUItem | null {
       render3D: Math.round(tier * 0.6),
       aiCompute: Math.round(tier * 0.8)
     },
-    Description: `No discrete GPU installed — rendering handled entirely by ${cpu.Model}'s built-in graphics, sharing system RAM as VRAM.`
+    Description: `No discrete GPU installed, rendering handled entirely by ${cpu.Model}'s built-in graphics, sharing system RAM as VRAM.`
   };
 }

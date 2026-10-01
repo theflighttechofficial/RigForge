@@ -17,7 +17,7 @@ import {
   AlertTriangle,
   HardDrive,
   Layers
-} from 'lucide-react';
+} from './icons';
 import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface UpgradeROIProps {
@@ -127,25 +127,25 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
           onClick={() => applyPreset('cpu-amd-fx8350', 'gpu-amd-580', 'cpu-amd-5600', 'gpu-amd-6600', '1080p')}
           className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 whitespace-nowrap"
         >
-          2014 Vintage (FX-8350) ➔ 2024 Budget 1080p
+          2014 Vintage (FX-8350) to 2024 Budget 1080p
         </button>
         <button
           onClick={() => applyPreset('cpu-intel-8700k', 'gpu-nvidia-1060', 'cpu-amd-7600', 'gpu-nvidia-4060', '1080p')}
           className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 whitespace-nowrap"
         >
-          GTX 1060 Era ➔ Modern RTX 4060
+          GTX 1060 Era to Modern RTX 4060
         </button>
         <button
           onClick={() => applyPreset('cpu-amd-3600', 'gpu-nvidia-2060', 'cpu-amd-7800x3d', 'gpu-nvidia-4070-super', '1440p')}
           className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-emerald-400 whitespace-nowrap font-bold"
         >
-          Zen 2 + RTX 2060 ➔ 1440p High Refresh Titan
+          Zen 2 + RTX 2060 to 1440p High Refresh Titan
         </button>
         <button
           onClick={() => applyPreset('cpu-intel-12400f', 'gpu-nvidia-3070', 'cpu-amd-9800x3d', 'gpu-nvidia-4080-super', '4k')}
           className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-purple-400 whitespace-nowrap font-bold"
         >
-          Mid-Range ➔ Ultra 4K Enthusiast
+          Mid-Range to Ultra 4K Enthusiast
         </button>
       </div>
 
@@ -371,7 +371,7 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
                   drops (-35% to -50%), texture pop-in, and microstuttering.
                 </p>
                 <div className="pt-1 text-[11px] text-amber-300 font-mono">
-                  💡 <strong>Architect Recommendation:</strong> For {resolution}, consider a minimum of 12GB VRAM (e.g. RTX 4070 Super 12GB or Radeon RX 7700 XT 12GB / RX 7800 XT 16GB) to avoid obsolete frame buffers within 18 months.
+                  <strong>Architect Recommendation:</strong> For {resolution}, consider a minimum of 12GB VRAM (e.g. RTX 4070 Super 12GB or Radeon RX 7700 XT 12GB / RX 7800 XT 16GB) to avoid obsolete frame buffers within 18 months.
                 </div>
               </div>
             </div>
@@ -380,7 +380,7 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
               <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <span className="font-bold font-mono text-amber-300 block">
-                  Lateral VRAM Trap ({vramAnalysis.currentVram}GB ➔ {vramAnalysis.targetVram}GB)
+                  Lateral VRAM Trap ({vramAnalysis.currentVram}GB to {vramAnalysis.targetVram}GB)
                 </span>
                 <p className="text-zinc-300 leading-relaxed">
                   You are spending {formatINR(roi.costINR)} but maintaining the exact same {vramAnalysis.targetVram}GB VRAM capacity. Enabling Frame Generation (DLSS 3 / FSR 3) consumes an extra 1.5GB to 2GB of VRAM overhead, immediately choking 8GB buffers in next-gen titles.
@@ -407,7 +407,7 @@ export const UpgradeROI: React.FC<UpgradeROIProps> = ({ cpus, gpus }) => {
               +{roi.fpsGainPct}%
             </div>
             <span className="text-[10px] text-zinc-400 block">
-              {roi.oldFpsEst} FPS ➔ {roi.newFpsEst} FPS
+              {roi.oldFpsEst} FPS to {roi.newFpsEst} FPS
             </span>
           </div>
 

@@ -13,7 +13,7 @@ import {
   Fan,
   Layers,
   Sparkles
-} from 'lucide-react';
+} from './icons';
 
 export interface PowerConsumptionChartProps {
   gpuModel: string;

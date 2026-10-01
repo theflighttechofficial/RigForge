@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Cpu, MemoryStick, HardDrive, Wifi, Monitor, RefreshCw, Database, AlertTriangle, CheckCircle2, Cable, ShieldCheck, Copy } from 'lucide-react';
+import { Cpu, MemoryStick, HardDrive, Wifi, Monitor, RefreshCw, Database, AlertTriangle, CheckCircle2, Cable, ShieldCheck, Copy } from './icons';
 import type { SystemSpecsReport, UserHardwareEntry } from '../../systemSpecs';
+import { SkeletonBlock } from './Skeleton';
 import { CPUItem, GPUItem, HardwareItem } from '../types';
 
 interface MyPCSpecsProps {
   cpus: CPUItem[];
   gpus: GPUItem[];
   onInspectDetails: (item: HardwareItem) => void;
+  onOpenPrivacy?: () => void;
 }
 
 // Limited data a browser can see on its own, used when the local scan API is unreachable
@@ -76,7 +78,7 @@ const Card: React.FC<{ title: string; icon: React.FC<{ className?: string }>; ch
 const Row: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
   <div className="flex justify-between gap-4 border-b border-zinc-800/60 py-1.5 text-sm last:border-0">
     <span className="text-zinc-400">{label}</span>
-    <span className="text-right font-mono text-zinc-100">{value ?? '—'}</span>
+    <span className="text-right font-mono text-zinc-100">{value ?? 'n/a'}</span>
   </div>
 );
 
@@ -90,11 +92,11 @@ const CatalogBadge: React.FC<{ item?: HardwareItem; onInspect: (item: HardwareIt
     </button>
   ) : (
     <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400">
-      <Database className="h-3.5 w-3.5" /> Not in catalog — saved to local database
+      <Database className="h-3.5 w-3.5" /> Not in catalog, saved to hardware database
     </span>
   );
 
-export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetails }) => {
+export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetails, onOpenPrivacy }) => {
   const [report, setReport] = useState<SystemSpecsReport | null>(null);
   const [db, setDb] = useState<UserHardwareEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -206,6 +208,12 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
           <p className="mt-3 text-sm text-zinc-400">
             The scan is read-only. It does not change settings or read personal files. Components not yet in our catalog are added to the site's hardware
             database, without your computer name or MAC addresses.
+          {' '}
+            {onOpenPrivacy && (
+              <button onClick={onOpenPrivacy} className="text-cyan-400 underline underline-offset-2 cursor-pointer">
+                Privacy policy
+              </button>
+            )}
           </p>
           {consent === 'declined' && <p className="mt-3 text-sm text-amber-400">Scan declined. Nothing was read from your PC.</p>}
           <div className="mt-5 flex gap-3">
@@ -331,6 +339,22 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
               <Row label="Platform" value={browser.platform} />
             </div>
           )}
+        </div>
+      )}
+
+      {/* Local scans take a few seconds; show the result layout while waiting */}
+      {scanning && !agent && !report && !error && (
+        <div className="grid gap-6 lg:grid-cols-2" role="status" aria-label="Scanning hardware">
+          {['Processor', 'Memory', 'Graphics', 'Storage'].map((label) => (
+            <div key={label} className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-5 space-y-3">
+              <SkeletonBlock className="h-4 w-28" />
+              <SkeletonBlock className="h-6 w-2/3" />
+              {Array.from({ length: 4 }, (_, i) => (
+                <SkeletonBlock key={i} className="h-4" />
+              ))}
+            </div>
+          ))}
+          <span className="sr-only">Scanning hardware</span>
         </div>
       )}
 

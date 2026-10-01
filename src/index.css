@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+}
+
 @layer base {
   body {
     background-color: #09090b;
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
-      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 100% 100%, 36px 36px, 36px 36px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-sans);
   }
 }
 
@@ -125,12 +125,8 @@ input[type=range]::-webkit-slider-thumb:hover {
    ========================================================================== */
 html.light,
 html.light body {
-  background-color: #f8fafc !important;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px) !important;
-  background-size: 100% 100%, 32px 32px, 32px 32px !important;
+  background-color: #f6f7f9 !important;
+  background-image: none !important;
   color: #0f172a !important;
 }
 
@@ -293,8 +289,8 @@ html.light .text-zinc-600 {
 }
 
 /* Icons for text-white in light mode */
-html.light .text-white > svg.lucide,
-html.light svg.lucide.text-white {
+html.light .text-white > svg.icon,
+html.light svg.icon.text-white {
   stroke: #0f172a !important;
   color: #0f172a !important;
 }
@@ -541,7 +537,7 @@ html.light input[type=range]::-webkit-slider-thumb {
    ========================================================================== */
 
 /* Universal SVG Lucide transition & base styling */
-svg.lucide,
+svg.icon,
 .lucide {
   transition: stroke 0.15s ease, fill 0.15s ease, color 0.15s ease, filter 0.15s ease;
 }
@@ -550,83 +546,83 @@ svg.lucide,
    DARK THEME ICON RULES (:root:not(.light), html.dark, .dark)
    Luminous, radiant cyber strokes and neon accents with atmospheric bloom
    -------------------------------------------------------------------------- */
-:root:not(.light) svg.lucide,
-html.dark svg.lucide,
-.dark svg.lucide {
+:root:not(.light) svg.icon,
+html.dark svg.icon,
+.dark svg.icon {
   stroke: currentColor;
 }
 
-:root:not(.light) svg.lucide.text-cyan-400,
-html.dark svg.lucide.text-cyan-400,
-:root:not(.light) .text-cyan-400 > svg.lucide,
-html.dark .text-cyan-400 > svg.lucide {
+:root:not(.light) svg.icon.text-cyan-400,
+html.dark svg.icon.text-cyan-400,
+:root:not(.light) .text-cyan-400 > svg.icon,
+html.dark .text-cyan-400 > svg.icon {
   stroke: #22d3ee;
   filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.35));
 }
 
-:root:not(.light) svg.lucide.text-purple-400,
-html.dark svg.lucide.text-purple-400,
-:root:not(.light) .text-purple-400 > svg.lucide,
-html.dark .text-purple-400 > svg.lucide {
+:root:not(.light) svg.icon.text-purple-400,
+html.dark svg.icon.text-purple-400,
+:root:not(.light) .text-purple-400 > svg.icon,
+html.dark .text-purple-400 > svg.icon {
   stroke: #c084fc;
   filter: drop-shadow(0 0 4px rgba(192, 132, 252, 0.35));
 }
 
-:root:not(.light) svg.lucide.text-emerald-400,
-html.dark svg.lucide.text-emerald-400,
-:root:not(.light) .text-emerald-400 > svg.lucide,
-html.dark .text-emerald-400 > svg.lucide {
+:root:not(.light) svg.icon.text-emerald-400,
+html.dark svg.icon.text-emerald-400,
+:root:not(.light) .text-emerald-400 > svg.icon,
+html.dark .text-emerald-400 > svg.icon {
   stroke: #34d399;
   filter: drop-shadow(0 0 4px rgba(52, 211, 153, 0.35));
 }
 
-:root:not(.light) svg.lucide.text-amber-400,
-html.dark svg.lucide.text-amber-400,
-:root:not(.light) .text-amber-400 > svg.lucide,
-html.dark .text-amber-400 > svg.lucide {
+:root:not(.light) svg.icon.text-amber-400,
+html.dark svg.icon.text-amber-400,
+:root:not(.light) .text-amber-400 > svg.icon,
+html.dark .text-amber-400 > svg.icon {
   stroke: #fbbf24;
   filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.35));
 }
 
-:root:not(.light) svg.lucide.text-rose-400,
-html.dark svg.lucide.text-rose-400,
-:root:not(.light) .text-rose-400 > svg.lucide,
-html.dark .text-rose-400 > svg.lucide {
+:root:not(.light) svg.icon.text-rose-400,
+html.dark svg.icon.text-rose-400,
+:root:not(.light) .text-rose-400 > svg.icon,
+html.dark .text-rose-400 > svg.icon {
   stroke: #fb7185;
   filter: drop-shadow(0 0 4px rgba(251, 113, 133, 0.35));
 }
 
-:root:not(.light) svg.lucide.text-blue-400,
-html.dark svg.lucide.text-blue-400,
-:root:not(.light) .text-blue-400 > svg.lucide,
-html.dark .text-blue-400 > svg.lucide {
+:root:not(.light) svg.icon.text-blue-400,
+html.dark svg.icon.text-blue-400,
+:root:not(.light) .text-blue-400 > svg.icon,
+html.dark .text-blue-400 > svg.icon {
   stroke: #60a5fa;
   filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.35));
 }
 
 /* Dark mode dynamic fill rules */
-:root:not(.light) svg.lucide.fill-current,
-html.dark svg.lucide.fill-current {
+:root:not(.light) svg.icon.fill-current,
+html.dark svg.icon.fill-current {
   fill: currentColor;
 }
-:root:not(.light) svg.lucide.fill-amber-400,
-html.dark svg.lucide.fill-amber-400 {
+:root:not(.light) svg.icon.fill-amber-400,
+html.dark svg.icon.fill-amber-400 {
   fill: #fbbf24;
 }
-:root:not(.light) svg.lucide.fill-cyan-400,
-html.dark svg.lucide.fill-cyan-400 {
+:root:not(.light) svg.icon.fill-cyan-400,
+html.dark svg.icon.fill-cyan-400 {
   fill: #22d3ee;
 }
-:root:not(.light) svg.lucide.fill-emerald-400,
-html.dark svg.lucide.fill-emerald-400 {
+:root:not(.light) svg.icon.fill-emerald-400,
+html.dark svg.icon.fill-emerald-400 {
   fill: #34d399;
 }
-:root:not(.light) svg.lucide.fill-purple-400,
-html.dark svg.lucide.fill-purple-400 {
+:root:not(.light) svg.icon.fill-purple-400,
+html.dark svg.icon.fill-purple-400 {
   fill: #c084fc;
 }
-:root:not(.light) svg.lucide.fill-rose-400,
-html.dark svg.lucide.fill-rose-400 {
+:root:not(.light) svg.icon.fill-rose-400,
+html.dark svg.icon.fill-rose-400 {
   fill: #fb7185;
 }
 
@@ -636,172 +632,172 @@ html.dark svg.lucide.fill-rose-400 {
    -------------------------------------------------------------------------- */
 
 /* Base Neutral Icons in Light Mode */
-html.light svg.lucide,
+html.light svg.icon,
 html.light .lucide {
   stroke: currentColor;
 }
 
-html.light svg.lucide.text-zinc-400,
-html.light svg.lucide.text-zinc-500,
-html.light svg.lucide.text-zinc-600,
-html.light .text-zinc-400 > svg.lucide,
-html.light .text-zinc-500 > svg.lucide,
-html.light .text-zinc-600 > svg.lucide {
+html.light svg.icon.text-zinc-400,
+html.light svg.icon.text-zinc-500,
+html.light svg.icon.text-zinc-600,
+html.light .text-zinc-400 > svg.icon,
+html.light .text-zinc-500 > svg.icon,
+html.light .text-zinc-600 > svg.icon {
   stroke: #334155 !important; /* Slate-700: deep readable contrast */
   color: #334155 !important;
 }
 
-html.light svg.lucide.text-zinc-300,
-html.light .text-zinc-300 > svg.lucide {
+html.light svg.icon.text-zinc-300,
+html.light .text-zinc-300 > svg.icon {
   stroke: #1e293b !important; /* Slate-800 */
   color: #1e293b !important;
 }
 
 /* High-Contrast Dynamic Strokes & Colors in Light Mode */
-html.light svg.lucide.text-cyan-400,
-html.light svg.lucide.text-cyan-300,
-html.light svg.lucide.text-sky-400,
-html.light .text-cyan-400 > svg.lucide,
-html.light .text-cyan-300 > svg.lucide,
-html.light .text-sky-400 > svg.lucide {
+html.light svg.icon.text-cyan-400,
+html.light svg.icon.text-cyan-300,
+html.light svg.icon.text-sky-400,
+html.light .text-cyan-400 > svg.icon,
+html.light .text-cyan-300 > svg.icon,
+html.light .text-sky-400 > svg.icon {
   stroke: #0284c7 !important; /* Sky-600: rich optical clarity */
   color: #0284c7 !important;
   filter: none !important;
 }
 
-html.light svg.lucide.text-purple-400,
-html.light svg.lucide.text-purple-300,
-html.light svg.lucide.text-violet-400,
-html.light .text-purple-400 > svg.lucide,
-html.light .text-purple-300 > svg.lucide,
-html.light .text-violet-400 > svg.lucide {
+html.light svg.icon.text-purple-400,
+html.light svg.icon.text-purple-300,
+html.light svg.icon.text-violet-400,
+html.light .text-purple-400 > svg.icon,
+html.light .text-purple-300 > svg.icon,
+html.light .text-violet-400 > svg.icon {
   stroke: #7c3aed !important; /* Violet-600 */
   color: #7c3aed !important;
   filter: none !important;
 }
 
-html.light svg.lucide.text-emerald-400,
-html.light svg.lucide.text-emerald-300,
-html.light svg.lucide.text-green-400,
-html.light .text-emerald-400 > svg.lucide,
-html.light .text-emerald-300 > svg.lucide,
-html.light .text-green-400 > svg.lucide {
+html.light svg.icon.text-emerald-400,
+html.light svg.icon.text-emerald-300,
+html.light svg.icon.text-green-400,
+html.light .text-emerald-400 > svg.icon,
+html.light .text-emerald-300 > svg.icon,
+html.light .text-green-400 > svg.icon {
   stroke: #059669 !important; /* Emerald-600 */
   color: #059669 !important;
   filter: none !important;
 }
 
-html.light svg.lucide.text-amber-400,
-html.light svg.lucide.text-amber-300,
-html.light svg.lucide.text-yellow-400,
-html.light .text-amber-400 > svg.lucide,
-html.light .text-amber-300 > svg.lucide,
-html.light .text-yellow-400 > svg.lucide {
+html.light svg.icon.text-amber-400,
+html.light svg.icon.text-amber-300,
+html.light svg.icon.text-yellow-400,
+html.light .text-amber-400 > svg.icon,
+html.light .text-amber-300 > svg.icon,
+html.light .text-yellow-400 > svg.icon {
   stroke: #b45309 !important; /* Amber-700: deep contrast, never pale yellow */
   color: #b45309 !important;
   filter: none !important;
 }
 
-html.light svg.lucide.text-rose-400,
-html.light svg.lucide.text-rose-300,
-html.light svg.lucide.text-red-400,
-html.light .text-rose-400 > svg.lucide,
-html.light .text-rose-300 > svg.lucide,
-html.light .text-red-400 > svg.lucide {
+html.light svg.icon.text-rose-400,
+html.light svg.icon.text-rose-300,
+html.light svg.icon.text-red-400,
+html.light .text-rose-400 > svg.icon,
+html.light .text-rose-300 > svg.icon,
+html.light .text-red-400 > svg.icon {
   stroke: #e11d48 !important; /* Rose-600 */
   color: #e11d48 !important;
   filter: none !important;
 }
 
-html.light svg.lucide.text-blue-400,
-html.light svg.lucide.text-blue-300,
-html.light .text-blue-400 > svg.lucide,
-html.light .text-blue-300 > svg.lucide {
+html.light svg.icon.text-blue-400,
+html.light svg.icon.text-blue-300,
+html.light .text-blue-400 > svg.icon,
+html.light .text-blue-300 > svg.icon {
   stroke: #2563eb !important; /* Blue-600 */
   color: #2563eb !important;
   filter: none !important;
 }
 
 /* Light Mode Dynamic Fills */
-html.light svg.lucide.fill-current,
+html.light svg.icon.fill-current,
 html.light .fill-current {
   fill: currentColor !important;
 }
 
-html.light svg.lucide.fill-amber-400,
-html.light svg.lucide[class*="fill-amber-400"] {
+html.light svg.icon.fill-amber-400,
+html.light svg.icon[class*="fill-amber-400"] {
   fill: #b45309 !important;
   stroke: #b45309 !important;
 }
 
-html.light svg.lucide.fill-cyan-400,
-html.light svg.lucide[class*="fill-cyan-400"] {
+html.light svg.icon.fill-cyan-400,
+html.light svg.icon[class*="fill-cyan-400"] {
   fill: #0284c7 !important;
   stroke: #0284c7 !important;
 }
 
-html.light svg.lucide.fill-emerald-400,
-html.light svg.lucide[class*="fill-emerald-400"] {
+html.light svg.icon.fill-emerald-400,
+html.light svg.icon[class*="fill-emerald-400"] {
   fill: #059669 !important;
   stroke: #059669 !important;
 }
 
-html.light svg.lucide.fill-purple-400,
-html.light svg.lucide[class*="fill-purple-400"] {
+html.light svg.icon.fill-purple-400,
+html.light svg.icon[class*="fill-purple-400"] {
   fill: #7c3aed !important;
   stroke: #7c3aed !important;
 }
 
-html.light svg.lucide.fill-rose-400,
-html.light svg.lucide[class*="fill-rose-400"] {
+html.light svg.icon.fill-rose-400,
+html.light svg.icon[class*="fill-rose-400"] {
   fill: #e11d48 !important;
   stroke: #e11d48 !important;
 }
 
 /* Fallback for hardcoded fill-black / fill-zinc-950 and fill-white in Light Mode */
-html.light svg.lucide.fill-black,
-html.light svg.lucide.fill-zinc-950 {
+html.light svg.icon.fill-black,
+html.light svg.icon.fill-zinc-950 {
   fill: #09090b !important;
 }
 
 /* When fill-white appears in light mode on solid dark or colored buttons, retain white fill */
-html.light button[class*="bg-rose-"] svg.lucide.fill-white,
-html.light button[class*="bg-purple-"] svg.lucide.fill-white,
-html.light button[class*="bg-blue-"] svg.lucide.fill-white,
-html.light button[class*="bg-cyan-600"] svg.lucide.fill-white {
+html.light button[class*="bg-rose-"] svg.icon.fill-white,
+html.light button[class*="bg-purple-"] svg.icon.fill-white,
+html.light button[class*="bg-blue-"] svg.icon.fill-white,
+html.light button[class*="bg-cyan-600"] svg.icon.fill-white {
   fill: #ffffff !important;
 }
 
 /* Icons inside Vibrant Solid Buttons in Light Mode */
-html.light button[class*="bg-cyan-400"] svg.lucide,
-html.light button[class*="bg-cyan-500"] svg.lucide,
-html.light button[class*="bg-gradient-to-r from-cyan-"] svg.lucide,
-html.light [class*="bg-cyan-400"] > svg.lucide,
-html.light [class*="bg-cyan-500"] > svg.lucide {
+html.light button[class*="bg-cyan-400"] svg.icon,
+html.light button[class*="bg-cyan-500"] svg.icon,
+html.light button[class*="bg-gradient-to-r from-cyan-"] svg.icon,
+html.light [class*="bg-cyan-400"] > svg.icon,
+html.light [class*="bg-cyan-500"] > svg.icon {
   stroke: #09090b !important;
   color: #09090b !important;
 }
 
-html.light button[class*="bg-cyan-400"] svg.lucide.fill-current,
-html.light button[class*="bg-cyan-500"] svg.lucide.fill-current,
-html.light button[class*="bg-gradient-to-r from-cyan-"] svg.lucide.fill-current {
+html.light button[class*="bg-cyan-400"] svg.icon.fill-current,
+html.light button[class*="bg-cyan-500"] svg.icon.fill-current,
+html.light button[class*="bg-gradient-to-r from-cyan-"] svg.icon.fill-current {
   fill: #09090b !important;
 }
 
-html.light button[class*="bg-cyan-600"] svg.lucide,
-html.light button[class*="bg-purple-600"] svg.lucide,
-html.light button[class*="bg-rose-600"] svg.lucide,
-html.light button[class*="bg-blue-600"] svg.lucide,
-html.light button[class*="bg-emerald-600"] svg.lucide {
+html.light button[class*="bg-cyan-600"] svg.icon,
+html.light button[class*="bg-purple-600"] svg.icon,
+html.light button[class*="bg-rose-600"] svg.icon,
+html.light button[class*="bg-blue-600"] svg.icon,
+html.light button[class*="bg-emerald-600"] svg.icon {
   stroke: #ffffff !important;
   color: #ffffff !important;
 }
 
-html.light button[class*="bg-cyan-600"] svg.lucide.fill-current,
-html.light button[class*="bg-purple-600"] svg.lucide.fill-current,
-html.light button[class*="bg-rose-600"] svg.lucide.fill-current,
-html.light button[class*="bg-blue-600"] svg.lucide.fill-current,
-html.light button[class*="bg-emerald-600"] svg.lucide.fill-current {
+html.light button[class*="bg-cyan-600"] svg.icon.fill-current,
+html.light button[class*="bg-purple-600"] svg.icon.fill-current,
+html.light button[class*="bg-rose-600"] svg.icon.fill-current,
+html.light button[class*="bg-blue-600"] svg.icon.fill-current,
+html.light button[class*="bg-emerald-600"] svg.icon.fill-current {
   fill: #ffffff !important;
 }
 
@@ -838,11 +834,6 @@ html.light [class*="bg-blue-500/20"] {
 }
 
 
-/* Nudges the "Explore more" arrow toward the More tab */
-@keyframes nudge {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(4px); }
-}
 
 select:disabled {
   opacity: 0.45;
@@ -957,5 +948,57 @@ html.light [class*="bg-pink-950"]:not([class*="from-"]), html.light [class*="bg-
 html.light [class*="bg-fuchsia-950"]:not([class*="from-"]), html.light [class*="bg-fuchsia-900"]:not([class*="from-"]) { background-color: #fdf4ff !important; }
 html.light [class*="bg-lime-950"]:not([class*="from-"]), html.light [class*="bg-lime-900"]:not([class*="from-"]) { background-color: #f7fee7 !important; }
 
-/* Decorative blurred glow blobs: multiply so they tint the page without washing out text above them */
-html.light .pointer-events-none[class*="blur-"][class*="rounded-full"] { mix-blend-mode: multiply; }
+
+
+
+/* ==========================================================================
+   Design layer: flat, engineered surfaces. Unlayered, so it wins over Tailwind utilities.
+   ========================================================================== */
+
+/* Tighter corners than the default "soft card" look */
+.rounded-3xl { border-radius: 10px; }
+.rounded-2xl { border-radius: 8px; }
+.rounded-xl { border-radius: 6px; }
+.rounded-lg { border-radius: 4px; }
+
+/* No drop shadows or coloured glows; edges come from borders */
+* { --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; }
+[class*="drop-shadow"] { filter: none; }
+html.light .shadow-2xl, html.light .shadow-xl, html.light .shadow-lg { box-shadow: none !important; }
+
+/* No frosted glass */
+[class*="backdrop-blur"] { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* Decorative blurred orbs and glow blobs */
+.pointer-events-none[class*="blur-"],
+[class*="blur-3xl"], [class*="blur-2xl"], [class*="blur-[1"] { display: none !important; }
+
+/* Gradients flatten to their first stop */
+[class*="bg-gradient-to-"]:not(.bg-clip-text), [class*="bg-linear-to-"]:not(.bg-clip-text) {
+  background-image: none !important;
+  background-color: var(--tw-gradient-from);
+}
+.bg-clip-text {
+  background-image: none !important;
+  color: var(--tw-gradient-from) !important;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Interactions change colour, not geometry */
+[class*="hover:scale"]:hover, .group:hover [class*="group-hover:scale"],
+[class*="active:scale"]:active { scale: none !important; }
+[class*="hover:-translate"]:hover, [class*="hover:translate"]:hover,
+.group:hover [class*="group-hover:translate"], .group:hover [class*="group-hover:-translate"] { translate: none !important; }
+.animate-bounce, .animate-ping { animation: none !important; }
+svg.icon.animate-pulse { animation: none !important; }
+
+/* Skeleton loaders: a slow opacity shimmer, disabled for reduced-motion users */
+@keyframes skeleton-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.skeleton { animation: skeleton-fade 1.4s ease-in-out infinite; }
+html.light .skeleton { background-color: #e2e8f0 !important; }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}

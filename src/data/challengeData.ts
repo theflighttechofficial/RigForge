@@ -258,7 +258,7 @@ export function calculateChallengeScore(
 
   let feedback = 'All requirements satisfied! Balanced hardware selection.';
   if (!allReqsMet) feedback = 'Configuration failed one or more mandatory challenge requirements.';
-  else if (rankTier === 'S') feedback = '🏆 Masterful allocation! Maximum FPS extracted per Rupee spent.';
+  else if (rankTier === 'S') feedback = 'Masterful allocation! Maximum FPS extracted per Rupee spent.';
 
   return {
     requirementsMet: allReqsMet,

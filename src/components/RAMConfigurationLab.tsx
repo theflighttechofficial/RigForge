@@ -27,7 +27,7 @@ import {
   DollarSign,
   Boxes,
   Maximize2
-} from 'lucide-react';
+} from './icons';
 
 interface RAMConfigurationLabProps {
   onNavigateToBuilder?: () => void;
@@ -338,7 +338,7 @@ export const RAMConfigurationLab: React.FC<RAMConfigurationLabProps> = ({
               <span className="text-xs font-bold text-white">DIMM Slot Topology</span>
               <p className="text-[11px] text-zinc-400">
                 {dimmCount === 4 && ramType === 'DDR5'
-                  ? '⚠️ 4 DIMMs on DDR5 adds +4.0ns memory controller signal strain penalty.'
+                  ? '4 DIMMs on DDR5 adds +4.0ns memory controller signal strain penalty.'
                   : 'Optimal 2 DIMM dual-channel layout.'}
               </p>
             </div>
@@ -424,7 +424,7 @@ export const RAMConfigurationLab: React.FC<RAMConfigurationLabProps> = ({
             </span>
             <p className="leading-relaxed text-zinc-400">
               {effectiveTotalLatencyNs <= 10.0
-                ? '⭐ Excellent sub-10ns latency profile! Delivers silky-smooth 1% low FPS in eSports titles.'
+                ? 'Excellent sub-10ns latency profile! Delivers silky-smooth 1% low FPS in eSports titles.'
                 : 'Higher latency profile. Consider tightening CAS latency or running Gear 1 to reduce memory access delay.'}
             </p>
           </div>

@@ -111,21 +111,21 @@ export function checkScalperIndex(
       verdict: 'SCALPED_OVERPRICED',
       priceDeltaINR: delta,
       percentageDiff: pct,
-      label: `⚠️ Scalped / Overpriced (+${pct}% over fair value)`
+      label: `Scalped / Overpriced (+${pct}% over fair value)`
     };
   } else if (pct < -15) {
     return {
       verdict: 'EXCELLENT_DEAL',
       priceDeltaINR: delta,
       percentageDiff: pct,
-      label: `🔥 Bargain Deal (${Math.abs(pct)}% below fair value)`
+      label: `Bargain Deal (${Math.abs(pct)}% below fair value)`
     };
   } else {
     return {
       verdict: 'FAIR_MARKET',
       priceDeltaINR: delta,
       percentageDiff: pct,
-      label: `✅ Fair Market Price (${pct >= 0 ? '+' : ''}${pct}%)`
+      label: `Fair Market Price (${pct >= 0 ? '+' : ''}${pct}%)`
     };
   }
 }

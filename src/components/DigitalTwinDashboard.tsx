@@ -52,7 +52,7 @@ import {
   ChevronRight,
   Tag,
   Maximize2
-} from 'lucide-react';
+} from './icons';
 
 interface DigitalTwinDashboardProps {
   onNavigateToTab: (tabId: string) => void;
@@ -182,7 +182,7 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
     };
   }, [activeTwin]);
 
-  // Live workload load bars — scaled off the twin's actual CPU/GPU/RAM specs instead of a
+  // Live workload load bars, scaled off the twin's actual CPU/GPU/RAM specs instead of a
   // fixed 75%/88%/50% shown for every rig regardless of what hardware is installed.
   const workloadStats = useMemo(() => {
     const cpuLoadPct = Math.min(92, Math.max(35, Math.round(40 + (activeTwin.cpu.tdpWatts / 250) * 45)));
@@ -259,8 +259,7 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
                 Digital Twin Hub
               </span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] font-mono text-zinc-400">LIVE SYNCED</span>
+              <span className="text-[11px] font-mono text-zinc-400">SAVED PROFILE</span>
             </div>
             <h1 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
               {activeTwin.name}

@@ -17,7 +17,7 @@ import {
   Moon,
   Info,
   ChevronRight
-} from 'lucide-react';
+} from '../icons';
 
 export type DeskType = 'standing' | 'standard' | 'lshaped' | 'compact';
 export type DeskFinish = 'walnut' | 'oak' | 'carbon' | 'black' | 'white';

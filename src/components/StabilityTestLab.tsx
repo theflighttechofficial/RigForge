@@ -28,7 +28,7 @@ import {
   Info,
   X,
   HelpCircle
-} from 'lucide-react';
+} from './icons';
 
 interface StabilityTestLabProps {
   cpu: CPUItem;
@@ -946,7 +946,7 @@ export const StabilityTestLab: React.FC<StabilityTestLabProps> = ({ cpu, gpu }) 
               <div className="space-y-1 text-xs font-mono">
                 <div className="font-bold text-sm">
                   {testOutcome === 'PASSED'
-                    ? 'STRESS CYCLE PASSED — SYSTEM STABLE'
+                    ? 'STRESS CYCLE PASSED: SYSTEM STABLE'
                     : testOutcome === 'CRASHED_WHEA'
                     ? 'CRITICAL WHEA_UNCORRECTABLE_ERROR (BSOD)'
                     : testOutcome === 'CRASHED_THERMAL'

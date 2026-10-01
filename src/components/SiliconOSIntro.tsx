@@ -76,9 +76,9 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
     <div id="boot-header" style="position:fixed;left:0;top:0;right:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:linear-gradient(#09090B,rgba(9,9,11,.82));border-bottom:1px solid #1A1A1F;z-index:8">
       <span style="display:flex;align-items:baseline;gap:8px;min-width:0">
         <span style="font:800 17px/1 'Big Shoulders Display','Barlow Condensed',sans-serif;letter-spacing:.02em;color:#FAFAFA;white-space:nowrap">RIGFORGE</span>
-        <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:${COOL};letter-spacing:.03em;white-space:nowrap">// SILICON OS</span>
+        <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:${COOL};letter-spacing:.03em;white-space:nowrap">// SILICON OS</span>
       </span>
-      <span id="boot-status" style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:#8A8A93;letter-spacing:.02em;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;margin-left:10px">
+      <span id="boot-status" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#8A8A93;letter-spacing:.02em;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;margin-left:10px">
         <span style="width:6px;height:6px;border-radius:3px;background:${COOL};display:block;animation:pulse 1.4s ease-in-out infinite;flex-shrink:0"></span>
         <span id="boot-status-text">Booting up…</span>
       </span>
@@ -233,7 +233,7 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
     line.style.cssText = 'position:absolute;left:0;top:404px;width:1440px;height:2px;background:' + COOL + ';box-shadow:0 0 28px ' + COOL + ';transform-origin:center;animation:grow .55s cubic-bezier(.2,.8,.2,1) .15s both,out .5s ease .8s forwards';
     h.appendChild(line);
     const panel = document.createElement('div');
-    panel.style.cssText = 'position:absolute;left:400px;top:196px;width:640px;display:flex;flex-direction:column;gap:16px;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:16px;color:#E4E4E7;' + a(900, 400, 'fade');
+    panel.style.cssText = 'position:absolute;left:400px;top:196px;width:640px;display:flex;flex-direction:column;gap:16px;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:16px;color:#E4E4E7;' + a(900, 400, 'fade');
     const rows = [
       { k: 'CPU', v: 'Ryzen 7 7800X3D', delay: 1250 },
       { k: 'GPU', v: 'RTX 4070 SUPER', delay: 1550 },
@@ -302,7 +302,7 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
     h.appendChild(right);
     const tag = document.createElement('div');
     tag.style.cssText = 'position:absolute;left:220px;top:672px;width:1000px;text-align:center;font-size:22px;line-height:1.4;color:#E4E4E7;' + a(500, 600, 'fade');
-    tag.textContent = 'Not just "will these parts fit?" but "what happens when they become one computer?"';
+    tag.textContent = 'See how your parts behave together as one computer.';
     h.appendChild(tag);
     sceneEl.appendChild(h);
   }
@@ -571,7 +571,7 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
   function coreRect(x: number, y: number, label: string, delay: number) {
     return '<rect x="' + x + '" y="' + y + '" width="58" height="58" rx="4" fill="#0E0E11" stroke="#3F3F46" stroke-width="1"/>'
       + '<rect x="' + x + '" y="' + y + '" width="58" height="58" rx="4" fill="' + COOL + '" style="animation:core 1.1s ease ' + (delay / 1000) + 's both"/>'
-      + '<text x="' + (x + 8) + '" y="' + (y + 18) + '" fill="#E4E4E7" style="font:600 11px \'JetBrains Mono\',monospace">' + label + '</text>';
+      + '<text x="' + (x + 8) + '" y="' + (y + 18) + '" fill="#E4E4E7" style="font:600 11px \'IBM Plex Mono\',monospace">' + label + '</text>';
   }
 
   // ── Landing page ──────────────────────────────────────────
@@ -603,7 +603,7 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
     { tab: 'synergy', title: 'Bottleneck & Thermal Lab', blurb: 'CPU/GPU balance per resolution, voltage stability, thermal throttling.' },
     { tab: 'matrix', title: '2D Price/Performance Matrix', blurb: 'Pareto frontier across ₹ price vs. compute score.' },
     { tab: 'builder', title: 'Rig Architect', blurb: '8-part Indian PC builder with GST breakdown and presets.' },
-    { tab: 'community', title: 'Community Build Gallery', blurb: 'Browse and fork builds from other users.' }
+    { tab: 'community', title: 'Build Gallery', blurb: 'Sample builds plus the builds you save in this browser.' }
   ];
   function mobileLandingHTML() {
     const navChips = [
@@ -618,7 +618,7 @@ function mountSiliconIntro(host: HTMLElement, nav: NavCallbacks): () => void {
         <div style="position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 16px;border-bottom:1px solid #1A1A1F;background:#09090Bf2;backdrop-filter:blur(8px)">
           <span style="display:flex;align-items:baseline;gap:8px">
             <span style="font:800 18px/1 'Big Shoulders Display','Barlow Condensed',sans-serif;color:#FAFAFA">RIGFORGE</span>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${COOL}">SILICON OS</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${COOL}">SILICON OS</span>
           </span>
           <button data-action="overview" style="height:40px;padding:0 14px;border-radius:8px;border:1px solid ${COOL};background:${COOL};color:#04141A;font-size:13px;font-weight:700">Open app</button>
         </div>

@@ -15,7 +15,7 @@ import {
   Info,
   Layers,
   Sparkles
-} from 'lucide-react';
+} from './icons';
 
 interface DriverHealthPanelProps {
   gpu: GPUItem;
@@ -380,7 +380,7 @@ export const DriverHealthPanel: React.FC<DriverHealthPanelProps> = ({ gpu, onDri
             <ul className="space-y-1.5 text-xs text-zinc-300 font-mono">
               {profile.keyEnhancements.map((enhancement, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-500" aria-hidden />
                   <span className="text-[11px] leading-relaxed">{enhancement}</span>
                 </li>
               ))}

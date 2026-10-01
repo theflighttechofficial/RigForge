@@ -29,7 +29,7 @@ import {
   Wrench,
   ChevronRight,
   Info
-} from 'lucide-react';
+} from './icons';
 
 interface TroubleshootingWizardProps {
   onNavigateToBuilder?: () => void;
@@ -242,7 +242,7 @@ export const TroubleshootingWizard: React.FC<TroubleshootingWizardProps> = ({
                 </h2>
                 {currentNode.contextNote && (
                   <p className="text-xs text-zinc-400 max-w-xl mx-auto pt-1">
-                    💡 {currentNode.contextNote}
+                    {currentNode.contextNote}
                   </p>
                 )}
               </div>
@@ -324,7 +324,7 @@ export const TroubleshootingWizard: React.FC<TroubleshootingWizardProps> = ({
               {/* Preventative Tip */}
               <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-200 space-y-1">
                 <strong className="font-bold uppercase tracking-wider text-emerald-400 block">
-                  💡 Hardware Architect Preventative Tip
+                  Hardware Architect Preventative Tip
                 </strong>
                 <p>{activeSolution.preventativeTip}</p>
               </div>

@@ -23,7 +23,7 @@ import {
   Shield,
   Activity,
   Award
-} from 'lucide-react';
+} from './icons';
 
 interface BattlestationSimulatorProps {
   cpus: CPUItem[];
@@ -69,7 +69,7 @@ const STORAGE_TYPE_INFO: Record<StorageType, { costPerGB: number; readSpeed: str
 };
 const STORAGE_CAPACITY_OPTIONS_GB = [500, 1000, 2000, 4000, 8000];
 
-// Pixel count relative to 1080p — GPU-bound fps scales ~inversely with pixel count.
+// Pixel count relative to 1080p, GPU-bound fps scales ~inversely with pixel count.
 const RESOLUTION_PIXEL_FACTOR: Record<MonitorOption['resTag'], number> = {
   '720p': 2.25,
   '1080p': 1,
@@ -385,7 +385,7 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
               onChange={(e) => setUseIntegratedGraphics(e.target.checked)}
               className="w-3.5 h-3.5 accent-purple-500 disabled:opacity-40"
             />
-            No discrete GPU — use CPU&apos;s integrated graphics
+            No discrete GPU (use CPU&apos;s integrated graphics)
           </label>
         </div>
 
@@ -576,7 +576,7 @@ export const BattlestationSimulator: React.FC<BattlestationSimulatorProps> = ({
                   <div className="text-xs font-mono text-zinc-400">
                     Active Game Simulator: <span className="text-white font-bold">{selectedGame.name}</span>
                     {telemetry.gpuIsIntegrated && (
-                      <span className="ml-2 text-amber-400">(iGPU — expect low/medium settings)</span>
+                      <span className="ml-2 text-amber-400">(iGPU: expect low/medium settings)</span>
                     )}
                   </div>
                 </div>

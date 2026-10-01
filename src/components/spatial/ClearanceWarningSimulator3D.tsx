@@ -14,7 +14,7 @@ import {
   Layers,
   Box,
   Cpu
-} from 'lucide-react';
+} from '../icons';
 import { CPUItem, GPUItem } from '../../types';
 
 export interface ClearanceWarningSimulator3DProps {

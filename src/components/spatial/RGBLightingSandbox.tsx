@@ -15,7 +15,7 @@ import {
   Layers,
   Flame,
   Volume2
-} from 'lucide-react';
+} from '../icons';
 
 export type RGBPattern =
   | 'wave'

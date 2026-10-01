@@ -26,7 +26,8 @@ import {
   Calendar,
   Sparkles,
   Info
-} from 'lucide-react';
+} from './icons';
+import { FieldError, errorBorder } from './FieldError';
 
 interface CustomPresetsModalProps {
   isOpen: boolean;
@@ -65,6 +66,8 @@ export const CustomPresetsModal: React.FC<CustomPresetsModalProps> = ({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [importText, setImportText] = useState('');
   const [showImport, setShowImport] = useState(false);
+  const [nameError, setNameError] = useState<string | undefined>();
+  const [importError, setImportError] = useState<string | undefined>();
 
   useEffect(() => {
     if (isOpen) {
@@ -81,10 +84,14 @@ export const CustomPresetsModal: React.FC<CustomPresetsModalProps> = ({
 
   const handleSaveCurrent = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPresetName.trim()) return;
+    const name = newPresetName.trim();
+    if (name.length < 2) return setNameError('Give the preset a name of at least 2 characters.');
+    if (name.length > 60) return setNameError('Keep the name under 60 characters.');
+    if (presets.some((p) => p.name.toLowerCase() === name.toLowerCase())) return setNameError(`A preset called "${name}" already exists. Pick another name.`);
+    setNameError(undefined);
 
     const saved = saveCustomPreset({
-      name: newPresetName.trim(),
+      name,
       cpuId: currentConfig.cpuId,
       gpuId: currentConfig.gpuId,
       ramCapacity: currentConfig.ramCapacity,
@@ -127,21 +134,23 @@ export const CustomPresetsModal: React.FC<CustomPresetsModalProps> = ({
 
   const handleImportSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!importText.trim()) return setImportError('Paste the JSON you exported earlier.');
     try {
       const updated = importPresetsFromJSON(importText);
+      setImportError(undefined);
       setPresets(updated);
       setShowImport(false);
       setImportText('');
       onNotify('Successfully imported presets from JSON!');
     } catch {
-      alert('Invalid JSON preset format. Please verify the copied structure.');
+      setImportError('That is not a valid preset export. Paste the full text of a file saved with Export.');
     }
   };
 
   const copyConfigDetails = (preset: SavedCustomPreset) => {
     const cpu = cpus.find((c) => c.id === preset.cpuId)?.Model || preset.cpuId;
     const gpu = gpus.find((g) => g.id === preset.gpuId)?.Model || preset.gpuId;
-    const text = `🖥️ [Silicon Matrix Rig Preset: ${preset.name}]\n- CPU: ${cpu}\n- GPU: ${gpu}\n- RAM: ${preset.ramCapacity}GB ${preset.ramType}\n- Cooler: ${preset.cooler}\n- Estimated Power: ${preset.totalWatts}W\n- Approx Cost: ${formatINR(preset.totalBuildCostINR)}\n${preset.notes ? `- Notes: ${preset.notes}\n` : ''}`;
+    const text = `[Silicon Matrix Rig Preset: ${preset.name}]\n- CPU: ${cpu}\n- GPU: ${gpu}\n- RAM: ${preset.ramCapacity}GB ${preset.ramType}\n- Cooler: ${preset.cooler}\n- Estimated Power: ${preset.totalWatts}W\n- Approx Cost: ${formatINR(preset.totalBuildCostINR)}\n${preset.notes ? `- Notes: ${preset.notes}\n` : ''}`;
 
     navigator.clipboard.writeText(text);
     setCopiedId(preset.id);
@@ -217,6 +226,7 @@ export const CustomPresetsModal: React.FC<CustomPresetsModalProps> = ({
         {showSaveForm && (
           <form
             onSubmit={handleSaveCurrent}
+            noValidate
             className="p-5 bg-cyan-950/20 border-b border-cyan-900/40 space-y-3 animate-in slide-in-from-top-2 duration-150"
           >
             <div className="flex items-center justify-between">
@@ -230,17 +240,24 @@ export const CustomPresetsModal: React.FC<CustomPresetsModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-zinc-300 font-medium mb-1">
+                <label htmlFor="preset-name" className="block text-xs text-zinc-300 font-medium mb-1">
                   Preset Name <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="preset-name"
                   type="text"
                   required
+                  aria-invalid={Boolean(nameError)}
+                  aria-describedby={nameError ? 'preset-name-error' : undefined}
                   placeholder="e.g. My 1440p White Lian Li Battlestation"
                   value={newPresetName}
-                  onChange={(e) => setNewPresetName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
+                  onChange={(e) => {
+                    setNewPresetName(e.target.value);
+                    setNameError(undefined);
+                  }}
+                  className={`w-full px-3 py-2 rounded-xl bg-zinc-900 border text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none ${errorBorder(Boolean(nameError))}`}
                 />
+                <div className="mt-1"><FieldError id="preset-name-error" message={nameError} /></div>
               </div>
               <div>
                 <label className="block text-xs text-zinc-300 font-medium mb-1">
@@ -278,19 +295,27 @@ export const CustomPresetsModal: React.FC<CustomPresetsModalProps> = ({
         {showImport && (
           <form
             onSubmit={handleImportSubmit}
+            noValidate
             className="p-5 bg-zinc-900/80 border-b border-zinc-800 space-y-3"
           >
-            <label className="block text-xs text-zinc-300 font-medium">
+            <label htmlFor="preset-import" className="block text-xs text-zinc-300 font-medium">
               Paste JSON Presets Array
             </label>
             <textarea
+              id="preset-import"
               rows={4}
               required
+              aria-invalid={Boolean(importError)}
+              aria-describedby={importError ? 'preset-import-error' : undefined}
               placeholder='[ { "id": "...", "name": "...", "cpuId": "...", ... } ]'
               value={importText}
-              onChange={(e) => setImportText(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 font-mono text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-cyan-400"
+              onChange={(e) => {
+                setImportText(e.target.value);
+                setImportError(undefined);
+              }}
+              className={`w-full px-3 py-2 rounded-xl bg-zinc-950 border font-mono text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none ${errorBorder(Boolean(importError))}`}
             />
+            <FieldError id="preset-import-error" message={importError} />
             <div className="flex justify-end gap-2">
               <button
                 type="button"

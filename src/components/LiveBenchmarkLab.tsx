@@ -21,7 +21,7 @@ import {
   Clock,
   ShieldCheck,
   Tv
-} from 'lucide-react';
+} from './icons';
 import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface LiveBenchmarkLabProps {

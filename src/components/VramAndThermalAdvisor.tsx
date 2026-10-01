@@ -13,7 +13,7 @@ import {
   Flame,
   Snowflake,
   ChevronRight
-} from 'lucide-react';
+} from './icons';
 
 interface VramAndThermalAdvisorProps {
   cpu: CPUItem;

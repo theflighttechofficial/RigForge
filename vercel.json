@@ -1,5 +1,110 @@
 {
-  "buildCommand": "vite build",
+  "buildCommand": "npm run build:web",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/overview",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/my-pc",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/my-rig",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/build-doctor",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/value-matrix",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/compare",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/bottleneck",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/storage",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/ram",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/budget",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/challenges",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/gallery",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/troubleshoot",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/builder",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/3d-studio",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dream-setup",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/anatomy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/benchmarks",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/upgrade-roi",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/power-cost",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalog",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/thanks",
+      "destination": "/index.html"
+    }
+  ]
 }

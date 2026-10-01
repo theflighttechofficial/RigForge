@@ -1,7 +1,7 @@
 import React from 'react';
 import { CPUItem, GPUItem, HardwareItem } from '../types';
 import { formatINR, formatScore, getValueIndex, getPowerEfficiency } from '../utils/formatters';
-import { X, Cpu, Monitor, Zap, Award, ExternalLink, GitCompare, GitMerge } from 'lucide-react';
+import { X, Cpu, Monitor, Zap, Award, ExternalLink, GitCompare, GitMerge } from './icons';
 
 interface ComponentDetailsModalProps {
   item: HardwareItem | null;

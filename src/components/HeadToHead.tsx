@@ -21,7 +21,7 @@ import {
   Lightbulb,
   Gamepad2,
   X
-} from 'lucide-react';
+} from './icons';
 
 interface HeadToHeadProps {
   category: ComponentCategory;

@@ -19,8 +19,10 @@ import {
   Info,
   Layers,
   Zap,
-  RotateCcw
-} from 'lucide-react';
+  RotateCcw,
+  Snowflake,
+  Sun
+} from './icons';
 
 export type CoolerType = 'stock' | 'dual_tower' | 'aio_240' | 'aio_360';
 export type CaseAirflowType = 'choked' | 'balanced' | 'mesh';
@@ -100,11 +102,11 @@ const CASE_AIRFLOW_SPECS: Record<CaseAirflowType, { label: string; deltaC: numbe
 };
 
 const AMBIENT_PRESETS = [
-  { temp: 21, label: 'AC Studio', desc: 'Climate Controlled (21°C / 70°F)', icon: '❄️' },
-  { temp: 27, label: 'Normal Room', desc: 'Indoors with Fan (27°C / 81°F)', icon: '🍃' },
-  { temp: 35, label: 'Indian Summer', desc: 'Standard Summer Day (35°C / 95°F)', icon: '☀️' },
-  { temp: 42, label: 'Heatwave Peak', desc: 'Delhi/Rajasthan Heatwave (42°C / 108°F)', icon: '🔥' },
-  { temp: 48, label: 'Attic Crucible', desc: 'Top-Floor Tin Roof (48°C / 118°F)', icon: '🏜️' }
+  { temp: 21, label: 'AC Studio', desc: 'Climate Controlled (21°C / 70°F)', icon: Snowflake },
+  { temp: 27, label: 'Normal Room', desc: 'Indoors with Fan (27°C / 81°F)', icon: Wind },
+  { temp: 35, label: 'Indian Summer', desc: 'Standard Summer Day (35°C / 95°F)', icon: Sun },
+  { temp: 42, label: 'Heatwave Peak', desc: 'Delhi/Rajasthan Heatwave (42°C / 108°F)', icon: Flame },
+  { temp: 48, label: 'Attic Crucible', desc: 'Top-Floor Tin Roof (48°C / 118°F)', icon: Thermometer }
 ];
 
 export const ThermalThrottlingPanel: React.FC<ThermalThrottlingPanelProps> = ({ cpu, gpu }) => {
@@ -443,7 +445,7 @@ export const ThermalThrottlingPanel: React.FC<ThermalThrottlingPanelProps> = ({ 
                     }`}
                   >
                     <div className="flex items-center gap-1 text-xs font-bold font-mono">
-                      <span>{preset.icon}</span>
+                      <preset.icon className="w-3.5 h-3.5" />
                       <span className={isSelected ? 'text-amber-300' : 'text-zinc-300'}>{preset.temp}°C</span>
                     </div>
                     <div className="text-[10px] font-semibold truncate mt-0.5">{preset.label}</div>

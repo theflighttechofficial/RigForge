@@ -22,7 +22,7 @@ import {
   Box,
   Cpu,
   Monitor
-} from 'lucide-react';
+} from '../icons';
 
 export interface AssemblyCanvas3DProps {
   selectedCpu: CPUItem;
@@ -1014,7 +1014,7 @@ export const AssemblyCanvas3D: React.FC<AssemblyCanvas3DProps> = ({
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
                 snappedParts[inspectedPart] ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-amber-950 text-amber-300 border border-amber-800'
               }`}>
-                {snappedParts[inspectedPart] ? 'Installed ✓' : 'Extracted'}
+                {snappedParts[inspectedPart] ? 'Installed' : 'Extracted'}
               </span>
             </div>
 
@@ -1252,7 +1252,7 @@ export const AssemblyCanvas3D: React.FC<AssemblyCanvas3DProps> = ({
                         : 'bg-zinc-800 text-zinc-400'
                     }`}
                   >
-                    {isSnapped ? 'Snapped ✓' : 'Floating'}
+                    {isSnapped ? 'Snapped' : 'Floating'}
                   </span>
                 </div>
 

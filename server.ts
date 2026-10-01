@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { createApp } from './app.js';
+import { ROUTES } from './src/routes.js';
 
 async function startServer() {
   const app = createApp();
@@ -18,8 +19,11 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
+    // Known pages get 200; anything else still loads the app (which shows Not Found) but with a 404 status
+    const pagePaths = new Set(['/', ...Object.values(ROUTES).filter((r) => r.path !== '/404').map((r) => r.path)]);
     app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      const clean = req.path.replace(/\/+$/, '') || '/';
+      res.status(pagePaths.has(clean) ? 200 : 404).sendFile(path.join(distPath, 'index.html'));
     });
   }
 

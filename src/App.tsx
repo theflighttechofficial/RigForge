@@ -1,67 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ActiveTab, ComponentCategory, HardwareItem, CPUItem, GPUItem } from './types';
 import { cpuDataset, gpuDataset } from './data/hardwareData';
 import { getCachedHardware, setCachedHardware } from './utils/hardwareCache';
 import { Header } from './components/Header';
-import { PerformanceMatrix } from './components/PerformanceMatrix';
-import { HeadToHead } from './components/HeadToHead';
-import { SynergyLab } from './components/SynergyLab';
-import { RigArchitect } from './components/RigArchitect';
-import { HardwareCatalog } from './components/HardwareCatalog';
-import { UpgradeROI } from './components/UpgradeROI';
-import { RunningCostLab } from './components/RunningCostLab';
 import { IntroPage } from './components/IntroPage';
 import { ComponentDetailsModal } from './components/ComponentDetailsModal';
-import { LiveBenchmarkLab } from './components/LiveBenchmarkLab';
-import { LoadingScreen } from './components/LoadingScreen';
 import { SiliconOSIntro } from './components/SiliconOSIntro';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
-import { BattlestationSimulator } from './components/BattlestationSimulator';
-import { ComponentAnatomy } from './components/ComponentAnatomy';
-import { Spatial3DStudio } from './components/Spatial3DStudio';
-import { AIBuildDoctor } from './components/AIBuildDoctor';
-import { DigitalTwinDashboard } from './components/DigitalTwinDashboard';
-import { StoragePerformanceLab } from './components/StoragePerformanceLab';
-import { RAMConfigurationLab } from './components/RAMConfigurationLab';
-import { BuildCostOptimizer } from './components/BuildCostOptimizer';
-import { BuildChallengeMode } from './components/BuildChallengeMode';
-import { CommunityBuildGallery } from './components/CommunityBuildGallery';
-import { TroubleshootingWizard } from './components/TroubleshootingWizard';
-import { MyPCSpecs } from './components/MyPCSpecs';
+import { SiteFooter } from './components/SiteFooter';
+import { ConsentBanner } from './components/ConsentBanner';
+import { MobileCtaBar } from './components/MobileCtaBar';
+import { PageSkeleton } from './components/Skeleton';
+import { ROUTES, LANDING_META, tabFromPath } from './routes';
+import { SITE } from './siteConfig';
 
-const TAB_DISPLAY_NAMES: Record<ActiveTab, string> = {
-  intro: 'System Overview & Architecture Guide',
-  digitaltwin: 'My Rig // PC Build Digital Twin Centerpiece',
-  doctor: 'AI Build Doctor // Silicon Diagnostic Assistant',
-  matrix: '2D Price-to-Performance Matrix',
-  compare: 'Head-to-Head Component Duel',
-  synergy: 'Synergy & Bottleneck Diagnostic Lab',
-  storagelab: 'Storage Performance Lab // HDD vs. SATA vs. NVMe PCIe 3/4/5',
-  ramlab: 'RAM Configuration Lab // Frequency, CL Timings & Bandwidth',
-  costoptimizer: 'Build Cost Optimizer // Objective Budget Allocation Engine',
-  challengemode: 'PC Build Challenge Mode // Gamified Builder Quests',
-  community: 'Community Build Gallery // GitHub for PC Builds',
-  troubleshoot: 'PC Troubleshooting Wizard // Decision Tree Diagnostic Engine',
-  builder: 'Rig Architect // Indian PC Builder',
-  spatial3d: 'Immersive 3D Assembly & AR Studio',
-  battlestation: 'Dream Setup Battlestation Simulator',
-  anatomy: 'PC Component Anatomy & Architecture Guide',
-  benchmarks: 'Live Real-Time Benchmark Lab',
-  roi: 'Generational Upgrade ROI Engine',
-  cost: 'Indian Electricity & TCO Calculator',
-  catalog: 'Complete Hardware Spec Database',
-  myspecs: 'My PC Specs // Live System Hardware Scan'
-};
+// Each workspace loads on first visit; a skeleton fills the space meanwhile
+const PerformanceMatrix = lazy(() => import('./components/PerformanceMatrix').then((m) => ({ default: m.PerformanceMatrix })));
+const HeadToHead = lazy(() => import('./components/HeadToHead').then((m) => ({ default: m.HeadToHead })));
+const SynergyLab = lazy(() => import('./components/SynergyLab').then((m) => ({ default: m.SynergyLab })));
+const RigArchitect = lazy(() => import('./components/RigArchitect').then((m) => ({ default: m.RigArchitect })));
+const HardwareCatalog = lazy(() => import('./components/HardwareCatalog').then((m) => ({ default: m.HardwareCatalog })));
+const UpgradeROI = lazy(() => import('./components/UpgradeROI').then((m) => ({ default: m.UpgradeROI })));
+const RunningCostLab = lazy(() => import('./components/RunningCostLab').then((m) => ({ default: m.RunningCostLab })));
+const LiveBenchmarkLab = lazy(() => import('./components/LiveBenchmarkLab').then((m) => ({ default: m.LiveBenchmarkLab })));
+const BattlestationSimulator = lazy(() => import('./components/BattlestationSimulator').then((m) => ({ default: m.BattlestationSimulator })));
+const ComponentAnatomy = lazy(() => import('./components/ComponentAnatomy').then((m) => ({ default: m.ComponentAnatomy })));
+const Spatial3DStudio = lazy(() => import('./components/Spatial3DStudio').then((m) => ({ default: m.Spatial3DStudio })));
+const AIBuildDoctor = lazy(() => import('./components/AIBuildDoctor').then((m) => ({ default: m.AIBuildDoctor })));
+const DigitalTwinDashboard = lazy(() => import('./components/DigitalTwinDashboard').then((m) => ({ default: m.DigitalTwinDashboard })));
+const StoragePerformanceLab = lazy(() => import('./components/StoragePerformanceLab').then((m) => ({ default: m.StoragePerformanceLab })));
+const RAMConfigurationLab = lazy(() => import('./components/RAMConfigurationLab').then((m) => ({ default: m.RAMConfigurationLab })));
+const BuildCostOptimizer = lazy(() => import('./components/BuildCostOptimizer').then((m) => ({ default: m.BuildCostOptimizer })));
+const BuildChallengeMode = lazy(() => import('./components/BuildChallengeMode').then((m) => ({ default: m.BuildChallengeMode })));
+const CommunityBuildGallery = lazy(() => import('./components/CommunityBuildGallery').then((m) => ({ default: m.CommunityBuildGallery })));
+const TroubleshootingWizard = lazy(() => import('./components/TroubleshootingWizard').then((m) => ({ default: m.TroubleshootingWizard })));
+const MyPCSpecs = lazy(() => import('./components/MyPCSpecs').then((m) => ({ default: m.MyPCSpecs })));
+const PrivacyPolicy = lazy(() => import('./components/LegalPages').then((m) => ({ default: m.PrivacyPolicy })));
+const TermsOfService = lazy(() => import('./components/LegalPages').then((m) => ({ default: m.TermsOfService })));
+const NotFoundPage = lazy(() => import('./components/SitePages').then((m) => ({ default: m.NotFoundPage })));
+const ContactPage = lazy(() => import('./components/SitePages').then((m) => ({ default: m.ContactPage })));
+const ThanksPage = lazy(() => import('./components/SitePages').then((m) => ({ default: m.ThanksPage })));
+
 
 export default function App() {
   // Navigation stages: 'landing' (opens first) -> 'app' (main website experience)
-  const [appStage, setAppStage] = useState<'landing' | 'app'>('landing');
-  const [activeTab, setActiveTab] = useState<ActiveTab>('intro');
+  // The URL decides where a visit starts: "/" plays the landing intro, any other path opens that page directly
+  const initialRoute = tabFromPath(window.location.pathname);
+  const [appStage, setAppStage] = useState<'landing' | 'app'>(initialRoute === 'landing' ? 'landing' : 'app');
+  const [activeTab, setActiveTab] = useState<ActiveTab>(initialRoute === 'landing' ? 'intro' : initialRoute);
   const [category, setCategory] = useState<ComponentCategory>('CPU');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [loadingTargetTab, setLoadingTargetTab] = useState<ActiveTab>('intro');
-  const [loadingDisplayName, setLoadingDisplayName] = useState<string>('System Overview & Architecture Guide');
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(undefined);
   // Parts handed to Rig Architect from other pages; the nonce remounts it with the new defaults
   const [builderParts, setBuilderParts] = useState<{ cpuId: string; gpuId: string; nonce: number } | null>(null);
@@ -99,6 +87,49 @@ export default function App() {
         setCachedHardware(cpuDataset, gpuDataset);
       }
     });
+  }, []);
+
+  // Keep the address bar, title, description and canonical link in step with the open page
+  useEffect(() => {
+    const route = ROUTES[activeTab];
+    const path = appStage === 'landing' ? '/' : route.path;
+    // A mistyped URL keeps its address so the visitor can see what went wrong
+    if (activeTab !== 'notfound' && window.location.pathname !== path) {
+      window.history.pushState({ tab: activeTab, stage: appStage }, '', path);
+    }
+    const meta = appStage === 'landing' ? LANDING_META : { title: `${route.title} | ${SITE.name}`, description: route.description };
+    document.title = meta.title;
+    const setMeta = (selector: string, attr: string, value: string) => {
+      let el = document.head.querySelector<HTMLElement>(selector);
+      if (!el) {
+        el = document.createElement(selector.startsWith('link') ? 'link' : 'meta');
+        const [, key, name] = selector.match(/\[(\w+)="([^"]+)"\]/) ?? [];
+        if (key) el.setAttribute(key, name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute(attr, value);
+    };
+    setMeta('meta[name="description"]', 'content', meta.description);
+    setMeta('meta[property="og:title"]', 'content', meta.title);
+    setMeta('meta[property="og:description"]', 'content', meta.description);
+    setMeta('meta[property="og:url"]', 'content', SITE.url + path);
+    setMeta('link[rel="canonical"]', 'href', SITE.url + path);
+    setMeta('meta[name="robots"]', 'content', route.hidden && appStage === 'app' ? 'noindex' : 'index, follow');
+  }, [activeTab, appStage]);
+
+  // Browser back/forward buttons
+  useEffect(() => {
+    const onPop = () => {
+      const next = tabFromPath(window.location.pathname);
+      if (next === 'landing') {
+        setAppStage('landing');
+      } else {
+        setAppStage('app');
+        setActiveTab(next);
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
   }, []);
 
   // Scroll window to top whenever activeTab changes
@@ -150,11 +181,10 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Launch transition from Landing Page into the Website
+  // Leave the landing intro and open the requested workspace straight away
   const handleLaunchFromLanding = (targetTab: ActiveTab = 'intro') => {
-    setLoadingTargetTab(targetTab);
-    setLoadingDisplayName(TAB_DISPLAY_NAMES[targetTab] || 'System Overview & Architecture Guide');
-    setIsLoading(true);
+    setAppStage('app');
+    setActiveTab(targetTab);
   };
 
   // Switch tabs
@@ -170,13 +200,6 @@ export default function App() {
     setSelectedPresetId(presetId);
     setActiveTab('builder');
     showToast('Loaded Turnkey Preset into Rig Architect');
-  };
-
-  const handleLoadingComplete = () => {
-    setIsLoading(false);
-    setAppStage('app');
-    setActiveTab(loadingTargetTab);
-    showToast(`Mounted: ${loadingDisplayName}`);
   };
 
   const handleSelectForCompare = (item: HardwareItem) => {
@@ -208,13 +231,6 @@ export default function App() {
           theme === 'light' ? 'bg-slate-50 text-slate-900' : 'bg-zinc-950 text-zinc-100'
         }`}
       >
-        {/* Launch Animation: Plays LoadingScreen when Launch is clicked on Landing Page */}
-        {isLoading && (
-          <LoadingScreen
-            targetTabName={loadingDisplayName}
-            onComplete={handleLoadingComplete}
-          />
-        )}
         <SiliconOSIntro
           onLaunch={() => handleLaunchFromLanding('intro')}
           onDirectLaunchWorkspace={(tab) => handleLaunchFromLanding((tab as ActiveTab) || 'matrix')}
@@ -232,14 +248,6 @@ export default function App() {
         theme === 'light' ? 'bg-slate-50 text-slate-900' : 'bg-zinc-950 text-zinc-100'
       }`}
     >
-      {/* High-Tech Diagnostic Calibration Screen Overlay */}
-      {isLoading && (
-        <LoadingScreen
-          targetTabName={loadingDisplayName}
-          onComplete={handleLoadingComplete}
-        />
-      )}
-
       {/* Redesigned Clean Access Top Bar */}
       <Header
         activeTab={activeTab}
@@ -251,15 +259,10 @@ export default function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenSearch={() => setIsSearchOpen(true)}
-        onRunDiagnostics={() => {
-          setLoadingTargetTab(activeTab);
-          setLoadingDisplayName('Full Silicon Diagnostics Verification');
-          setIsLoading(true);
-        }}
       />
 
       {/* Main Content Viewport */}
-      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-6 overflow-hidden">
+      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-6 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -270,13 +273,19 @@ export default function App() {
             // Cap line length on ultrawide monitors; smaller screens are unaffected
             className="w-full max-w-[1920px] mx-auto"
           >
+            <Suspense fallback={<PageSkeleton />}>
             {/* Overview Content Page */}
             {activeTab === 'intro' && (
               <IntroPage
                 onEnterWorkspace={handleEnterWorkspace}
                 onSelectPreset={handleSelectPreset}
-                totalCpus={cpuDataset.length}
-                totalGpus={gpuDataset.length}
+                onOpenSynergy={(cpuId, gpuId) => {
+                  setSynergyCpuId(cpuId);
+                  setSynergyGpuId(gpuId);
+                  setActiveTab('synergy');
+                }}
+                cpus={cpuDataset}
+                gpus={gpuDataset}
               />
             )}
 
@@ -286,8 +295,15 @@ export default function App() {
                 cpus={cpuDataset}
                 gpus={gpuDataset}
                 onInspectDetails={setModalItem}
+                onOpenPrivacy={() => setActiveTab('privacy')}
               />
             )}
+
+            {activeTab === 'privacy' && <PrivacyPolicy />}
+            {activeTab === 'contact' && <ContactPage />}
+            {activeTab === 'thanks' && <ThanksPage onNavigate={setActiveTab} />}
+            {activeTab === 'notfound' && <NotFoundPage onNavigate={setActiveTab} />}
+            {activeTab === 'terms' && <TermsOfService />}
 
             {/* PC Build Digital Twin Centerpiece */}
             {activeTab === 'digitaltwin' && (
@@ -414,6 +430,7 @@ export default function App() {
                   setActiveTab('builder');
                 }}
                 onOpen3DView={() => setActiveTab('spatial3d')}
+                onSaved={() => setActiveTab('thanks')}
                 theme={theme}
               />
             )}
@@ -502,9 +519,14 @@ export default function App() {
                 onOpenDetails={setModalItem}
               />
             )}
+            </Suspense>
           </motion.div>
         </AnimatePresence>
       </main>
+
+      <SiteFooter onNavigate={setActiveTab} />
+      <ConsentBanner onOpenPrivacy={() => setActiveTab('privacy')} />
+      <MobileCtaBar activeTab={activeTab} onNavigate={setActiveTab} />
 
       {/* Hardware Spec Detail Modal */}
       {modalItem && (

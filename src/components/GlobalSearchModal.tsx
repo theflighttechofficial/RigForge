@@ -15,7 +15,7 @@ import {
   Sparkles,
   ExternalLink,
   SlidersHorizontal
-} from 'lucide-react';
+} from './icons';
 import { formatINR } from '../utils/formatters';
 
 interface GlobalSearchModalProps {

@@ -50,7 +50,7 @@ export const IntegratedGraphicsToggle: React.FC<IntegratedGraphicsToggleProps> =
         className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-purple-500 disabled:opacity-40"
       />
       <span>
-        No discrete GPU — use integrated graphics
+        No discrete GPU (use integrated graphics)
         {checked && igpuName && <span className="block text-amber-400">Using {igpuName}</span>}
         {!available && <span className="block">Not available: this CPU has no iGPU</span>}
       </span>

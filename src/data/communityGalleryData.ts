@@ -25,12 +25,12 @@ export interface CommunityBuild {
 
 export const INITIAL_COMMUNITY_BUILDS: CommunityBuild[] = [
   {
-    id: 'build-varun-blackout',
-    title: "🖥️ VARUN'S BLACKOUT BUILD",
-    author: 'Varun Sharma',
-    authorRole: 'Enthusiast Overclocker',
-    likes: 142,
-    forksCount: 38,
+    id: 'sample-blackout-1440p',
+    title: 'BLACKOUT 1440P GAMING BUILD',
+    author: 'Silicon Matrix',
+    authorRole: 'Sample build',
+    likes: 0,
+    forksCount: 0,
     tag: 'Minimalist',
     totalPriceINR: 148000,
     specs: {
@@ -45,15 +45,15 @@ export const INITIAL_COMMUNITY_BUILDS: CommunityBuild[] = [
     },
     description: 'Zero RGB, all stealth blackout aesthetics. Tuning for max 1440p 240Hz esports frame rates with whisper-quiet fan curves.',
     publishedAt: '2 hours ago',
-    commentsCount: 19
+    commentsCount: 0
   },
   {
-    id: 'build-priya-ai-neural',
-    title: "⚡ PRIYA'S LOCAL AI NEURAL RIG",
-    author: 'Priya Nair',
-    authorRole: 'Machine Learning Researcher',
-    likes: 218,
-    forksCount: 57,
+    id: 'sample-local-ai',
+    title: 'LOCAL AI / ML WORKSTATION',
+    author: 'Silicon Matrix',
+    authorRole: 'Sample build',
+    likes: 0,
+    forksCount: 0,
     tag: 'AI / ML',
     totalPriceINR: 315000,
     specs: {
@@ -68,15 +68,15 @@ export const INITIAL_COMMUNITY_BUILDS: CommunityBuild[] = [
     },
     description: 'Dedicated local LLM runner (Llama-3 70B quantized) & PyTorch CUDA tensor cruncher. Built with 24GB VRAM headroom.',
     publishedAt: 'Yesterday',
-    commentsCount: 34
+    commentsCount: 0
   },
   {
-    id: 'build-aarav-budget-champ',
-    title: "🎮 AARAV'S ₹80K BUDGET CHAMPION",
-    author: 'Aarav Patel',
-    authorRole: 'College Esports Captain',
-    likes: 96,
-    forksCount: 29,
+    id: 'sample-budget-80k',
+    title: '₹80K BUDGET 1080P BUILD',
+    author: 'Silicon Matrix',
+    authorRole: 'Sample build',
+    likes: 0,
+    forksCount: 0,
     tag: 'Budget',
     totalPriceINR: 82000,
     specs: {
@@ -91,11 +91,12 @@ export const INITIAL_COMMUNITY_BUILDS: CommunityBuild[] = [
     },
     description: 'Maximum FPS extracted per Rupee spent in India. Clean cable management and future-proof AM5 socket upgrade path.',
     publishedAt: '3 days ago',
-    commentsCount: 12
+    commentsCount: 0
   }
 ];
 
-const LOCAL_STORAGE_KEY = 'silicon_community_builds_v1';
+// v2: sample builds no longer carry invented authors or counts
+const LOCAL_STORAGE_KEY = 'silicon_community_builds_v2';
 
 export function getStoredCommunityBuilds(): CommunityBuild[] {
   try {

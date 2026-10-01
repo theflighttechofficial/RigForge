@@ -29,7 +29,7 @@ import {
   Cpu,
   Thermometer,
   Boxes
-} from 'lucide-react';
+} from './icons';
 
 interface StoragePerformanceLabProps {
   onNavigateToBuilder?: () => void;
@@ -428,7 +428,7 @@ export const StoragePerformanceLab: React.FC<StoragePerformanceLabProps> = ({
               <span>RACE COMPLETED</span>
             </div>
             <div className="text-base font-extrabold text-white">
-              🏆 Winner: <span className="text-emerald-300">{raceFinishedWinner}</span> finished in first place!
+              Winner: <span className="text-emerald-300">{raceFinishedWinner}</span> finished in first place!
             </div>
           </motion.div>
         )}

@@ -27,7 +27,7 @@ import {
   Flame,
   Wrench,
   RotateCcw
-} from 'lucide-react';
+} from './icons';
 import { IntegratedGraphicsToggle, useIntegratedGraphics } from './IntegratedGraphicsToggle';
 
 interface BuildChallengeModeProps {
@@ -77,7 +77,7 @@ export const BuildChallengeMode: React.FC<BuildChallengeModeProps> = ({
   }, [currentChallenge, userConfig, cpus, gpus]);
 
   const handleShareBuild = () => {
-    const text = `🏆 PC BUILD CHALLENGE: ${currentChallenge.code} (${currentChallenge.title})\n` +
+    const text = `PC BUILD CHALLENGE: ${currentChallenge.code} (${currentChallenge.title})\n` +
       `Rank: Tier ${scoreResult.rankTier} (${scoreResult.scores.totalComposite}/100 Score)\n` +
       `CPU: ${chosenCpu.Model}\n` +
       `GPU: ${chosenGpu.Model}\n` +
@@ -283,7 +283,7 @@ export const BuildChallengeMode: React.FC<BuildChallengeModeProps> = ({
               {scoreResult.requirementChecklist.map((item) => (
                 <div key={item.id} className="flex items-center gap-2 p-2 rounded-lg bg-zinc-900/80">
                   {item.met ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-500" aria-hidden />
                   ) : (
                     <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
                   )}

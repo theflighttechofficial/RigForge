@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { CPUItem, GPUItem, HardwareItem, ComponentCategory, Brand, HardwareEra } from '../types';
 import { formatINR, formatScore, getValueIndex, getPowerEfficiency } from '../utils/formatters';
-import { Search, SlidersHorizontal, ArrowUpDown, GitCompare, GitMerge, Info, Cpu, Monitor, Zap, History, Sparkles, Server } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, GitCompare, GitMerge, Info, Cpu, Monitor, Zap, History, Sparkles, Server } from './icons';
 
 interface HardwareCatalogProps {
   category: ComponentCategory;
