@@ -69,7 +69,7 @@ export const DigitalTwinDashboard: React.FC<DigitalTwinDashboardProps> = ({
   onRunAiDiagnostics,
   onOpen3DStudio,
   onOpenSynergy,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   // Load digital twins from localStorage or defaults
   const [twins, setTwins] = useState<DigitalTwinPC[]>(() => loadSavedDigitalTwins());

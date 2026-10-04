@@ -182,11 +182,27 @@ export async function completeScanSession(token: string, session: ScanSession, r
   await setSessionValue(token, { ...session, report }, remaining);
 }
 
+// Double-click launcher: runs the PowerShell agent in a window that stays open until Enter is pressed
+export function windowsLauncherScript(agentUrl: string): string {
+  return [
+    '@echo off',
+    'title Silicon Matrix hardware scan',
+    `powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072; irm '${agentUrl}' | iex"`,
+    'echo.',
+    'pause'
+  ].join(String.fromCharCode(13, 10));
+}
+
 export function windowsAgentScript(origin: string, token: string): string {
   return `# Silicon Matrix hardware scan agent (read-only)
 # Reads hardware details on this PC and sends them to ${origin} (scan session ${token}).
 # It does not change settings, install anything, or read personal files.
+# Older Windows PowerShell builds default to TLS 1.0, which HTTPS hosts reject
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 $ErrorActionPreference = 'SilentlyContinue'
+Write-Host ''
+Write-Host 'Silicon Matrix hardware scan' -ForegroundColor Cyan
+Write-Host '[1/3] Reading processor, memory, drives, graphics and network adapters...'
 $cs  = Get-CimInstance Win32_ComputerSystem
 $os  = Get-CimInstance Win32_OperatingSystem
 $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1
@@ -211,8 +227,23 @@ $data = [ordered]@{
   network = @(Get-NetAdapter -Physical | ForEach-Object { @{ name = $_.Name; description = $_.InterfaceDescription; mac = $_.MacAddress; speedBps = $_.ReceiveLinkSpeed; status = "$($_.Status)"; wireless = ($_.PhysicalMediaType -match '802\\.11') } })
   wifi = @{ ssid = (Get-WlanField 'SSID'); signalPercent = ((Get-WlanField 'Signal') -replace '%', ''); band = (Get-WlanField 'Band') }
 }
+Write-Host ('       Found: ' + $cpu.Name.Trim())
 $json = $data | ConvertTo-Json -Depth 5
-Invoke-RestMethod -Method Post -Uri '${origin}/api/system-specs/report/${token}' -ContentType 'application/json' -Body ([System.Text.Encoding]::UTF8.GetBytes($json)) | Out-Null
-Write-Host 'Scan sent. Return to your browser tab.' -ForegroundColor Green
+Write-Host '[2/3] Sending the report to ${origin} ...'
+try {
+  Invoke-RestMethod -Method Post -Uri '${origin}/api/system-specs/report/${token}' -ContentType 'application/json' -Body ([System.Text.Encoding]::UTF8.GetBytes($json)) -ErrorAction Stop | Out-Null
+  Write-Host '[3/3] Done. Go back to your browser tab; your specs appear there in a few seconds.' -ForegroundColor Green
+} catch {
+  $code = $_.Exception.Response.StatusCode.value__
+  if ($code -eq 404) {
+    Write-Host 'This scan link has expired (links last 15 minutes). Press Rescan in the browser for a new one.' -ForegroundColor Yellow
+  } elseif ($code -eq 409) {
+    Write-Host 'This scan link was already used. Press Rescan in the browser for a new one.' -ForegroundColor Yellow
+  } else {
+    Write-Host ('Could not send the scan: ' + $_.Exception.Message) -ForegroundColor Red
+    Write-Host 'Check your internet connection and try again.'
+  }
+}
+Write-Host ''
 `;
 }

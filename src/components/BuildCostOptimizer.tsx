@@ -44,7 +44,7 @@ export const BuildCostOptimizer: React.FC<BuildCostOptimizerProps> = ({
   cpus,
   gpus,
   onNavigateToBuilder,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   const [budgetINR, setBudgetINR] = useState<number>(100000);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<BuildObjective>('gaming');

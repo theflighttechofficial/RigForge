@@ -22,6 +22,46 @@ import {
   ArrowUp
 } from '../icons';
 import { CPUItem, GPUItem } from '../../types';
+import { buildPcModel, disposeObject, gpuOptions, PcModel, PcPartKey, setupRenderer } from '../../three/pcModel';
+
+// Model units are centimetres; the AR scene uses 0.3 units per cm (a 48 cm tower is 14.4 units tall)
+const AR_UNITS_PER_CM = 0.3;
+const LABELLED_PARTS: { key: PcPartKey; label: string }[] = [
+  { key: 'gpu', label: 'Graphics card' },
+  { key: 'cooler', label: 'CPU cooler' },
+  { key: 'ram', label: 'Memory' },
+  { key: 'motherboard', label: 'Motherboard' },
+  { key: 'psu', label: 'Power supply' },
+  { key: 'case', label: 'Intake fans' }
+];
+
+// Measurement line with end ticks and a text label, drawn in model units (cm)
+function dimensionLine(a: THREE.Vector3, b: THREE.Vector3, text: string, tickDir: THREE.Vector3): THREE.Group {
+  const g = new THREE.Group();
+  const mat = new THREE.LineBasicMaterial({ color: 0x06b6d4 });
+  const tick = tickDir.clone().multiplyScalar(1.5);
+  const pts = [a, b, a.clone().add(tick), a.clone().sub(tick), b.clone().add(tick), b.clone().sub(tick)];
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), mat));
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 96;
+  const ctx = c.getContext('2d')!;
+  ctx.fillStyle = 'rgba(9,9,11,0.85)';
+  ctx.fillRect(0, 0, 256, 96);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 54px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 128, 50);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
+  sprite.scale.set(8, 3, 1);
+  sprite.position.copy(a).add(b).multiplyScalar(0.5).add(tickDir.clone().multiplyScalar(4));
+  sprite.renderOrder = 10;
+  g.add(sprite);
+  return g;
+}
 
 export interface ARViewerModalProps {
   isOpen: boolean;
@@ -55,6 +95,9 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
   const [isFlashlightOn, setIsFlashlightOn] = useState<boolean>(false);
   const [rotationDeg, setRotationDeg] = useState<number>(15);
   const [elevationCm, setElevationCm] = useState<number>(0); // 0 = floor, 74 = desk height
+  const [showLabels, setShowLabels] = useState<boolean>(true);
+  const labelLayerRef = useRef<HTMLDivElement>(null);
+  const pcRef = useRef<PcModel | null>(null);
 
   // Real-world Dimensions
   const dimensions = currentObject === 'tower'
@@ -142,6 +185,7 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const disposeEnv = setupRenderer(renderer, scene);
 
     // Studio Lighting for AR Model
     const ambient = new THREE.AmbientLight(0xffffff, 1.2);
@@ -199,8 +243,29 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
 
       // Pulse reticle
       ring.rotation.z += 0.01;
+      pcRef.current?.rotors.forEach((r) => (r.rotation.y += 0.12));
 
       state.renderer.render(state.scene, state.camera);
+
+      // Keep part labels over their parts
+      const layer = labelLayerRef.current;
+      const pc = pcRef.current;
+      if (layer && pc) {
+        const w = state.renderer.domElement.clientWidth;
+        const h = state.renderer.domElement.clientHeight;
+        const v = new THREE.Vector3();
+        LABELLED_PARTS.forEach(({ key }, i) => {
+          const el = layer.children[i] as HTMLElement | undefined;
+          if (!el) return;
+          const target = key === 'case' ? (pc.parts.case.userData.callouts?.[0]?.anchor as THREE.Object3D | undefined) : pc.parts[key];
+          if (!target) return;
+          if (key === 'case') target.getWorldPosition(v);
+          else new THREE.Box3().setFromObject(target).getCenter(v);
+          v.project(state.camera);
+          el.style.display = v.z < 1 ? 'block' : 'none';
+          el.style.transform = `translate(${((v.x + 1) / 2) * w}px, ${((1 - v.y) / 2) * h}px)`;
+        });
+      }
       state.animFrameId = requestAnimationFrame(animate);
     };
 
@@ -223,6 +288,9 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
         cancelAnimationFrame(threeRef.current.animFrameId);
         threeRef.current.renderer.dispose();
       }
+      pcRef.current?.dispose();
+      pcRef.current = null;
+      disposeEnv();
     };
   }, [isOpen]);
 
@@ -231,8 +299,23 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
     if (!threeRef.current) return;
     const group = threeRef.current.modelGroup;
     while (group.children.length > 0) {
-      group.remove(group.children[0]);
+      const child = group.children[0];
+      group.remove(child);
+      disposeObject(child);
     }
+    pcRef.current = null;
+
+    // Detailed PC at true scale, glass side facing the viewer
+    const pc = buildPcModel({
+      ...gpuOptions(selectedGpu),
+      coolerType: 'Tower Air',
+      cpuBrand: selectedCpu.Brand === 'Intel' ? 'Intel' : 'AMD',
+      ramSticks: 2,
+      ramType: 'DDR5',
+      rgbHex: rgbColorHex,
+      finish: document.documentElement.classList.contains('light') ? 'white' : 'black'
+    });
+    pcRef.current = pc;
 
     const steelMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.4, metalness: 0.7 });
     const glassMat = new THREE.MeshPhysicalMaterial({
@@ -244,37 +327,14 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
     });
 
     if (currentObject === 'tower') {
-      // 3D Rig Tower (Scaled to true AR coordinates)
       const tower = new THREE.Group();
-      const chassis = new THREE.Mesh(new THREE.BoxGeometry(6.5, 14, 13), steelMat);
-      chassis.position.y = 7;
-      tower.add(chassis);
-
-      // Glass side panel
-      const glass = new THREE.Mesh(new THREE.BoxGeometry(0.2, 13.5, 12.5), glassMat);
-      glass.position.set(-3.3, 7, 0);
-      tower.add(glass);
-
-      // Internal GPU & Cooler glow
-      const gpuMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(3.5, 3.2, 8.5),
-        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.3, metalness: 0.8 })
-      );
-      gpuMesh.position.set(-0.5, 5, 0);
-      tower.add(gpuMesh);
-
-      const insideLight = new THREE.PointLight(new THREE.Color(rgbColorHex), 4.0, 15);
-      insideLight.position.set(-0.5, 7, 0);
-      tower.add(insideLight);
-
-      // Laser Bounding Box Dimension Wireframe
-      const boxGeo = new THREE.BoxGeometry(7, 14.5, 13.5);
-      const wireGeo = new THREE.WireframeGeometry(boxGeo);
-      const wireMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.6 });
-      const wire = new THREE.LineSegments(wireGeo, wireMat);
-      wire.position.y = 7.25;
-      tower.add(wire);
-
+      tower.add(pc.root);
+      // Real-size measurement lines: height, depth and width
+      const { size } = pc;
+      tower.add(dimensionLine(new THREE.Vector3(-27, 0, 11.5), new THREE.Vector3(-27, size.y, 11.5), `${Math.round(size.y)} cm`, new THREE.Vector3(-1, 0, 0)));
+      tower.add(dimensionLine(new THREE.Vector3(-23, -2, 15.5), new THREE.Vector3(23, -2, 15.5), `${Math.round(size.x)} cm`, new THREE.Vector3(0, -1, 0)));
+      tower.add(dimensionLine(new THREE.Vector3(27, 0, -11.5), new THREE.Vector3(27, 0, 11.5), `${Math.round(size.z)} cm`, new THREE.Vector3(1, 0, 0)));
+      tower.scale.setScalar(AR_UNITS_PER_CM);
       group.add(tower);
     } else {
       // Complete Desk Battlestation Setup
@@ -317,10 +377,11 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
         deskSetup.add(mon);
       }
 
-      // Tower on right edge
-      const miniTower = new THREE.Mesh(new THREE.BoxGeometry(4, 9, 8), steelMat);
-      miniTower.position.set(10.5, 16.5, 1);
-      deskSetup.add(miniTower);
+      // The same PC at desk scale (the 160 cm desk is 26 units wide)
+      pc.root.scale.setScalar(26 / 160);
+      pc.root.rotation.y = -Math.PI / 2;
+      pc.root.position.set(10.5, 12.4, 0.5);
+      deskSetup.add(pc.root);
 
       // Chair
       const chair = new THREE.Mesh(
@@ -332,42 +393,42 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
 
       group.add(deskSetup);
     }
-  }, [currentObject, rgbColorHex]);
+  }, [isOpen, currentObject, rgbColorHex, selectedGpu.id, selectedCpu.Brand]);
 
   // Scale update
   useEffect(() => {
     if (!threeRef.current) return;
     threeRef.current.modelGroup.scale.set(scaleFactor, scaleFactor, scaleFactor);
-  }, [scaleFactor]);
+  }, [isOpen, scaleFactor]);
 
   // Flashlight illumination boost
   useEffect(() => {
     if (!threeRef.current) return;
     threeRef.current.ambientLight.intensity = isFlashlightOn ? 2.4 : 1.2;
     threeRef.current.dirLight.intensity = isFlashlightOn ? 2.8 : 1.6;
-  }, [isFlashlightOn]);
+  }, [isOpen, isFlashlightOn]);
 
   // Height elevation (Floor vs Desk)
   useEffect(() => {
     if (!threeRef.current) return;
     threeRef.current.modelGroup.position.y = elevationCm * 0.1;
-  }, [elevationCm]);
+  }, [isOpen, elevationCm]);
 
   // Manual rotation dial update
   useEffect(() => {
     if (!threeRef.current) return;
     threeRef.current.modelGroup.rotation.y = (rotationDeg * Math.PI) / 180;
-  }, [rotationDeg]);
+  }, [isOpen, rotationDeg]);
 
   // Touch & Mouse rotation
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.PointerEvent) => {
     if (!threeRef.current) return;
     threeRef.current.isDragging = true;
     threeRef.current.prevX = e.clientX;
     threeRef.current.prevY = e.clientY;
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: React.PointerEvent) => {
     if (!threeRef.current || !threeRef.current.isDragging) return;
     const deltaX = e.clientX - threeRef.current.prevX;
     threeRef.current.prevX = e.clientX;
@@ -465,7 +526,17 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setShowLabels((v) => !v)}
+              aria-pressed={showLabels}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold cursor-pointer ${
+                showLabels ? 'bg-cyan-500 text-zinc-950' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+              }`}
+            >
+              Part labels {showLabels ? 'ON' : 'OFF'}
+            </button>
+
             {/* Flashlight Studio Illumination Toggle */}
             <button
               onClick={() => setIsFlashlightOn((f) => !f)}
@@ -521,9 +592,10 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
         <div
           ref={containerRef}
           className="relative flex-1 bg-black overflow-hidden select-none flex items-center justify-center cursor-grab active:cursor-grabbing"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
+          onPointerDown={handleMouseDown}
+          onPointerMove={handleMouseMove}
+          onPointerUp={handleMouseUp}
+          onPointerLeave={handleMouseUp}
         >
           {/* Live Camera Video Feed (Background) */}
           <video
@@ -552,24 +624,20 @@ export const ARViewerModal: React.FC<ARViewerModalProps> = ({
             </div>
           )}
 
-          {/* Holographic AR Surface Plane Tracking Bracket HUD */}
-          <div className="pointer-events-none absolute inset-6 sm:inset-10 z-15 border border-cyan-500/20 rounded-3xl flex flex-col justify-between p-3 select-none">
-            <div className="flex items-center justify-between text-[10px] font-mono font-bold text-cyan-400/80">
-              <span className="flex items-center gap-1">
-                <Crosshair className="w-3.5 h-3.5 animate-spin" /> SURFACE PLANE: LOCKED
-              </span>
-              <span className="px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300">
-                60 FPS TRACKING
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
-              <span>ELEVATION: {elevationCm === 0 ? 'FLOOR LEVEL (0 CM)' : 'DESK LEVEL (+74 CM)'}</span>
-              <span>AZIMUTH: {rotationDeg}°</span>
-            </div>
-          </div>
 
           {/* Three.js 3D WebGL Canvas Layer */}
-          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-10 block" />
+          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-10 block touch-none" />
+
+          {/* Part labels, positioned every frame from the 3D model */}
+          <div ref={labelLayerRef} className={`absolute inset-0 z-20 pointer-events-none ${showLabels ? '' : 'hidden'}`} aria-hidden>
+            {LABELLED_PARTS.map((p) => (
+              <div key={p.key} className="absolute left-0 top-0" style={{ display: 'none' }}>
+                <span className="-translate-x-1/2 -translate-y-1/2 inline-block whitespace-nowrap rounded bg-zinc-950/85 px-1.5 py-0.5 text-[11px] font-medium text-white ring-1 ring-cyan-400/70">
+                  {p.label}
+                </span>
+              </div>
+            ))}
+          </div>
 
           {/* Real-World Dimension Bounding Box Overlay */}
           <div className="absolute top-4 right-4 z-20 p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/15 text-xs font-mono space-y-2 max-w-xs shadow-2xl pointer-events-auto">

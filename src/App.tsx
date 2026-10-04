@@ -43,6 +43,8 @@ const ContactPage = lazy(() => import('./components/SitePages').then((m) => ({ d
 const ThanksPage = lazy(() => import('./components/SitePages').then((m) => ({ default: m.ThanksPage })));
 
 
+const THEME_KEY = 'silicon_matrix_theme_v2';
+
 export default function App() {
   // Navigation stages: 'landing' (opens first) -> 'app' (main website experience)
   // The URL decides where a visit starts: "/" plays the landing intro, any other path opens that page directly
@@ -56,12 +58,12 @@ export default function App() {
 
   // Global theme state ('dark' or 'light')
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    // Light is the default. The key changed when the default did, so earlier visitors start on light once.
     try {
-      const saved = localStorage.getItem('silicon_matrix_theme');
-      if (saved === 'light' || saved === 'dark') return saved;
-      return 'dark';
+      const saved = localStorage.getItem(THEME_KEY);
+      return saved === 'dark' ? 'dark' : 'light';
     } catch {
-      return 'dark';
+      return 'light';
     }
   });
 
@@ -74,7 +76,7 @@ export default function App() {
       document.documentElement.classList.remove('light');
     }
     try {
-      localStorage.setItem('silicon_matrix_theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
     } catch {
       // ignore
     }

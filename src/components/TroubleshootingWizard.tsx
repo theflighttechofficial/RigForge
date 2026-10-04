@@ -38,7 +38,7 @@ interface TroubleshootingWizardProps {
 
 export const TroubleshootingWizard: React.FC<TroubleshootingWizardProps> = ({
   onNavigateToBuilder,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   const [activeCategory, setActiveCategory] = useState<TroubleshootingCategory | null>(null);
   const [currentNodeId, setCurrentNodeId] = useState<string | null>(null);

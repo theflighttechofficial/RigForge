@@ -5,7 +5,7 @@ import { scanSystemSpecs, readUserHardwareDb } from './systemSpecs.js';
 import { storeKind } from './store.js';
 import { generateDeterministicReport } from './src/utils/doctorReport.js';
 import { parseUnixDump, unixAgentScript } from './unixAgent.js';
-import { completeScanSession, createScanSession, getScanSession, reportFromAgent, windowsAgentScript } from './deviceAgent.js';
+import { completeScanSession, createScanSession, getScanSession, reportFromAgent, windowsAgentScript, windowsLauncherScript } from './deviceAgent.js';
 
 dotenv.config();
 
@@ -72,7 +72,9 @@ export function createApp() {
   app.get('/api/system-specs/agent/:token', async (req, res) => {
     if (!(await getScanSession(req.params.token))) return res.status(404).send('# Scan session expired. Start a new scan in the browser.');
     const origin = originOf(req);
-    if (req.query.os === 'unix') {
+    if (req.query.os === 'cmd') {
+      res.type('text/plain').attachment('silicon-matrix-scan.cmd').send(windowsLauncherScript(`${origin}/api/system-specs/agent/${req.params.token}`));
+    } else if (req.query.os === 'unix') {
       res.type('text/plain').attachment('silicon-matrix-scan.sh').send(unixAgentScript(origin, req.params.token));
     } else {
       res.type('text/plain').attachment('silicon-matrix-scan.ps1').send(windowsAgentScript(origin, req.params.token));

@@ -45,6 +45,24 @@ function probeBrowser(): BrowserProbe {
   };
 }
 
+// Survives unmounting (tab switches) but not a page reload, by design
+const sessionCache = new Map<string, unknown>();
+
+function useSessionState<T>(key: string, initial: T): [T, (value: T | ((prev: T) => T)) => void] {
+  const [value, setValue] = useState<T>(() => (sessionCache.has(key) ? (sessionCache.get(key) as T) : initial));
+  const set = useCallback(
+    (next: T | ((prev: T) => T)) => {
+      setValue((prev) => {
+        const resolved = typeof next === 'function' ? (next as (p: T) => T)(prev) : next;
+        sessionCache.set(key, resolved);
+        return resolved;
+      });
+    },
+    [key]
+  );
+  return [value, set];
+}
+
 type AgentOs = 'windows' | 'mac' | 'linux';
 
 function detectOs(): AgentOs {
@@ -97,15 +115,16 @@ const CatalogBadge: React.FC<{ item?: HardwareItem; onInspect: (item: HardwareIt
   );
 
 export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetails, onOpenPrivacy }) => {
-  const [report, setReport] = useState<SystemSpecsReport | null>(null);
-  const [db, setDb] = useState<UserHardwareEntry[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [scanning, setScanning] = useState(false);
-  const [consent, setConsent] = useState<'ask' | 'granted' | 'declined'>('ask');
-  const [agent, setAgent] = useState<{ token: string; agentUrl: string } | null>(null);
+  // State lives in a module-level session cache so switching tabs keeps the scan until the page reloads
+  const [report, setReport] = useSessionState('report', null as SystemSpecsReport | null);
+  const [db, setDb] = useSessionState('db', [] as UserHardwareEntry[]);
+  const [error, setError] = useSessionState('error', null as string | null);
+  const [scanning, setScanning] = useSessionState('scanning', false);
+  const [consent, setConsent] = useSessionState('consent', 'ask' as 'ask' | 'granted' | 'declined');
+  const [agent, setAgent] = useSessionState('agent', null as { token: string; agentUrl: string } | null);
   const [copied, setCopied] = useState(false);
-  const [agentOs, setAgentOs] = useState<AgentOs>(detectOs);
-  const [browser, setBrowser] = useState<BrowserProbe | null>(null);
+  const [agentOs, setAgentOs] = useSessionState('agentOs', detectOs());
+  const [browser, setBrowser] = useSessionState('browser', null as BrowserProbe | null);
 
   const loadDb = useCallback(async () => {
     const dbRes = await fetch('/api/user-hardware-db');
@@ -168,7 +187,7 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
   const oneLiner = !agent
     ? ''
     : agentOs === 'windows'
-      ? `powershell -NoProfile -ExecutionPolicy Bypass -Command "irm '${agent.agentUrl}' | iex"`
+      ? `irm '${agent.agentUrl}' | iex`
       : `curl -fsSL '${agent.agentUrl}?os=unix' | sh`;
 
   const cpuMatch = report?.cpu.matchedId ? cpus.find((c) => c.id === report.cpu.matchedId) : undefined;
@@ -251,7 +270,9 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
             <li>
               {agentOs === 'windows' ? (
                 <>
-                  Press <kbd className="rounded bg-zinc-800 px-1.5">Win</kbd> + <kbd className="rounded bg-zinc-800 px-1.5">R</kbd>, paste this command, then press Enter:
+                  Open PowerShell: right-click the Start button and choose <span className="font-semibold">Terminal</span> (or{' '}
+                  <span className="font-semibold">Windows PowerShell</span>). Paste this command with Ctrl + V and press Enter. Leave the window open
+                  until it says Done:
                 </>
               ) : agentOs === 'mac' ? (
                 <>
@@ -285,12 +306,17 @@ export const MyPCSpecs: React.FC<MyPCSpecsProps> = ({ cpus, gpus, onInspectDetai
             </li>
             <li>
               Or{' '}
-              <a href={agentOs === 'windows' ? agent.agentUrl : `${agent.agentUrl}?os=unix`} className="font-semibold text-cyan-400 underline">
-                download the scan script
+              <a href={agentOs === 'windows' ? `${agent.agentUrl}?os=cmd` : `${agent.agentUrl}?os=unix`} className="font-semibold text-cyan-400 underline">
+                download the scan launcher
               </a>
               {agentOs === 'windows' ? (
                 <>
-                  , right-click it and choose <span className="font-semibold">Run with PowerShell</span>.
+                  {' '}and double-click <code className="text-cyan-400">silicon-matrix-scan.cmd</code>. If Windows shows "Windows protected your PC", choose{' '}
+                  <span className="font-semibold">More info</span> then <span className="font-semibold">Run anyway</span>. You can{' '}
+                  <a href={agent.agentUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                    read the script first
+                  </a>
+                  .
                 </>
               ) : (
                 <>

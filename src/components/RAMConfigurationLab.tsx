@@ -36,7 +36,7 @@ interface RAMConfigurationLabProps {
 
 export const RAMConfigurationLab: React.FC<RAMConfigurationLabProps> = ({
   onNavigateToBuilder,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   // Sandbox RAM Configuration Controls
   const [ramType, setRamType] = useState<'DDR4' | 'DDR5'>('DDR5');

@@ -24,6 +24,20 @@ import {
   Gauge,
   Activity
 } from './icons';
+import { PartViewer3D } from './PartViewer3D';
+import type { PcPartKey } from '../three/pcModel';
+
+// Anatomy entries that have a 3D model
+const ANATOMY_3D: Record<string, PcPartKey> = {
+  cpu: 'cpu',
+  gpu: 'gpu',
+  motherboard: 'motherboard',
+  ram: 'ram',
+  storage: 'storage',
+  psu: 'psu',
+  cooling: 'cooler',
+  case: 'case'
+};
 
 interface ComponentSection {
   id: string;
@@ -526,6 +540,9 @@ export const ComponentAnatomy: React.FC = () => {
               {currentComponent.tagline}
             </p>
           </div>
+
+          {/* Rotatable 3D model of this part with its sub-parts labelled */}
+          {ANATOMY_3D[currentComponent.id] && <PartViewer3D part={ANATOMY_3D[currentComponent.id]} />}
 
           {/* DUAL DEPTH VIEW */}
           {depthMode === 'beginner' ? (

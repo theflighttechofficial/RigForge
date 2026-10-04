@@ -38,7 +38,7 @@ interface StoragePerformanceLabProps {
 
 export const StoragePerformanceLab: React.FC<StoragePerformanceLabProps> = ({
   onNavigateToBuilder,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   const [selectedMetricId, setSelectedMetricId] = useState<StorageBenchmarkMetric['id']>('seqRead');
   const [directStorageActive, setDirectStorageActive] = useState<boolean>(true);

@@ -41,7 +41,7 @@ export const BuildChallengeMode: React.FC<BuildChallengeModeProps> = ({
   cpus,
   gpus,
   onNavigateToBuilder,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   const [activeChallengeId, setActiveChallengeId] = useState<string>('challenge-001');
 

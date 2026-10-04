@@ -47,7 +47,7 @@ export const CommunityBuildGallery: React.FC<CommunityBuildGalleryProps> = ({
   onForkToBuilder,
   onOpen3DView,
   onSaved,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   const [builds, setBuilds] = useState<CommunityBuild[]>(() => getStoredCommunityBuilds());
   const [searchQuery, setSearchQuery] = useState<string>('');

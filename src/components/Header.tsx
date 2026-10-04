@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
   cpuCount,
   gpuCount,
   onOpenSearch,
-  theme = 'dark',
+  theme = 'light',
   onToggleTheme
 }) => {
   const [moreOpen, setMoreOpen] = useState<boolean>(false);

@@ -52,7 +52,7 @@ export const Spatial3DStudio: React.FC<Spatial3DStudioProps> = ({
   onSelectCpu,
   onSelectGpu,
   onOpenRigArchitect,
-  theme = 'dark'
+  theme = 'light'
 }) => {
   // iGPU-only builds render with no graphics card in the chassis
   const { useIntegrated: useIgpu, setUseIntegrated: setUseIgpu, effectiveGpu: selectedGpu } = useIntegratedGraphics(selectedCpu, selectedDiscreteGpu);
