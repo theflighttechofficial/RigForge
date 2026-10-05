@@ -68,7 +68,8 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (theme === 'light') {
+    // The landing intro is a dark cinematic; the light theme's global overrides would blank its text
+    if (theme === 'light' && appStage === 'app') {
       document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     } else {
@@ -80,7 +81,7 @@ export default function App() {
     } catch {
       // ignore
     }
-  }, [theme]);
+  }, [theme, appStage]);
 
   // Warm IndexedDB local silicon dataset cache
   useEffect(() => {

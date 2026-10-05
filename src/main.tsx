@@ -10,6 +10,12 @@ import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '@fontsource/ibm-plex-mono/700.css';
+// Display faces used by the landing intro
+import '@fontsource/big-shoulders-display/800';
+import '@fontsource/big-shoulders-display/900';
+import '@fontsource/instrument-sans/400';
+import '@fontsource/instrument-sans/500';
+import '@fontsource/instrument-sans/600';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
