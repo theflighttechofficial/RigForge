@@ -1,204 +1,264 @@
 # ⚡ PC Hardware Performance Matrix & Synergy Engine
 
-> **A browser-based hardware intelligence platform** — 3D assembly visualization, Pareto-efficiency price/performance analysis, AI-powered build diagnostics, and full system simulation, localized for the Indian PC building market (₹ INR).
+> **The Ultimate WebGL & AI-Powered Hardware Intelligence Platform** — Real-time 3D PC assembly visualization, Pareto-efficiency price/performance analysis, AI build diagnostics, stability & thermal stress modeling, and total cost of ownership analytics — tailored for high-performance PC building and localized for the Indian market (₹ INR).
 
 <p align="center">
-  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white">
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white">
-  <img alt="Three.js" src="https://img.shields.io/badge/Three.js-WebGL-000000?logo=three.js&logoColor=white">
-  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white">
-  <img alt="Express" src="https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white">
-  <img alt="License" src="https://img.shields.io/badge/License-Proprietary-lightgrey">
+  <a href="https://react.dev/"><img alt="React 19" src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black"></a>
+  <a href="https://www.typescriptlang.org/"><img alt="TypeScript 5.8" src="https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white"></a>
+  <a href="https://vitejs.dev/"><img alt="Vite 6" src="https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white"></a>
+  <a href="https://threejs.org/"><img alt="Three.js" src="https://img.shields.io/badge/Three.js-WebGL-000000?style=for-the-badge&logo=three.js&logoColor=white"></a>
+  <a href="https://tailwindcss.com/"><img alt="Tailwind CSS v4" src="https://img.shields.io/badge/Tailwind_CSS-4.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white"></a>
+  <a href="https://expressjs.com/"><img alt="Express 4" src="https://img.shields.io/badge/Express-4.21-000000?style=for-the-badge&logo=express&logoColor=white"></a>
+  <a href="https://ai.google.dev/"><img alt="Google Gemini AI" src="https://img.shields.io/badge/Gemini_AI-2.4-8E75B5?style=for-the-badge&logo=google&logoColor=white"></a>
 </p>
 
 ---
 
-## 🚀 Overview
+## 🌟 Key Highlights
 
-**PC Hardware Performance Matrix & Synergy Engine** turns the desktop PC-building experience into an interactive engineering lab. Assemble rigs in a real-time 3D WebGL viewport, hunt for CPU/GPU bottlenecks across resolutions, stress-test voltage and thermal stability, inspect silicon die floorplans, and evaluate price-to-performance frontiers spanning nearly two decades of hardware — all client-side, all localized to the Indian retail market.
-
-It ships as a single-page React app with an optional Express + Gemini backend that powers the natural-language **AI Build Doctor** diagnostic assistant.
+- 🧊 **3D Spatial Computing & Assembly Studio** — Photorealistic PBR WebGL assembly viewport, interactive exploded component inspect, airflow particle dynamic simulation, and 1:1 scale AR WebXR floor projection.
+- 🩺 **AI Build Doctor (Gemini 2.4 Powered)** — Server-assisted natural-language system diagnostic engine with intelligent local heuristics fallback.
+- 📊 **Pareto Value Matrix** — Interactive 2D scatter analysis mapping ₹ INR prices against synthetic compute benchmarks across 18 years of hardware history (2007–2025).
+- ⚔️ **Architectural Head-to-Head Duel** — 6-axis workload radar charts, lithography details, cache topology, and contextual performance verdicts.
+- 🔬 **Synergy & Bottleneck Physics Lab** — Queue-based CPU/GPU frame rendering pipeline analysis at 1080p, 1440p, 4K, and Workstation workloads.
+- ⚡ **Thermal & Stability Stress Lab** — High-ambient Indian summer (up to 45°C) thermal runway modeling, Vcore offset & LLC vdroop simulation, and live 15-second stress execution.
+- 🖥️ **Rig Architect Configurator** — Real-time component compatibility, VRM/wattage audit, and Indian retail ₹ pricing with 18% GST calculation.
+- 🔋 **TCO & DISCOM Electricity Engine** — 3-year running cost projection with region-specific tariffs (MSEDCL, BESCOM, BSES, TANGEDCO, UPPCL, WBSEDCL, WBSEDCL).
 
 ---
 
 ## 📑 Table of Contents
 
-- [Feature Modules](#-feature-modules)
-- [Global UX & Design](#-global-ux--design)
-- [Tech Stack](#-tech-stack)
+- [Architectural Overview](#-architectural-overview)
+- [Comprehensive Feature Breakdown](#-comprehensive-feature-breakdown)
+  - [1. 3D Spatial Computing & Interactive Assembly](#1-3d-spatial-computing--interactive-assembly)
+  - [2. AI Build Doctor & Diagnostics Engine](#2-ai-build-doctor--diagnostics-engine)
+  - [3. Price-to-Performance Pareto Matrix](#3-price-to-performance-pareto-matrix)
+  - [4. Synergy, Bottleneck & Physics Lab](#4-synergy-bottleneck--physics-lab)
+  - [5. Rig Architect & Indian Builder Suite](#5-rig-architect--indian-builder-suite)
+  - [6. Deep Hardware Labs & Subsystem Simulations](#6-deep-hardware-labs--subsystem-simulations)
+- [Tech Stack & Architecture](#-tech-stack--architecture)
+- [Project Directory Structure](#-project-directory-structure)
 - [Getting Started](#-getting-started)
-- [Environment Variables](#-environment-variables)
-- [Project Structure](#-project-structure)
-- [License](#-license)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Development Workflow](#development-workflow)
+  - [Production Build & Bundle](#production-build--bundle)
+- [Environment Configuration](#-environment-configuration)
+- [Performance & Security](#-performance--security)
+- [Contributing](#-contributing)
+- [License & Trademarks](#-license--trademarks)
 
 ---
 
-## 🛠️ Feature Modules
+## 🏗️ Architectural Overview
 
-### 🧊 3D Spatial Computing & Assembly Studio
-Real-time WebGL/Three.js assembly viewport with orbit/pan/zoom camera controls.
-- **Exploded View** — separate the chassis to inspect the motherboard, GPU, RAM, AIO, and PSU.
-- **Render Modes** — photorealistic PBR, wireframe CAD, and thermal heat-signature overlays.
-- **Clearance & Collision Lab** — flags RAM-vs-cooler clashes, GPU-vs-radiator length limits, and PSU shroud/HDD bay conflicts with 3D warning zones.
-- **Airflow Simulator** — particle-based intake/exhaust flow, static pressure (positive/neutral/negative), and dust-accumulation forecasting.
-- **RGB Lighting Sandbox** — curated presets (Cyberpunk Cyan, Tokyo Violet, Matrix Emerald, and more) with static/breathing/spectrum modes.
-- **AR Floor Projector** — WebXR-based 1:1 scale projection of your tower or desk setup via mobile camera.
-- **Desk Planner** — plans monitor arms, peripherals, and cable routing in 3D.
+**PC Hardware Performance Matrix & Synergy Engine** bridges hardware telemetry, CAD-like spatial WebGL modeling, and predictive AI analytics into a unified browser experience. Built as a high-performance Single-Page Application (SPA) leveraging React 19 and Vite 6, it pairs client-side code-split modules with an Express node backend for server-side SEO generation and Gemini AI API orchestration.
 
-### 📊 2D Price-to-Performance Value Matrix
-Scatter plot of ₹ price vs. synthetic compute/gaming benchmarks with a dynamically calculated **Pareto efficiency frontier**. Filter by category, market era (2007–2025), and manufacturer; route any part directly into Head-to-Head or Synergy Lab.
-
-### ⚔️ Head-to-Head Architectural Duel
-Side-by-side breakdown of clocks, core/thread topology, lithography, TDP, memory bus, and cache — plus a 6-axis normalized workload radar (Esports, 4K Rasterization, Ray Tracing, Video Encoding, 3D Rendering, Local AI/LLM compute) with a contextual value verdict.
-
-### 🔬 Synergy & Bottleneck Lab
-- Resolution-sensitive CPU/GPU queue-physics simulation across 1080p/1440p/4K/Workstation loads.
-- Adverse mismatch detection (e.g. FX-8350 + RTX 4090) with PCIe/memory-bandwidth chokepoint warnings.
-- Real-world FPS projections for demanding AAA titles.
-- **Driver Health Panel** — WHQL/branch-age checks with links to official NVIDIA/AMD/Intel driver portals and a DDU clean-install checklist.
-- **Stability Test Lab** — Vcore offset & LLC vdroop simulation, 12V transient excursions, thermal-runaway modeling, and a live 15-second stress run with MTBF scoring.
-- **Thermal Throttling Panel** — calibrated for high-ambient Indian summers (up to 45°C) across stock/air/AIO cooling tiers.
-- **Vector PDF Export** — jsPDF-generated diagnostic engineering reports.
-
-### 🩺 AI Build Doctor
-Natural-language build diagnostics (e.g. `Ryzen 5 3600 + RTX 4070 + 16GB RAM`) powered by a server-side Gemini endpoint with a deterministic heuristics fallback — zero client-side API key exposure. Produces a full health report: CPU/GPU balance per resolution, memory headroom audit, socket/platform lifespan, and a prioritized upgrade sequence with engineering rationale.
-
-### 🧙 Troubleshooting Wizard
-Guided, decision-tree diagnostics for common build issues — boot failures, black screens, thermal shutdowns, and driver instability — walking the user step-by-step to a root cause.
-
-### 🖥️ Rig Architect (Indian PC Builder)
-8-component configurator (CPU, GPU, motherboard, RAM, storage, PSU, cabinet, cooler) with automated socket/VRM/wattage validation, real-time ₹ pricing with 18% GST breakdown, and curated presets from ₹50,000 budget builds to ₹2,50,000 4K titans.
-
-### 💰 Build Cost Optimizer
-Suggests component swaps and price-tier alternatives to hit a target budget while minimizing performance loss, with a cost-distribution breakdown.
-
-### 🏆 Build Challenge Mode
-Gamified budget/performance challenges — build a rig against constraints (e.g. "best 1440p rig under ₹80,000") and get scored against an optimal target.
-
-### 🖼️ Community Build Gallery
-Browse curated example builds with specs, cost breakdowns, and use-case tags for inspiration.
-
-### 🧬 Digital Twin Dashboard
-A live, simulated telemetry view of a configured rig — temperatures, clocks, and utilization — mirroring the Stability/Thermal labs in a persistent dashboard format.
-
-### ⏱️ Live Real-Time Benchmark Lab
-In-browser canvas stress test measuring real FPS, frame-time variance, and endurance under simulated load.
-
-### 🎛️ RAM Configuration Lab
-Models dual/quad-channel population, XMP/EXPO profile impact, and frequency/timing trade-offs on effective bandwidth and latency.
-
-### 💾 Storage Performance Lab
-Compares HDD/SATA SSD/NVMe Gen3/Gen4/Gen5 sequential & random I/O, and models real-world load-time impact.
-
-### 🔋 TDP & Battery Estimator
-Estimates total system power draw and, for laptop/handheld configurations, projected battery runtime under gaming vs. idle loads.
-
-### 🔬 Silicon Anatomy & Die Inspector
-Interactive die floorplans for AMD Zen 4/5 (CCDs, 3D V-Cache, IOD), Intel Raptor/Arrow Lake (compute tiles, P/E-cores, Xe-LPG), and NVIDIA Ada/Blackwell (SMs, Tensor/RT cores) — with transistor density and interconnect tooltips.
-
-### 🪑 Battlestation Desk & Ergonomics Simulator
-3D desk/monitor-arm planning with viewing-distance/angle analysis, an ergonomics & health index, and cable-management scoring.
-
-### 📈 Upgrade ROI Engine
-Models generational upgrade jumps, computes ₹/FPS gained, and estimates depreciated resale value in the Indian used market.
-
-### ⚡ Electricity & TCO Calculator
-State-wise DISCOM tariff modeling (MSEDCL, BESCOM, BSES, TANGEDCO, TSSPDCL, UPPCL, WBSEDCL) for 3-year total cost of ownership comparisons.
-
-### 📚 Hardware Catalog
-Searchable spec database of desktop CPUs and GPUs from 2007 to 2025 with full architecture details and launch MSRPs.
+```mermaid
+graph TD
+    User([User Browser]) <--> ReactApp[React 19 Frontend SPA]
+    
+    subgraph Client-Side Rendering
+        ReactApp --> Spatial3D[Three.js 3D Spatial Studio]
+        ReactApp --> MatrixEngine[D3 / Chart.js Pareto Matrix]
+        ReactApp --> PhysicsSim[Synergy & Bottleneck Physics Lab]
+        ReactApp --> LocalStorage[(Client LocalStorage Persistence)]
+    end
+    
+    subgraph Server-Side Services
+        ReactApp <--> ExpressServer[Express SSR & API Server]
+        ExpressServer <--> GeminiAPI[Google Gemini 2.4 AI Engine]
+        ExpressServer --> SitemapGen[Dynamic Sitemap Generator]
+    end
+```
 
 ---
 
-## 🎨 Global UX & Design
+## 🛠️ Comprehensive Feature Breakdown
 
-- **Adaptive Theming** — cyberpunk dark mode and a high-contrast light mode, both WCAG AA compliant.
-- **Global Search** (`Ctrl+K` / `Cmd+K`) — fuzzy search across every CPU, GPU, and architecture tag.
-- **Indian Localization** — Lakhs/Crores numbering and ₹ INR formatting throughout.
-- **Motion** — smooth route/modal transitions via `motion/react`.
-- **Privacy-first** — runs entirely client-side with `localStorage` persistence; the only network calls are the optional AI Build Doctor requests.
+### 1. 3D Spatial Computing & Interactive Assembly
+- **Exploded View Mechanics**: Smoothly disassembles the chassis along z-axes to inspect RAM slot alignment, AIO pump clearance, motherboard VRM heatspreaders, and GPU sag bracket mountings.
+- **Multi-Mode Visual Shading**: Switch instantly between PBR Photorealistic rendering, CAD Wireframe viewports, and Thermal Heat Map overlays.
+- **Clearance & Collision Detection**: Real-time bounding-box check identifying RAM height vs. AIO radiator overhangs, GPU length vs. front intake fans, and PSU depth vs. drive cages.
+- **Airflow Particle Dynamics**: Visualizes intake/exhaust static pressure loops (positive, neutral, negative flow) and calculates dust-accumulation potential over time.
+- **RGB Lighting Sandbox**: Customizable RGB zones supporting presets (*Cyberpunk Cyan, Matrix Emerald, Tokyo Violet*) with dynamic pulse and breathing animations.
+- **AR WebXR Floor Projection**: Projects 1:1 scale tower models into physical space via mobile camera viewports.
+
+### 2. AI Build Doctor & Diagnostics Engine
+- **Gemini 2.4 Integration**: Processes natural language specs (e.g., *"i5-12400F with RTX 4080 Super for 4K video editing"*) through a secure server-side proxy (`/api/build-doctor`).
+- **Heuristic Fallback Engine**: Guarantees zero downtime by switching automatically to local deterministic evaluation rules if API limits or offline modes occur.
+- **Diagnostic Insights**: Delivers socket upgrade paths, VRM power phase adequacy ratings, memory bottleneck warnings, and targeted component swap recommendations.
+
+### 3. Price-to-Performance Pareto Matrix
+- **Dynamic Frontier Calculation**: Plots 500+ CPU/GPU entries against price point and synthetic compute scores, automatically highlighting non-dominated Pareto optimal parts.
+- **Multi-Decade Dataset**: Spans 2007 through 2025, enabling historical value trajectory analysis across legacy and modern architectures.
+- **Filters & Direct Routing**: Filter by vendor (NVIDIA, AMD, Intel), release era, TDP envelope, or socket type with single-click routing into the Comparison Duel.
+
+### 4. Synergy, Bottleneck & Physics Lab
+- **Resolution-Sensitive Queue Simulation**: Models frame-time rendering breakdown across 1080p, 1440p, 4K, and Ultrawide displays.
+- **Adverse Mismatch Alerts**: Detects severe PCIe bus bottlenecks (e.g., PCIe 3.0 x4 limitations on budget GPUs) and core/thread starvation.
+- **Stability & LLC Stress Test**: Simulates Load-Line Calibration (LLC) vdroop, 12V transient power spikes, and thermal runaway scenarios under 100% synthetic load runs.
+- **Indian Ambient Summer Modeling**: Evaluates thermal throttling under ambient room temperatures up to 45°C for Stock, Air Tower, and 240/360mm AIO coolers.
+
+### 5. Rig Architect & Indian Builder Suite
+- **Full 8-Component Configurator**: Interactive selection of CPU, GPU, Motherboard, RAM, Storage, PSU, Cabinet, and Cooling.
+- **Automated Validation Engine**: Real-time checking of Socket Compatibility, VRM Thermal Requirements, Total System TDP, and Form-Factor Alignment (ATX, Micro-ATX, Mini-ITX).
+- **Indian Retail Localization**: Integrated pricing in ₹ INR including automated 18% GST tax breakdown, vendor availability links, and budget presets from ₹50,000 to ₹2,50,000+.
+
+### 6. Deep Hardware Labs & Subsystem Simulations
+- **Silicon Anatomy & Die Inspector**: Detailed floorplans of AMD Zen 4/5 CCDs, Intel Raptor/Arrow Lake compute tiles, and NVIDIA Ada/Blackwell SM layouts.
+- **RAM Configuration Lab**: Dual vs. Quad-channel bandwidth, XMP/EXPO timing profiles, sub-timing latency calculations, and infinity fabric ratio impacts.
+- **Storage I/O Performance Lab**: Benchmarks sequential and random 4K IOPS across SATA, NVMe Gen3/Gen4/Gen5 SSDs, and legacy mechanical drives.
+- **TCO & DISCOM Electricity Engine**: Calculates 3-year ownership expenses using regional tariff tiers (MSEDCL, BESCOM, BSES, TANGEDCO, UPPCL, WBSEDCL) with usage pattern customization.
+- **Upgrade ROI Engine**: Quantifies ₹ cost per additional FPS gained and calculates estimated secondary market resale depreciation over 12–36 months.
 
 ---
 
-## 💻 Tech Stack
+## 💻 Tech Stack & Architecture
 
-| Layer | Technology |
-|---|---|
-| Framework | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
-| Build tool | [Vite 6](https://vitejs.dev/) |
-| 3D / WebGL | [Three.js](https://threejs.org/) |
-| Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
-| Animation | [motion](https://motion.dev/) |
-| Icons | [Lucide React](https://lucide.dev/) |
-| Charts | Chart.js, D3.js |
-| PDF export | [jsPDF](https://github.com/parallax/jsPDF) |
-| Server | [Express](https://expressjs.com/) + [tsx](https://github.com/privatenumber/tsx) |
-| AI | [Gemini API](https://ai.google.dev/) via `@google/genai` |
+| Layer | Technologies & Dependencies | Purpose |
+| :--- | :--- | :--- |
+| **Core Framework** | [React 19.0](https://react.dev/), [TypeScript 5.8](https://www.typescriptlang.org/) | Concurrent UI rendering & strict type safety |
+| **Build System** | [Vite 6.2](https://vitejs.dev/), [tsx](https://github.com/privatenumber/tsx), [Esbuild](https://esbuild.github.io/) | Lightning-fast HMR dev server & production bundling |
+| **3D Rendering** | [Three.js v0.186](https://threejs.org/) | WebGL graphics, scene graphs, lighting, & 3D object rendering |
+| **Styling & UI** | [Tailwind CSS v4.1](https://tailwindcss.com/), `@tailwindcss/vite` | Modern utility-first responsive styling engine |
+| **Animations** | [Motion v12.23](https://motion.dev/) | Fluid layout morphing, modal springs, & page tab transitions |
+| **Data Viz** | [Chart.js v4.5](https://chartjs.org/), [D3.js v7.9](https://d3js.org/) | Pareto scatter charts, radar plots, & timeline graphics |
+| **Backend & AI** | [Express v4.21](https://expressjs.com/), `@google/genai v2.4` | Server API routes, Gemini AI proxy, and sitemap generation |
+| **Utilities** | [jsPDF v4.2](https://github.com/parallax/jsPDF), [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) | Engineering PDF export & gamification reward triggers |
+
+---
+
+## 📁 Project Directory Structure
+
+```
+pc-hardware-performance-matrix-synergy-engine/
+├── api/                     # Vercel & serverless API endpoints
+├── data/                    # Hardcoded hardware specification datasets
+├── public/                  # Static assets, icons, manifest files
+├── scripts/                 # Post-build routines & dynamic sitemap generators
+├── src/                     # React application source code
+│   ├── components/          # Feature UI modules
+│   │   ├── spatial/         # Three.js 3D viewport scenes & shaders
+│   │   ├── AIBuildDoctor.tsx
+│   │   ├── HardwareCatalog.tsx
+│   │   ├── HeadToHead.tsx
+│   │   ├── PerformanceMatrix.tsx
+│   │   ├── RigArchitect.tsx
+│   │   ├── RunningCostLab.tsx
+│   │   ├── Spatial3DStudio.tsx
+│   │   └── SynergyLab.tsx
+│   ├── data/                # Client hardware catalog index files
+│   ├── utils/                # Calculation engines, physics models, cache helpers
+│   ├── App.tsx              # Root application router & layout state
+│   ├── main.tsx             # React DOM root entry point
+│   ├── routes.ts            # Dynamic routing definitions & meta mappings
+│   └── types.ts             # TypeScript definitions for hardware models
+├── app.ts                   # Express application setup
+├── server.ts                # Main Node server entry point
+├── package.json             # Build scripts and dependency configuration
+├── tsconfig.json            # TypeScript compiler configuration
+└── vite.config.ts           # Vite bundler & plugin configuration
+```
 
 ---
 
 ## 🏃 Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) 18+
-- npm (or Bun, since `bun.lock` is included)
+
+Ensure your environment meets the following requirements before installation:
+- **Node.js**: `v18.0.0` or higher (v20+ recommended)
+- **npm**: `v9.0.0` or higher (or `bun` / `pnpm`)
 
 ### Installation
 
+Clone the repository and install dependencies:
+
 ```bash
-git clone <repo-url>
+# Clone the repository
+git clone https://github.com/theflighttechofficial/RigForge.git
+
+# Navigate to project directory
 cd pc-hardware-performance-matrix-synergy-engine
+
+# Install project dependencies
 npm install
 ```
 
-### Development
+### Development Workflow
+
+Start the development server with hot module replacement (HMR):
 
 ```bash
 npm run dev
 ```
+> The application will run at **`http://localhost:3000`** (or the port specified in environment configuration).
 
-This starts the Express server (`server.ts`) with Vite in middleware mode, serving the app at [http://localhost:3000](http://localhost:3000).
+### Production Build & Bundle
 
-### Production Build
-
-```bash
-npm run build   # bundles the client with Vite + compiles the server with esbuild
-npm start       # runs the compiled server from dist/
-```
-
-### Type Checking
+To compile client assets and build the Node server bundle:
 
 ```bash
-npm run lint    # tsc --noEmit
+# Generate sitemap, compile React frontend, and bundle Express server
+npm run build
+
+# Start production server
+npm start
 ```
+
+Other available scripts:
+- `npm run lint` — Runs TypeScript compiler diagnostics (`tsc --noEmit`).
+- `npm run sitemap` — Regenerates the dynamic XML sitemap.
+- `npm run clean` — Cleans build output directories (`dist/`).
 
 ---
 
-## 🔐 Environment Variables
+## 🔐 Environment Configuration
 
-Copy `.env.example` to `.env` and configure:
+Create a `.env` file in the project root directory using `.env.example` as a template:
 
-| Variable | Required | Description |
-|---|---|---|
-| `GEMINI_API_KEY` | Optional | Enables AI-generated (vs. deterministic fallback) reports in the **AI Build Doctor**. Without it, the app still works using a heuristics-based diagnostic engine. |
-| `APP_URL` | Optional | Self-referential base URL, used when deployed behind a proxy/Cloud Run. |
+```env
+# Optional: Google Gemini API Key for AI Build Doctor natural-language diagnostics
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional: Base canonical URL for server-side meta tags and sitemap routing
+APP_URL=http://localhost:3000
+
+# Optional: Upstash Redis connection parameters (if caching server responses)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+```
+
+> **Note**: If `GEMINI_API_KEY` is omitted, the **AI Build Doctor** automatically falls back to its internal deterministic rules engine without throwing errors or breaking UI flows.
 
 ---
 
-## 📁 Project Structure
+## ⚡ Performance & Security
 
-```
-src/
-├── components/          # Feature modules (Rig Architect, Synergy Lab, AI Build Doctor, ...)
-│   └── spatial/          # Three.js 3D scenes (assembly, airflow, RGB, AR, desk planner)
-├── data/                 # Static hardware datasets, presets, and lexicons
-└── App.tsx               # Root routing & layout
-server.ts                 # Express server + Gemini-backed Build Doctor API
-```
+- **Lazy-Loaded Modules**: All major lab views and spatial 3D components are code-split using `React.lazy()` and `Suspense`, keeping initial bundle size minimal.
+- **Client-First Privacy**: Benchmarks, saved builds, and custom settings persist locally via browser `localStorage`. No user build data is collected or transmitted to external tracking servers.
+- **Server API Defense**: The Gemini AI integration is proxied via the Express backend to prevent exposing API credentials on the client side.
 
 ---
 
-## 📄 License
+## 🤝 Contributing
 
-This project is built and maintained for PC hardware enthusiasts, system architects, and builders. All manufacturer names, logos, and trademarks (Intel, AMD, NVIDIA) belong to their respective owners.
+Contributions from hardware enthusiasts and developers are welcome! To contribute:
+
+1. **Fork** the repository.
+2. Create a feature branch: `git checkout -b feature/amazing-feature`.
+3. Commit your changes: `git commit -m 'Add amazing hardware telemetry feature'`.
+4. Push to the branch: `git push origin feature/amazing-feature`.
+5. Open a **Pull Request**.
+
+Please ensure your code passes `npm run lint` before submitting PRs.
+
+---
+
+## 📄 License & Trademarks
+
+This project is licensed under the MIT License - see the `LICENSE` file for details.
+
+*Disclaimer: All product names, logos, brands, and trademarks (such as Intel, AMD, NVIDIA, Ryzen, GeForce, Radeon) are property of their respective owners. Their usage in this project is for educational, identification, and hardware performance comparison purposes only.*
