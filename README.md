@@ -14,6 +14,88 @@
 
 ---
 
+## 📸 Visual Showcase
+
+<div align="center">
+
+### 🖥️ Platform Overview & Live Dashboard
+*Interactive workspace showing real-time CPU & GPU pairing diagnostics, system specs, and instantaneous health verdict.*
+
+![Silicon Matrix Platform Overview](docs/screenshots/overview.png)
+
+</div>
+
+<br/>
+
+<table align="center" width="100%">
+  <tr>
+    <td width="50%" align="center">
+      <h3>🧊 3D Spatial Computing Studio</h3>
+      <a href="docs/screenshots/3d-studio.png">
+        <img src="docs/screenshots/3d-studio.png" alt="3D Spatial Studio" width="100%"/>
+      </a>
+      <p><em>Real-time PBR WebGL assembly viewport, exploded view inspection, airflow dynamic loops & clearance checking.</em></p>
+    </td>
+    <td width="50%" align="center">
+      <h3>📊 Price-to-Performance Pareto Matrix</h3>
+      <a href="docs/screenshots/value-matrix.png">
+        <img src="docs/screenshots/value-matrix.png" alt="Pareto Value Matrix" width="100%"/>
+      </a>
+      <p><em>2D scatter analysis mapping ₹ INR street pricing against synthetic compute scores with Pareto-frontier curves.</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <h3>🛠️ Rig Architect Configurator</h3>
+      <a href="docs/screenshots/builder.png">
+        <img src="docs/screenshots/builder.png" alt="Rig Architect Builder" width="100%"/>
+      </a>
+      <p><em>Full 8-part build architect with dynamic socket compatibility, 80% PSU load margin sizing & Indian retail pricing with GST.</em></p>
+    </td>
+    <td width="50%" align="center">
+      <h3>🩺 AI Build Doctor</h3>
+      <a href="docs/screenshots/build-doctor.png">
+        <img src="docs/screenshots/build-doctor.png" alt="AI Build Doctor" width="100%"/>
+      </a>
+      <p><em>Gemini 2.4-backed natural language diagnostics engine with heuristic fallback, bottlenecks & upgrade blueprints.</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <h3>🔬 Synergy & Bottleneck Physics Lab</h3>
+      <a href="docs/screenshots/bottleneck.png">
+        <img src="docs/screenshots/bottleneck.png" alt="Synergy and Bottleneck Lab" width="100%"/>
+      </a>
+      <p><em>Resolution-sensitive pipeline queue simulation across 1080p, 1440p, 4K, and Workstation stress tests.</em></p>
+    </td>
+    <td width="50%" align="center">
+      <h3>⚔️ Architectural Head-to-Head Duel</h3>
+      <a href="docs/screenshots/compare.png">
+        <img src="docs/screenshots/compare.png" alt="Head-to-Head Comparison Duel" width="100%"/>
+      </a>
+      <p><em>Side-by-side component breakdown with 6-axis workload radar charts, lithography details, and cache topology.</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <h3>🎮 Gaming Benchmarks & FPS Engine</h3>
+      <a href="docs/screenshots/benchmarks.png">
+        <img src="docs/screenshots/benchmarks.png" alt="Gaming Benchmarks and FPS Estimator" width="100%"/>
+      </a>
+      <p><em>Estimated frame rates across AAA titles by resolution, quality presets, DLSS/FSR upscaling & frame generation.</em></p>
+    </td>
+    <td width="50%" align="center">
+      <h3>⚡ TCO & DISCOM Electricity Engine</h3>
+      <a href="docs/screenshots/power-cost.png">
+        <img src="docs/screenshots/power-cost.png" alt="TCO and DISCOM Power Cost Lab" width="100%"/>
+      </a>
+      <p><em>3-year running electricity cost projections mapped against state DISCOM tariffs (BESCOM, MSEDCL, BSES) and UPS sizing.</em></p>
+    </td>
+  </tr>
+</table>
+
+---
+
 ## 🌟 Key Highlights
 
 - 🧊 **3D Spatial Computing & Assembly Studio** — Photorealistic PBR WebGL assembly viewport, interactive exploded component inspect, airflow particle dynamic simulation, and 1:1 scale AR WebXR floor projection.
@@ -23,12 +105,13 @@
 - 🔬 **Synergy & Bottleneck Physics Lab** — Queue-based CPU/GPU frame rendering pipeline analysis at 1080p, 1440p, 4K, and Workstation workloads.
 - ⚡ **Thermal & Stability Stress Lab** — High-ambient Indian summer (up to 45°C) thermal runway modeling, Vcore offset & LLC vdroop simulation, and live 15-second stress execution.
 - 🖥️ **Rig Architect Configurator** — Real-time component compatibility, VRM/wattage audit, and Indian retail ₹ pricing with 18% GST calculation.
-- 🔋 **TCO & DISCOM Electricity Engine** — 3-year running cost projection with region-specific tariffs (MSEDCL, BESCOM, BSES, TANGEDCO, UPPCL, WBSEDCL, WBSEDCL).
+- 🔋 **TCO & DISCOM Electricity Engine** — 3-year running cost projection with region-specific tariffs (MSEDCL, BESCOM, BSES, TANGEDCO, UPPCL, WBSEDCL).
 
 ---
 
 ## 📑 Table of Contents
 
+- [Visual Showcase](#-visual-showcase)
 - [Architectural Overview](#-architectural-overview)
 - [Comprehensive Feature Breakdown](#-comprehensive-feature-breakdown)
   - [1. 3D Spatial Computing & Interactive Assembly](#1-3d-spatial-computing--interactive-assembly)
@@ -136,8 +219,13 @@ graph TD
 pc-hardware-performance-matrix-synergy-engine/
 ├── api/                     # Vercel & serverless API endpoints
 ├── data/                    # Hardcoded hardware specification datasets
+├── docs/                    # Documentation & visual showcases
+│   └── screenshots/         # Hi-res captures of platform workspaces
 ├── public/                  # Static assets, icons, manifest files
 ├── scripts/                 # Post-build routines & dynamic sitemap generators
+│   ├── generate-sitemap.ts  # Dynamic XML sitemap builder
+│   ├── postbuild.ts         # Post-bundle copy routines
+│   └── take-screenshots.mjs # Automated headless viewport capture suite
 ├── src/                     # React application source code
 │   ├── components/          # Feature UI modules
 │   │   ├── spatial/         # Three.js 3D viewport scenes & shaders
@@ -150,7 +238,7 @@ pc-hardware-performance-matrix-synergy-engine/
 │   │   ├── Spatial3DStudio.tsx
 │   │   └── SynergyLab.tsx
 │   ├── data/                # Client hardware catalog index files
-│   ├── utils/                # Calculation engines, physics models, cache helpers
+│   ├── utils/               # Calculation engines, physics models, cache helpers
 │   ├── App.tsx              # Root application router & layout state
 │   ├── main.tsx             # React DOM root entry point
 │   ├── routes.ts            # Dynamic routing definitions & meta mappings
@@ -212,6 +300,7 @@ Other available scripts:
 - `npm run lint` — Runs TypeScript compiler diagnostics (`tsc --noEmit`).
 - `npm run sitemap` — Regenerates the dynamic XML sitemap.
 - `npm run clean` — Cleans build output directories (`dist/`).
+- `node scripts/take-screenshots.mjs` — Automated capture of high-resolution platform screenshots to `docs/screenshots/`.
 
 ---
 
