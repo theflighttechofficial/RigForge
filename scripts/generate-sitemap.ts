@@ -1,5 +1,7 @@
 // Writes public/sitemap.xml, public/robots.txt and the page rewrites in vercel.json from src/routes.ts,
 // so every page URL stays listed and unknown URLs fall through to a real 404.
+// Rewrites name each page path, so static files (sitemap.xml, robots.txt and the Search Console
+// verification file public/google0ef37f357648e48d.html) are never captured. Never delete that file.
 import fs from 'fs';
 import { ROUTES } from '../src/routes';
 import { SITE } from '../src/siteConfig';
@@ -18,7 +20,7 @@ fs.writeFileSync(
 
 fs.writeFileSync(
   'public/robots.txt',
-  `User-agent: *\nAllow: /\n# API routes and one-time scan scripts are not pages\nDisallow: /api/\n\nSitemap: ${SITE.url}/sitemap.xml\n`
+  `User-agent: *\nAllow: /\n\nSitemap: ${SITE.url}/sitemap.xml\n`
 );
 
 // Only known pages are rewritten to the app; anything else gets Vercel's 404 (dist/404.html, a copy of the app)
